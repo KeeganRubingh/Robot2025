@@ -173,7 +173,6 @@ public class RobotContainer {
     //               drive.run(0.0, aimController.calculate(vision.getTargetX(0).getRadians()));
     //             },
     //             drive));
-    vision.getTargetX(0).getRadians();
   }
 
   /**
