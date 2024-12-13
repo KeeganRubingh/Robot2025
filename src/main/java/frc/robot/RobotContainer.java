@@ -15,16 +15,13 @@ package frc.robot;
 
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -37,7 +34,6 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -54,10 +50,9 @@ public class RobotContainer {
 
   private final Vision vision;
 
-  private final CommandGenericHID keyboard = new CommandGenericHID(0); // Keyboard 0 on port 0
+  private AutoCommandManager autoCommandManager;
 
-  // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
+  // private final CommandGenericHID keyboard = new CommandGenericHID(0); // Keyboard 0 on port 0
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -118,24 +113,7 @@ public class RobotContainer {
         break;
     }
 
-    // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
-    // Set up SysId routines
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    autoCommandManager = new AutoCommandManager(drive);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -179,6 +157,23 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+
+    // Auto aim command example FOR DIFFERENTIAL DRIVE
+    // @SuppressWarnings("resource")
+    // PIDController aimController = new PIDController(0.2, 0.0, 0.0);
+    // aimController.enableContinuousInput(-Math.PI, Math.PI);
+    // keyboard
+    //     .button(1)
+    //     .whileTrue(
+    //         Commands.startRun(
+    //             () -> {
+    //               aimController.reset();
+    //             },
+    //             () -> {
+    //               drive.run(0.0, aimController.calculate(vision.getTargetX(0).getRadians()));
+    //             },
+    //             drive));
+    vision.getTargetX(0).getRadians();
   }
 
   /**
@@ -187,6 +182,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return autoCommandManager.getAutonomousCommand();
   }
 }
