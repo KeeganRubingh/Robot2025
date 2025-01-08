@@ -1,4 +1,4 @@
-// Copyright 2021-2024 FRC 6328
+// Copyright 2021-2025 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
@@ -43,7 +43,7 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
  */
 public class RobotContainer {
   // Subsystems
-  private Drive drive;
+  private final Drive drive;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -52,12 +52,18 @@ public class RobotContainer {
 
   private AutoCommandManager autoCommandManager;
 
-  // private final CommandGenericHID keyboard = new CommandGenericHID(0); // Keyboard 0 on port 0
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     switch (Constants.currentMode) {
       case REAL:
+        drive =
+            new Drive(
+                new GyroIOPigeon2(),
+                new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                new ModuleIOTalonFX(TunerConstants.FrontRight),
+                new ModuleIOTalonFX(TunerConstants.BackLeft),
+                new ModuleIOTalonFX(TunerConstants.BackRight));
+
         vision =
             new Vision(
                 drive::addVisionMeasurement,
@@ -70,18 +76,10 @@ public class RobotContainer {
         //         new VisionIOPhotonVision(camera1Name, robotToCamera1));
 
         // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight));
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-
         drive =
             new Drive(
                 new GyroIO() {},
@@ -99,10 +97,6 @@ public class RobotContainer {
         break;
 
       default:
-        // Replayed robot, disable IO implementations
-        // (Use same number of dummy implementations as the real robot)
-        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-
         drive =
             new Drive(
                 new GyroIO() {},
@@ -110,6 +104,11 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+
+        // Replayed robot, disable IO implementations
+        // (Use same number of dummy implementations as the real robot)
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+
         break;
     }
 
