@@ -13,15 +13,21 @@
 
 package frc.robot;
 
-import static frc.robot.subsystems.vision.VisionConstants.*;
+import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
+import static frc.robot.subsystems.vision.VisionConstants.camera1Name;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCamera0;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
 
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -47,6 +53,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController characterizeController = new CommandXboxController(2);
 
   private final Vision vision;
 
@@ -158,6 +165,40 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+
+    characterizeController
+        .back()
+        .and(characterizeController.y())
+        .whileTrue(drive.sysIdDynamic(Direction.kForward));
+    characterizeController
+        .back()
+        .and(characterizeController.x())
+        .whileTrue(drive.sysIdDynamic(Direction.kReverse));
+    characterizeController
+        .start()
+        .and(characterizeController.y())
+        .whileTrue(drive.sysIdQuasistatic(Direction.kForward));
+    characterizeController
+        .start()
+        .and(characterizeController.x())
+        .whileTrue(drive.sysIdQuasistatic(Direction.kReverse));
+    characterizeController
+        .a()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  SignalLogger.setPath("/media/sda1/logs");
+                  SignalLogger.start();
+                  System.out.println("Started Logger");
+                }));
+    characterizeController
+        .b()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  SignalLogger.stop();
+                  System.out.println("Stopped Logger");
+                }));
 
     // Auto aim command example FOR DIFFERENTIAL DRIVE
     // @SuppressWarnings("resource")
