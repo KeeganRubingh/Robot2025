@@ -56,8 +56,9 @@ public class TunerConstants {
   // ********** Drive FF Characterization Results **********
   // kS: 0.17960
   // kV: 0.78706
+  // If loading from WPIlib logs, use Radians, if loading from .hoot, use Rotations.
   private static final Slot0Configs driveGains =
-      new Slot0Configs().withKP(0.1).withKI(0).withKD(0).withKS(0.17960).withKV(0.78706);
+      new Slot0Configs().withKP(0.5201664).withKI(0).withKD(0).withKS(0.1546825).withKV(0.79265);
 
   // The closed-loop output type to use for the steer motors;
   // This affects the PID/FF gains for the steer motors
@@ -103,7 +104,7 @@ public class TunerConstants {
 
   // Theoretical free speed (m/s) at 12 V applied output;
   // This needs to be tuned to your individual robot
-  public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.93);
+  public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.65);
 
   // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
   // This may need to be tuned to your individual robot

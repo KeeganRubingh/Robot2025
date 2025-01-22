@@ -188,6 +188,7 @@ public class RobotContainer {
             new InstantCommand(
                 () -> {
                   SignalLogger.setPath("/media/sda1/logs");
+                  // SignalLogger.enableAutoLogging(true);
                   SignalLogger.start();
                   System.out.println("Started Logger");
                 }));
