@@ -1,12 +1,5 @@
 package frc.robot.generated;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.Volts;
-
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -24,9 +17,16 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
@@ -58,7 +58,15 @@ public class TunerConstants {
   // kV: 0.68816
   // If loading from WPIlib logs, use Radians, if loading from .hoot, use Rotations.
   private static final Slot0Configs driveGains =
-      new Slot0Configs().withKP(0.5201664).withKI(0).withKD(0).withKS(0.1546825).withKV(0.79265);
+      new Slot0Configs()
+          .withKP(0.5201664)
+          // .withKP(0.47900025)
+          .withKI(0)
+          .withKD(0.05201664) // Help reduce roughness of drive PID
+          // .withKS(0.1546825)
+          .withKS(0.1636875)
+          // .withKV(0.79265);
+          .withKV(0.79163);
 
   // The closed-loop output type to use for the steer motors;
   // This affects the PID/FF gains for the steer motors
@@ -104,7 +112,8 @@ public class TunerConstants {
 
   // Theoretical free speed (m/s) at 12 V applied output;
   // This needs to be tuned to your individual robot
-  public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(5.42);
+  // Theoretical Max is 5.42 M/s^2, with WCP X2i X3 T11
+  public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(5.1);
 
   // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
   // This may need to be tuned to your individual robot
