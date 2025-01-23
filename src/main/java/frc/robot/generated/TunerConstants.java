@@ -88,7 +88,9 @@ public class TunerConstants {
 
   // The stator current at which the wheels start to slip;
   // This needs to be tuned to your individual robot
-  private static final Current kSlipCurrent = Amps.of(120.0);
+
+  // Needs further testing without bumpers
+  private static final Current kSlipCurrent = Amps.of(31.5);
 
   // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
   // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
@@ -125,7 +127,7 @@ public class TunerConstants {
   //   Wheel Delta: 59.201 radians
   //   Gyro Delta: 6.882 radians
   //   Wheel Radius: 0.051 meters, 1.997 inches
-  private static final Distance kWheelRadius = Inches.of(2);
+  private static final Distance kWheelRadius = Inches.of(1.997);
 
   private static final boolean kInvertLeftSide = false;
   private static final boolean kInvertRightSide = true;
