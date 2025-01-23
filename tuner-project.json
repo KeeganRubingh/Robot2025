@@ -372,7 +372,7 @@
     }
   ],
   "SwerveOptions": {
-    "kSpeedAt12Volts": 4.925707000072885,
+    "kSpeedAt12Volts": 5.418277700080173,
     "Gyro": {
       "Id": 13,
       "Name": "Pigeon 2",
@@ -391,10 +391,10 @@
     "SwerveModuleType": 9,
     "SwerveModuleConfiguration": {
       "ModuleBrand": 9,
-      "DriveRatio": 6.48,
+      "DriveRatio": 5.8909090909090915,
       "SteerRatio": 12.1,
-      "CouplingRatio": 5.4,
-      "CustomName": "X3 10T"
+      "CouplingRatio": 4.909090909090909,
+      "CustomName": "X3 11T"
     },
     "HasVerifiedSteer": true,
     "HasVerifiedDrive": true,
