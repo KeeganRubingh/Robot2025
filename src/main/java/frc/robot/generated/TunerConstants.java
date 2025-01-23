@@ -1,5 +1,12 @@
 package frc.robot.generated;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -17,16 +24,9 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
@@ -54,8 +54,8 @@ public class TunerConstants {
   // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
 
   // ********** Drive FF Characterization Results **********
-  // kS: 0.17960
-  // kV: 0.78706
+  // kS: 0.22444
+  // kV: 0.68816
   // If loading from WPIlib logs, use Radians, if loading from .hoot, use Rotations.
   private static final Slot0Configs driveGains =
       new Slot0Configs().withKP(0.5201664).withKI(0).withKD(0).withKS(0.1546825).withKV(0.79265);
@@ -112,6 +112,10 @@ public class TunerConstants {
 
   private static final double kDriveGearRatio = 5.8909090909090915;
   private static final double kSteerGearRatio = 12.1;
+  //   ********** Wheel Radius Characterization Results **********
+  //   Wheel Delta: 59.201 radians
+  //   Gyro Delta: 6.882 radians
+  //   Wheel Radius: 0.051 meters, 1.997 inches
   private static final Distance kWheelRadius = Inches.of(2);
 
   private static final boolean kInvertLeftSide = false;
