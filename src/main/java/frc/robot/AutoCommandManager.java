@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -41,6 +42,14 @@ public class AutoCommandManager {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption("Circle", Circle);
+    autoChooser.addOption("Straight", Straight);
+    autoChooser.addOption("Diagonal", Diagonal);
+    autoChooser.addOption("simpleAuto", simpleAuto);
+
+    // Add Choreo Paths
+    autoChooser.addOption("Characterization Test Path", CharacterizationTest);
+    autoChooser.addOption("[Choreo] Straight Test", ChoreoStraightAuto);
   }
 
   public Command getAutonomousCommand() {
