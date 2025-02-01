@@ -73,6 +73,7 @@ public class Drive extends SubsystemBase {
               Math.hypot(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
 
   // PathPlanner config constants
+  // Final mass of robot v1 in kg
   private static final double ROBOT_MASS_KG = 65.7708937;
   private static final double ROBOT_MOI = 6.883;
   private static final double WHEEL_COF = 1.2;
