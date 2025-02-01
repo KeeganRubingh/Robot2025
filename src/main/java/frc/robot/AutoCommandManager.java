@@ -19,6 +19,7 @@ public class AutoCommandManager {
     PathPlannerAuto Circle = new PathPlannerAuto("Circle");
     PathPlannerAuto Straight = new PathPlannerAuto("Straight");
     PathPlannerAuto Diagonal = new PathPlannerAuto("Diagonal");
+    PathPlannerAuto simpleAuto = new PathPlannerAuto("simpleAuto");
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -38,6 +39,7 @@ public class AutoCommandManager {
     autoChooser.addOption("Circle", Circle);
     autoChooser.addOption("Straight", Straight);
     autoChooser.addOption("Diagonal", Diagonal);
+    autoChooser.addOption("simpleAuto", simpleAuto);
   }
 
   public Command getAutonomousCommand() {
