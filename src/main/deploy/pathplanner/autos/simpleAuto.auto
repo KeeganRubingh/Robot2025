@@ -7,7 +7,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "simplePath"
+            "pathName": "simplePath.0"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "simplePath.1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "simplePath.2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 20000.0
           }
         }
       ]
@@ -15,5 +45,5 @@
   },
   "resetOdom": true,
   "folder": null,
-  "choreoAuto": false
+  "choreoAuto": true
 }
