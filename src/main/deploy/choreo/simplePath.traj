@@ -153,5 +153,8 @@
     {"t":5.01506, "x":3.78606, "y":5.25023, "heading":2.09887, "vx":0.0, "vy":0.0, "omega":0.0, "ax":0.0, "ay":0.0, "alpha":0.0, "fx":[0.0,0.0,0.0,0.0], "fy":[0.0,0.0,0.0,0.0]}],
   "splits":[0,29,81]
  },
- "events":[]
+ "events":[
+   {"name":"L1Score", "from":{"target":1, "targetTimestamp":1.20067, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"L1Score"}}},
+   {"name":"L1Score", "from":{"target":4, "targetTimestamp":5.01506, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"L1Score"}}},
+   {"name":"groundIntake", "from":{"target":3, "targetTimestamp":3.4425, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"groundIntake"}}}]
 }
