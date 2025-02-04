@@ -2,6 +2,7 @@ package frc.robot.subsystems.toesies;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -10,6 +11,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.arm.ArmJointIO.ArmInputs;
+import frc.robot.util.CanDef;
 import frc.robot.util.PhoenixUtil;
 
 public class ToesiesIOTalonFX implements ToesiesIO {
@@ -18,8 +20,8 @@ public class ToesiesIOTalonFX implements ToesiesIO {
 
   public ArmInputs inputs;
 
-  public ToesiesIOTalonFX(int id) {
-    Motor = new TalonFX(id);
+  public ToesiesIOTalonFX(CanDef canbus) {
+    Motor = new TalonFX(canbus.id(),canbus.bus());
     Request = new VoltageOut(0.0);
 
     Motor.setControl(Request);

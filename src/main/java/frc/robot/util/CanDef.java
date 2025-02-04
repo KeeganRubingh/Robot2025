@@ -5,8 +5,8 @@ public class CanDef {
   private final CanBus bus;
 
   public enum CanBus {
-    Rio("RIO"),
-    CANivore("CANivore");
+    Rio("rio"),
+    CANivore("ARM");
 
     private final String name;
 

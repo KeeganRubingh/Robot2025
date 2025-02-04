@@ -2,6 +2,7 @@ package frc.robot.subsystems.arm;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -22,7 +23,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
 
   public ArmJointIOTalonFX(ArmJointConstants constants) {
     m_Constants = constants;
-    Motor = new TalonFX(constants.LeaderProfile.id());
+    Motor = new TalonFX(constants.LeaderProfile.id(), constants.LeaderProfile.bus());
     Request = new PositionVoltage(constants.StartingAngle);
     configureTalons();
   }

@@ -2,6 +2,7 @@ package frc.robot.subsystems.wrist;
 
 import static edu.wpi.first.units.Units.Rotations;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -9,14 +10,15 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Angle;
+import frc.robot.util.CanDef;
 import frc.robot.util.PhoenixUtil;
 
 public class WristIOTalonFX implements WristIO {
   public PositionVoltage Request;
   public TalonFX Motor;
 
-  public WristIOTalonFX(int MotorId) {
-    Motor= new TalonFX(MotorId);
+  public WristIOTalonFX(CanDef canbus) {
+    Motor= new TalonFX(canbus.id(), canbus.bus());
     Request = new PositionVoltage(0);
 
     Motor.setControl(Request);
