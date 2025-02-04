@@ -87,6 +87,8 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.subsystems.wrist.WristIOSim;
 import frc.robot.subsystems.wrist.WristIOTalonFX;
+import frc.robot.util.CanDef;
+import frc.robot.util.CommandFactory;
 import frc.robot.util.LoggedTunableNumber;
 
 /**
@@ -241,6 +243,9 @@ public class RobotContainer {
       //   throw new Exception("The robot is in neither sim nor real. Something has gone seriously wrong");
     }
 
+    //Gives all our subsystems to the commandFactory
+    CommandFactory.initialize(shoulder, elbow, elevator, fingeys, intake, intakeExtender, toesies, wrist);
+
     autoCommandManager = new AutoCommandManager(drive);
 
     // Configure the button bindings
@@ -276,6 +281,8 @@ public class RobotContainer {
 
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+    controller.leftTrigger().onTrue(CommandFactory.getInstance().getNewStartIntakeCommand());
 
     // Reset gyro to 0° when B button is pressed
     controller

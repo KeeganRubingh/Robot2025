@@ -35,12 +35,23 @@ public class Intake extends SubsystemBase{
         },
         this);
   }
+
   public Command getNewSetVoltsCommand(double i) {
     return new InstantCommand(
         () -> {
           setTarget(Volts.of(i));
         },
         this);
+  }
+
+  public Command getNewSetSpeedCommand(double percentOutput) {
+    return new InstantCommand(
+      () -> {
+        double volts = 12.0 * percentOutput;
+        setTarget(Volts.of(volts));
+      },
+      this
+    );
   }
 
   @Override

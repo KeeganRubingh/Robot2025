@@ -1,8 +1,10 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
@@ -14,6 +16,8 @@ public class AutoCommandManager {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   public AutoCommandManager(Drive drive) {
+    configureNamedCommands();
+    
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     PathPlannerAuto Circle = new PathPlannerAuto("Circle");
@@ -44,5 +48,10 @@ public class AutoCommandManager {
 
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  private void configureNamedCommands() {
+    NamedCommands.registerCommand("groundIntake", new PrintCommand("Intaking sir!"));
+    NamedCommands.registerCommand("L1Score", new PrintCommand("Scoring sir!"));
   }
 }
