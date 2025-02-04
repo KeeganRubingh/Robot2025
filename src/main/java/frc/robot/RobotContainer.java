@@ -202,7 +202,7 @@ public class RobotContainer {
 
         fingeys = new Fingeys(new FingeysIOTalonFX(canivoreCanBuilder.id(12).build()));
         
-        intake = new Intake(new IntakeIOTalonFX(canivoreCanBuilder.id(15).build(),canivoreCanBuilder.id(17).build()));
+        intake = new Intake(new IntakeIOTalonFX(canivoreCanBuilder.id(18).build(),canivoreCanBuilder.id(17).build()));
 
         intakeExtender = new IntakeExtender(new IntakeExtenderIOTalonFX(canivoreCanBuilder.id(16).build()));
 
