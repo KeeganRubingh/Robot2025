@@ -28,6 +28,7 @@ import static frc.robot.subsystems.vision.VisionConstants.robotToCameraFront;
 
 import java.util.Optional;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -87,7 +88,9 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.subsystems.wrist.WristIOSim;
 import frc.robot.subsystems.wrist.WristIOTalonFX;
+import frc.robot.util.CanDef;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.CanDef.CanBus;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -138,6 +141,10 @@ public class RobotContainer {
   final LoggedTunableNumber setIntakeVolts = new LoggedTunableNumber("RobotState/Intake/setVolts", 2);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer(){
+
+    CanDef.Builder canivoreCanBuilder = CanDef.builder().bus(CanBus.CANivore);
+    CanDef.Builder rioCanBuilder = CanDef.builder().bus(CanBus.Rio);
+
     switch (Constants.currentMode) {
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
@@ -186,22 +193,20 @@ public class RobotContainer {
                 new VisionIOLimelight(limelightFrontName, drive::getRotation),
                 new VisionIOLimelight(limelightBackName, drive::getRotation));
 
-        wrist = new Wrist(new WristIOTalonFX(11));
+        wrist = new Wrist(new WristIOTalonFX(canivoreCanBuilder.id(9).build(),canivoreCanBuilder.id(15).build()));
 
-        elevator = new Elevator(new ElevatorIOTalonFX(13, 14));
+        elevator = new Elevator(new ElevatorIOTalonFX(canivoreCanBuilder.id(13).build(),canivoreCanBuilder.id(14).build()));
 
-        shoulder = new ArmJoint( new ArmJointIOTalonFX(new ShoulderConstants()));
-        elbow = new ArmJoint( new ArmJointIOTalonFX(new ElbowConstants()));
+        shoulder = new ArmJoint(new ArmJointIOTalonFX(new ShoulderConstants()));
+        elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants()));
 
-        fingeys = new Fingeys( new FingeysIOTalonFX(12));
+        fingeys = new Fingeys(new FingeysIOTalonFX(canivoreCanBuilder.id(12).build()));
         
-        intake = new Intake( new IntakeIOTalonFX(15, 17));
+        intake = new Intake(new IntakeIOTalonFX(canivoreCanBuilder.id(15).build(),canivoreCanBuilder.id(17).build()));
 
-        intakeExtender = new IntakeExtender( new IntakeExtenderIOTalonFX(16));
+        intakeExtender = new IntakeExtender(new IntakeExtenderIOTalonFX(canivoreCanBuilder.id(16).build()));
 
-        toesies = new Toesies( new ToesiesIOTalonFX(6));
-
-        // arm = new ArmJoint(new ArmJointIOTalonFX(), null);
+        toesies = new Toesies(new ToesiesIOTalonFX(canivoreCanBuilder.id(15).build()));
 
         // vision =
         //     new Vision(

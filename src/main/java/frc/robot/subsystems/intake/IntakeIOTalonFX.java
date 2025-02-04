@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -13,6 +14,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.util.CanDef;
 import frc.robot.util.PhoenixUtil;
 
 public class IntakeIOTalonFX implements IntakeIO {
@@ -21,10 +23,10 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   private CANrange rangeSensor;
 
-  public IntakeIOTalonFX(int id,int CANrangeID) {
-    Motor = new TalonFX(id);
+  public IntakeIOTalonFX(CanDef motorCanDef,CanDef sensorCanDef) {
+    Motor = new TalonFX(motorCanDef.id(),motorCanDef.bus());
     Request = new VoltageOut(0.0);
-    rangeSensor = new CANrange(CANrangeID);
+    rangeSensor = new CANrange(sensorCanDef.id(),sensorCanDef.bus());
 
     Motor.setControl(Request);
     configureTalons();

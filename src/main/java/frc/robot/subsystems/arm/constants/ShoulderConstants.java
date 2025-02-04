@@ -10,7 +10,7 @@ import frc.robot.util.Gains;
 
 public class ShoulderConstants extends ArmJointConstants {
     public ShoulderConstants() {
-        this.LeaderProfile = CanDef.builder().id(0).bus(CanBus.Rio).build();
+        this.LeaderProfile = CanDef.builder().id(9).bus(CanBus.CANivore).build();
 
         this.SimGains =
             Gains.builder().kS(0.0).kG(0.0).kV(0.0).kA(0.0).kP(0.1).kI(0.0).kD(0.0).build();
