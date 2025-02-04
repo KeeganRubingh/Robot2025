@@ -193,7 +193,7 @@ public class RobotContainer {
                 new VisionIOLimelight(limelightFrontName, drive::getRotation),
                 new VisionIOLimelight(limelightBackName, drive::getRotation));
 
-        wrist = new Wrist(new WristIOTalonFX(canivoreCanBuilder.id(9).build()));
+        wrist = new Wrist(new WristIOTalonFX(canivoreCanBuilder.id(9).build(),canivoreCanBuilder.id(15).build()));
 
         elevator = new Elevator(new ElevatorIOTalonFX(canivoreCanBuilder.id(13).build(),canivoreCanBuilder.id(14).build()));
 
