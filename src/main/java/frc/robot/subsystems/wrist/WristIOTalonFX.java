@@ -1,8 +1,5 @@
 package frc.robot.subsystems.wrist;
 
-import static edu.wpi.first.units.Units.Rotations;
-
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -10,8 +7,10 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.util.CanDef;
 import frc.robot.util.Gains;
@@ -46,6 +45,9 @@ public class WristIOTalonFX implements WristIO {
     cfg.Feedback.SensorToMechanismRatio = 1.0;
     cfg.Feedback.RotorToSensorRatio = 9.0;
 
+    cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
+    cfg.Slot0.kP = 1.0;
 
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }

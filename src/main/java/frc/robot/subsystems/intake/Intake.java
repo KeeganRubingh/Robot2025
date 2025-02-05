@@ -1,9 +1,11 @@
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.*;
-
 import org.littletonrobotics.junction.Logger;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;

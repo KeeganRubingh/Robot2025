@@ -19,28 +19,20 @@
  */
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-import static frc.robot.subsystems.vision.VisionConstants.limelightBackName;
-import static frc.robot.subsystems.vision.VisionConstants.limelightFrontName;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBack;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCameraFront;
-
-import java.util.Optional;
-
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
@@ -53,7 +45,6 @@ import frc.robot.subsystems.arm.constants.ShoulderConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
@@ -72,25 +63,18 @@ import frc.robot.subsystems.toesies.Toesies;
 import frc.robot.subsystems.toesies.ToesiesIOSim;
 import frc.robot.subsystems.toesies.ToesiesIOTalonFX;
 import frc.robot.subsystems.vision.AprilTagVision;
-import frc.robot.subsystems.elevator.ElevatorIOSim;
-import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
-import frc.robot.subsystems.fingeys.Fingeys;
-import frc.robot.subsystems.fingeys.FingeysIOSim;
-import frc.robot.subsystems.fingeys.FingeysIOTalonFX;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
-import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
+import static frc.robot.subsystems.vision.VisionConstants.limelightBackName;
+import static frc.robot.subsystems.vision.VisionConstants.limelightFrontName;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBack;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraFront;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.subsystems.wrist.WristIOSim;
 import frc.robot.subsystems.wrist.WristIOTalonFX;
 import frc.robot.util.CanDef;
-import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.CanDef.CanBus;
+import frc.robot.util.LoggedTunableNumber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -197,8 +181,8 @@ public class RobotContainer {
 
         elevator = new Elevator(new ElevatorIOTalonFX(canivoreCanBuilder.id(13).build(),canivoreCanBuilder.id(14).build()));
 
-        shoulder = new ArmJoint(new ArmJointIOTalonFX(new ShoulderConstants()));
-        elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants()));
+        shoulder = new ArmJoint(new ArmJointIOTalonFX(new ShoulderConstants(), InvertedValue.Clockwise_Positive));
+        elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants(), InvertedValue.CounterClockwise_Positive));
 
         fingeys = new Fingeys(new FingeysIOTalonFX(canivoreCanBuilder.id(12).build()));
         

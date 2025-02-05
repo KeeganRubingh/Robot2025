@@ -1,15 +1,16 @@
 package frc.robot.subsystems.arm;
 
-import static edu.wpi.first.units.Units.*;
-
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import static edu.wpi.first.units.Units.Amp;
+import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.subsystems.arm.constants.ArmJointConstants;
 import frc.robot.util.Gains;
@@ -23,14 +24,14 @@ public class ArmJointIOTalonFX implements ArmJointIO {
 
   private final ArmJointConstants m_Constants;
 
-  public ArmJointIOTalonFX(ArmJointConstants constants) {
+  public ArmJointIOTalonFX(ArmJointConstants constants, InvertedValue motorInversion) {
     m_Constants = constants;
     Motor = new TalonFX(constants.LeaderProfile.id(), constants.LeaderProfile.bus());
     Request = new PositionVoltage(constants.StartingAngle);
-    configureTalons();
+    configureTalons(motorInversion);
   }
 
-  private void configureTalons() {
+  private void configureTalons(InvertedValue motorInversion) {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
     cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.Slot0.kP = m_Constants.TalonFXGains.kP;
@@ -42,6 +43,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
     cfg.Slot0.kA = m_Constants.TalonFXGains.kA;
     cfg.CurrentLimits.SupplyCurrentLimit = m_Constants.SupplyCurrentLimit.in(Amp);
     cfg.CurrentLimits.StatorCurrentLimit = m_Constants.TorqueCurrentLimit.in(Amp);
+    cfg.MotorOutput.Inverted = motorInversion;
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }
 
