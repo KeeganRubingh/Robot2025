@@ -1,12 +1,6 @@
 package frc.robot.subsystems.wrist;
 
-<<<<<<< HEAD
-import static edu.wpi.first.units.Units.Rotations;
-
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.Slot0Configs;
-=======
->>>>>>> a713d9c (Invert Motors based on real-life testing)
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -51,12 +45,9 @@ public class WristIOTalonFX implements WristIO {
     cfg.Feedback.SensorToMechanismRatio = 1.0;
     cfg.Feedback.RotorToSensorRatio = 9.0;
 
-<<<<<<< HEAD
-=======
     cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
     cfg.Slot0.kP = 1.0;
->>>>>>> a713d9c (Invert Motors based on real-life testing)
 
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }
