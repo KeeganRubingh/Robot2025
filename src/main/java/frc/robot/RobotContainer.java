@@ -88,7 +88,6 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
 
-  // TODO: SET PROPER MOTOR IDS
   private final double DRIVE_SPEED = 1.0;
   private final double ANGULAR_SPEED = 0.75;
   private final Wrist wrist;
