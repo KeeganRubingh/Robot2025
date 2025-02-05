@@ -78,7 +78,7 @@ public class Wrist extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // tunableGains.ifGainsHaveChanged((gains) -> this.m_WristIO.setGains(gains));
+    tunableGains.ifGainsHaveChanged((gains) -> this.m_WristIO.setGains(gains));
     m_WristIO.updateInputs(loggedwrist);
     Logger.processInputs("RobotState/Wrist", loggedwrist);
   }
