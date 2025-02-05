@@ -2,11 +2,6 @@ package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.*;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Volts;
-
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
@@ -16,12 +11,15 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotState;
+import frc.robot.util.LoggedTunableGainsBuilder;
 import frc.robot.util.LoggedTunableNumber;
 
 public class Elevator extends SubsystemBase {
   private ElevatorIO m_ElevatorIO;
 
   ElevatorInputsAutoLogged loggedelevator = new ElevatorInputsAutoLogged();
+
+  public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder("Elevator", 0, 0, 0, 0, 0, 0, 0);
 
   public Elevator(ElevatorIO elevatorIO) {
     m_ElevatorIO = elevatorIO;
@@ -65,6 +63,7 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    tunableGains.ifGainsHaveChanged((gains) -> this.m_ElevatorIO.setGains(gains));
     m_ElevatorIO.updateInputs(loggedelevator);
     Logger.processInputs("RobotState/Elevator", loggedelevator);
   }

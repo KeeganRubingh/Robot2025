@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -18,6 +19,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Distance;
 import frc.robot.subsystems.arm.ArmJointIO.ArmInputs;
 import frc.robot.util.CanDef;
+import frc.robot.util.Gains;
 import frc.robot.util.PhoenixUtil;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
@@ -52,6 +54,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     cfg.CurrentLimits.SupplyCurrentLimit = 40;
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
 
+    cfg.Feedback.SensorToMechanismRatio = 3.0;
+
     cfg.Slot0.kP = 1.0;
     PhoenixUtil.tryUntilOk(5, () -> leaderMotor.getConfigurator().apply(cfg));
 
@@ -63,6 +67,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     cfg2.CurrentLimits.StatorCurrentLimitEnable = true;
     cfg2.CurrentLimits.SupplyCurrentLimit = 40;
     cfg2.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+    cfg2.Feedback.SensorToMechanismRatio = 3.0;
 
     PhoenixUtil.tryUntilOk(5, ()->followerMotor.getConfigurator().apply(cfg2));
 
@@ -89,5 +95,18 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void stop() {
     leaderMotor.setControl(new StaticBrake());
+  }
+
+    @Override
+  public void setGains(Gains gains) {
+    Slot0Configs slot0Configs = new Slot0Configs();
+    slot0Configs.kP = gains.kP;
+    slot0Configs.kI = gains.kI;
+    slot0Configs.kD = gains.kD;
+    slot0Configs.kS = gains.kS;
+    slot0Configs.kG = gains.kG;
+    slot0Configs.kV = gains.kV;
+    slot0Configs.kA = gains.kA;
+    PhoenixUtil.tryUntilOk(5, () -> leaderMotor.getConfigurator().apply(slot0Configs));
   }
 }

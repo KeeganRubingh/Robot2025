@@ -14,12 +14,15 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotState;
+import frc.robot.util.LoggedTunableGainsBuilder;
 import frc.robot.util.LoggedTunableNumber;
 
 public class Wrist extends SubsystemBase {
   private WristIO m_WristIO;
 
   WristInputsAutoLogged loggedwrist = new WristInputsAutoLogged();
+
+  public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder("Wrist", 0, 0, 0, 0, 0, 0, 0);
 
   //WRIST WEIGHT
   //2.173 lbs
@@ -63,6 +66,7 @@ public class Wrist extends SubsystemBase {
 
   @Override
   public void periodic() {
+    tunableGains.ifGainsHaveChanged((gains) -> this.m_WristIO.setGains(gains));
     m_WristIO.updateInputs(loggedwrist);
     Logger.processInputs("RobotState/Wrist", loggedwrist);
   }

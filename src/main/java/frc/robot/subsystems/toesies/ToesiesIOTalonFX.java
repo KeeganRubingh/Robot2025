@@ -3,6 +3,7 @@ package frc.robot.subsystems.toesies;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -12,6 +13,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.arm.ArmJointIO.ArmInputs;
 import frc.robot.util.CanDef;
+import frc.robot.util.Gains;
+import frc.robot.util.LoggedTunableGainsBuilder;
 import frc.robot.util.PhoenixUtil;
 
 public class ToesiesIOTalonFX implements ToesiesIO {

@@ -7,6 +7,7 @@ import edu.wpi.first.units.measure.MutCurrent;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.MutLinearVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
+import frc.robot.util.Gains;
 
 public interface ElevatorIO {
 
@@ -25,4 +26,6 @@ public interface ElevatorIO {
   public void stop();
 
   public void setTarget(Distance meters);
+
+  public void setGains(Gains gains);
 }
