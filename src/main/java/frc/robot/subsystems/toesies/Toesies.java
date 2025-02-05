@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.toesies.ToesiesInputsAutoLogged;
+import frc.robot.util.LoggedTunableGainsBuilder;
 import frc.robot.util.LoggedTunableNumber;
 
 /**
@@ -26,6 +27,8 @@ public class Toesies extends SubsystemBase {
   private ToesiesIO m_ToesiesIO;
 
   ToesiesInputsAutoLogged loggedtoesies = new ToesiesInputsAutoLogged();
+  private LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder("AlgaeEndEffector", 0, 0, 0, 0, 0, 0, 0);
+
 
   public Toesies(ToesiesIO toesiesIO) {
     m_ToesiesIO = toesiesIO;

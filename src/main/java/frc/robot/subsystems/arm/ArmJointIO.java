@@ -6,6 +6,7 @@ import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutCurrent;
 import edu.wpi.first.units.measure.MutVoltage;
 import frc.robot.subsystems.arm.constants.ArmJointConstants;
+import frc.robot.util.Gains;
 
 import org.littletonrobotics.junction.AutoLog;
 
@@ -36,4 +37,6 @@ public interface ArmJointIO {
    * @return
    */
   public ArmJointConstants getConstants();
+
+  public void setGains(Gains gains);
 }

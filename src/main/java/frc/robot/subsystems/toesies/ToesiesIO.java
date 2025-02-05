@@ -4,6 +4,8 @@ import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutCurrent;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.util.Gains;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ToesiesIO {

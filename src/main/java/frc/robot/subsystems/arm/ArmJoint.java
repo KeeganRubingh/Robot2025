@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.arm.constants.ArmJointConstants;
+import frc.robot.util.LoggedTunableGainsBuilder;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -19,6 +20,8 @@ public class ArmJoint extends SubsystemBase {
   private final ArmJointConstants m_constants;
 
   ArmInputsAutoLogged m_loggedArm = new ArmInputsAutoLogged();
+
+  public LoggedTunableGainsBuilder tunableGains;
 
   public ArmJoint(ArmJointIO armJointIO) {
     m_armJointIO = armJointIO;
@@ -34,6 +37,7 @@ public class ArmJoint extends SubsystemBase {
     //    to pass the constants instance back up from the IO to get an instance of it in the subsystem.
     m_constants = armJointIO.getConstants();
     m_constants.mechanismSimCallback.accept(m_loggedArm.angle);
+    tunableGains = new LoggedTunableGainsBuilder("ArmJoint"+m_constants.LoggedName, 0, 0, 0, 0, 0, 0, 0);
   }
 
   public void setAngle(Angle angle) {
@@ -62,6 +66,7 @@ public class ArmJoint extends SubsystemBase {
 
   @Override
   public void periodic() {
+    tunableGains.ifGainsHaveChanged((gains) -> this.m_armJointIO.setGains(gains));
     m_armJointIO.updateInputs(m_loggedArm);
     Logger.processInputs("RobotState/" + m_constants.LoggedName, m_loggedArm);
   }

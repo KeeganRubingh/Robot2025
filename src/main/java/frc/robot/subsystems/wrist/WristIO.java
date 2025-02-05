@@ -5,6 +5,7 @@ import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutCurrent;
 import edu.wpi.first.units.measure.MutVoltage;
+import frc.robot.util.Gains;
 
 import org.littletonrobotics.junction.AutoLog;
 
@@ -23,4 +24,6 @@ public interface WristIO {
   public void setTarget(Angle target);
 
   public void updateInputs(WristInputs inputs);
+
+  public void setGains(Gains gains);
 }

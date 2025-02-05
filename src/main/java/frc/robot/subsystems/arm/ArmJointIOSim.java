@@ -9,8 +9,10 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.subsystems.arm.constants.ArmJointConstants;
+import frc.robot.util.Gains;
 
 public class ArmJointIOSim implements ArmJointIO {
 
@@ -97,5 +99,9 @@ public class ArmJointIOSim implements ArmJointIO {
   @Override
   public ArmJointConstants getConstants() {
     return m_Constants;
+  }
+
+  public void setGains(Gains gains) {
+    DriverStation.reportWarning("Sim gains tuning not implemented", true);
   }
 }

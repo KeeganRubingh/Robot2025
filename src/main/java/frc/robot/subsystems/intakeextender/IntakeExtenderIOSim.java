@@ -9,7 +9,9 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import frc.robot.util.Gains;
 
 public class IntakeExtenderIOSim implements IntakeExtenderIO {
   
@@ -66,5 +68,9 @@ public class IntakeExtenderIOSim implements IntakeExtenderIO {
     Angle currentAngle = Radians.of(sim.getOutput(0));
     controller.reset(currentAngle.in(Degrees));
     runVolts(Volts.of(0));
+  }
+
+  public void setGains(Gains gains) {
+    DriverStation.reportWarning("Sim gains tuning not implemented", true);
   }
 }

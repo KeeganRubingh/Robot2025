@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.LoggedTunableGainsBuilder;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.RobotState;
 
@@ -20,6 +21,8 @@ public class IntakeExtender extends SubsystemBase {
   private IntakeExtenderIO m_intakeextenderIO;
 
   IntakeExtenderInputsAutoLogged loggedintakeExtender = new IntakeExtenderInputsAutoLogged();
+
+  public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder("IntakeExtender", 0, 0, 0, 0, 0, 0, 0);
 
   public IntakeExtender(IntakeExtenderIO intakeExtenderIO) {
     m_intakeextenderIO = intakeExtenderIO;
@@ -61,6 +64,7 @@ public class IntakeExtender extends SubsystemBase {
 
   @Override
   public void periodic() {
+    tunableGains.ifGainsHaveChanged((gains) -> this.m_intakeextenderIO.setGains(gains));
     m_intakeextenderIO.updateInputs(loggedintakeExtender);
     Logger.processInputs("RobotState/IntakeExtender", loggedintakeExtender);
   }

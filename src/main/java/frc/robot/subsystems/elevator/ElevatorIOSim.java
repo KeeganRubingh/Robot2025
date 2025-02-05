@@ -11,7 +11,9 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import frc.robot.util.Gains;
 
 public class ElevatorIOSim implements ElevatorIO {
   private ElevatorFeedforward ff = new ElevatorFeedforward(0.0, 0.0, 0.0, 0.0);
@@ -66,5 +68,9 @@ public class ElevatorIOSim implements ElevatorIO {
     Distance currentDistance = Distance.ofRelativeUnits(0, Meters);
     controller.reset(currentDistance.in(Meters));
     runVolts(Volts.of(0));
+  }
+
+  public void setGains(Gains gains) {
+    DriverStation.reportWarning("Sim gains tuning not implemented", true);
   }
 }
