@@ -23,7 +23,6 @@ public class ToesiesIOTalonFX implements ToesiesIO {
     Motor = new TalonFX(canbus.id(),canbus.bus());
     Request = new VoltageOut(0.0);
 
-    Motor.setControl(Request);
     configureTalons();
   }
 
@@ -41,10 +40,10 @@ public class ToesiesIOTalonFX implements ToesiesIO {
   @Override
   public void updateInputs(ToesiesInputs inputs) {
     inputs.angularVelocity.mut_replace(Motor.getVelocity().getValue());
-    inputs.voltageSetPoint.mut_replace(
-        Voltage.ofRelativeUnits(
-            ((VoltageOut) Motor.getAppliedControl()).Output, Volts));
-    inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
+    // inputs.voltageSetPoint.mut_replace(
+    //     Voltage.ofRelativeUnits(
+    //         ((VoltageOut) Motor.getAppliedControl()).Output, Volts));
+    // inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(Motor.getStatorCurrent().getValue());
   }
 

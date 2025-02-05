@@ -26,7 +26,6 @@ public class WristIOTalonFX implements WristIO {
     Request = new PositionVoltage(0);
     canCoder = new CANcoder(canCoderDef.id(), canCoderDef.bus());
 
-    Motor.setControl(Request);
     configureTalons();
   }
 
@@ -61,9 +60,9 @@ public class WristIOTalonFX implements WristIO {
   public void updateInputs(WristInputs inputs) {
     inputs.wristAngle.mut_replace(Motor.getPosition().getValue());
     inputs.wristAngularVelocity.mut_replace(Motor.getVelocity().getValue());
-    inputs.wristSetPoint.mut_replace(
-        Angle.ofRelativeUnits(
-            ((MotionMagicVoltage) Motor.getAppliedControl()).Position, Rotations));
+    // inputs.wristSetPoint.mut_replace(
+    //     Angle.ofRelativeUnits(
+    //         ((PositionVoltage) Motor.getAppliedControl()).Position, Rotations));
     inputs.supplyCurrent.mut_replace(Motor.getStatorCurrent().getValue());
   }
 

@@ -23,7 +23,6 @@ public class IntakeExtenderIOTalonFX implements IntakeExtenderIO {
     Motor= new TalonFX(canbus.id(), canbus.bus());
     Request = new PositionVoltage(0);
 
-    Motor.setControl(Request);
     configureTalons();
   }
 
@@ -51,9 +50,9 @@ public class IntakeExtenderIOTalonFX implements IntakeExtenderIO {
   public void updateInputs(IntakeExtenderInputs inputs) {
     inputs.Angle.mut_replace(Motor.getPosition().getValue());
     inputs.IntakeExtenderAngularVelocity.mut_replace(Motor.getVelocity().getValue());
-    inputs.IntakeExtenderSetPoint.mut_replace(
-        Angle.ofRelativeUnits(
-            ((MotionMagicVoltage) Motor.getAppliedControl()).Position, Rotations));
+    // inputs.IntakeExtenderSetPoint.mut_replace(
+    //     Angle.ofRelativeUnits(
+    //         ((PositionVoltage) Motor.getAppliedControl()).Position, Rotations));
     inputs.supplyCurrent.mut_replace(Motor.getStatorCurrent().getValue());
   }
 

@@ -19,8 +19,7 @@ public class FingeysIOTalonFX implements FingeysIO {
   public FingeysIOTalonFX(CanDef canbus) {
     Motor = new TalonFX(canbus.id(),canbus.bus());
     Request = new VoltageOut(0.0);
-
-    Motor.setControl(Request);
+    
     configureTalons();
   }
 
@@ -40,9 +39,9 @@ public class FingeysIOTalonFX implements FingeysIO {
   @Override
   public void updateInputs(FingeysInputs inputs) {
     inputs.angularVelocity.mut_replace(Motor.getVelocity().getValue());
-    inputs.voltageSetPoint.mut_replace(
-        Voltage.ofRelativeUnits(
-            ((VoltageOut) Motor.getAppliedControl()).Output, Volts));
+    // inputs.voltageSetPoint.mut_replace(
+    //     Voltage.ofRelativeUnits(
+    //         ((VoltageOut) Motor.getAppliedControl()).Output, Volts));
     inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(Motor.getStatorCurrent().getValue());
   }

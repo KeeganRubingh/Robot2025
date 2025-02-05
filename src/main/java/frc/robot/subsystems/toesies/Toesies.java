@@ -34,6 +34,7 @@ public class Toesies extends SubsystemBase {
     loggedtoesies.angularVelocity = DegreesPerSecond.mutable(0);
     loggedtoesies.supplyCurrent = Amps.mutable(0);
     loggedtoesies.torqueCurrent = Amps.mutable(0);
+    loggedtoesies.voltage = Volts.mutable(0);
     loggedtoesies.voltageSetPoint = Volts.mutable(0);
   }
   public Command getNewSetVoltsCommand(LoggedTunableNumber volts) {
