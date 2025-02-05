@@ -54,6 +54,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     cfg.CurrentLimits.SupplyCurrentLimit = 40;
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
 
+    cfg.Feedback.SensorToMechanismRatio = 3.0;
+
     cfg.Slot0.kP = 1.0;
     PhoenixUtil.tryUntilOk(5, () -> leaderMotor.getConfigurator().apply(cfg));
 
@@ -65,6 +67,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     cfg2.CurrentLimits.StatorCurrentLimitEnable = true;
     cfg2.CurrentLimits.SupplyCurrentLimit = 40;
     cfg2.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+    cfg2.Feedback.SensorToMechanismRatio = 3.0;
 
     PhoenixUtil.tryUntilOk(5, ()->followerMotor.getConfigurator().apply(cfg2));
 

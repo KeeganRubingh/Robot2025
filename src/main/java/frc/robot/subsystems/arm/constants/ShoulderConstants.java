@@ -26,8 +26,8 @@ public class ShoulderConstants extends ArmJointConstants {
         this.ForwardTorqueLimit = Amps.of(80);
         this.ReverseTorqueLimit = Amps.of(-80);
 
-        this.NumMotors = 2;
-        this.Gearing = 75;
+        this.NumMotors = 1;
+        this.Gearing = 50;
         this.Length = Inches.of(18);
         this.Weight = Pounds.of(15);
         this.Motors = DCMotor.getKrakenX60(NumMotors);

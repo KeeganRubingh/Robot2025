@@ -43,8 +43,9 @@ public class WristIOTalonFX implements WristIO {
 
     cfg.Feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();
     cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    cfg.Feedback.SensorToMechanismRatio = 1.0;
+    cfg.Feedback.RotorToSensorRatio = 9.0;
 
-    cfg.Slot0.kP = 1.0;
 
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }
