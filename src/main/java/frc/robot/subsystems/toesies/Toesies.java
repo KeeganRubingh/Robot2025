@@ -27,7 +27,6 @@ public class Toesies extends SubsystemBase {
   private ToesiesIO m_ToesiesIO;
 
   ToesiesInputsAutoLogged loggedtoesies = new ToesiesInputsAutoLogged();
-  private LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder("AlgaeEndEffector", 0, 0, 0, 0, 0, 0, 0);
 
 
   public Toesies(ToesiesIO toesiesIO) {
