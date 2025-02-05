@@ -22,7 +22,12 @@ public class Wrist extends SubsystemBase {
 
   WristInputsAutoLogged loggedwrist = new WristInputsAutoLogged();
 
-  public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder("Wrist", 0, 0, 0, 1, 0, 0, 0);
+  public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
+    "Wrist", 
+    0, 0, 0, 
+    0, 0, 0, 0, 
+    0, 0, 0, 0, 0
+  );
 
   //WRIST WEIGHT
   //2.173 lbs

@@ -22,8 +22,13 @@ public class IntakeExtender extends SubsystemBase {
 
   IntakeExtenderInputsAutoLogged loggedintakeExtender = new IntakeExtenderInputsAutoLogged();
 
-  public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder("IntakeExtender", 0, 0, 0, 0, 0, 0, 0);
-
+  public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
+    "Wrist", 
+    0, 0, 0, 
+    0, 0, 0, 0, 
+    0, 0, 0, 0, 0
+  );
+  
   public IntakeExtender(IntakeExtenderIO intakeExtenderIO) {
     m_intakeextenderIO = intakeExtenderIO;
     loggedintakeExtender.Angle = Degrees.mutable(0);

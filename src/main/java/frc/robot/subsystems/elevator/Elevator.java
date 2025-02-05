@@ -19,8 +19,13 @@ public class Elevator extends SubsystemBase {
 
   ElevatorInputsAutoLogged loggedelevator = new ElevatorInputsAutoLogged();
 
-  public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder("Elevator", 0, 0, 0, 0, 0, 0, 0);
-
+  public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
+    "Wrist", 
+    0, 0, 0, 
+    0, 0, 0, 0, 
+    0, 0, 0, 0, 0
+  );
+  
   public Elevator(ElevatorIO elevatorIO) {
     m_ElevatorIO = elevatorIO;
     loggedelevator.distance = Meters.mutable(0);
