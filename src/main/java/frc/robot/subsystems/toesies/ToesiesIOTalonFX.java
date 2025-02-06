@@ -7,7 +7,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.arm.ArmJointIO.ArmInputs;
 import frc.robot.util.CanDef;
@@ -29,11 +28,11 @@ public class ToesiesIOTalonFX implements ToesiesIO {
   private void configureTalons() {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
     cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    cfg.CurrentLimits.StatorCurrentLimit = 80;
+    cfg.CurrentLimits.StatorCurrentLimit = 80.0;
     cfg.CurrentLimits.StatorCurrentLimitEnable = true;
-    cfg.CurrentLimits.SupplyCurrentLimit = 40;
+    cfg.CurrentLimits.SupplyCurrentLimit = 30.0;
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
-    cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }
 
@@ -44,6 +43,7 @@ public class ToesiesIOTalonFX implements ToesiesIO {
     //     Voltage.ofRelativeUnits(
     //         ((VoltageOut) Motor.getAppliedControl()).Output, Volts));
     // inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
+    inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(Motor.getStatorCurrent().getValue());
   }
 

@@ -57,7 +57,8 @@ public class WristIOTalonFX implements WristIO {
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
 
     CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
-    cc_cfg.MagnetSensor.MagnetOffset = 0.16;
+    cc_cfg.MagnetSensor.MagnetOffset = -0.223 - 0.012;//UNIT: ROTATIONS
+    //AdvantageScope publishes in radians
 
     PhoenixUtil.tryUntilOk(5, () -> canCoder.getConfigurator().apply(cc_cfg));
   }
