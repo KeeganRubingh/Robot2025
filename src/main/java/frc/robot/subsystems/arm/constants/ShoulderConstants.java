@@ -11,7 +11,7 @@ import frc.robot.util.Gains;
 public class ShoulderConstants extends ArmJointConstants {
     public ShoulderConstants() {
         this.LeaderProfile = CanDef.builder().id(9).bus(CanBus.CANivore).build();
-        this.CanCoderProfile = CanDef.builder().id(16).bus(CanBus.CANivore).build();
+        this.CanCoderProfile = CanDef.builder().id(22).bus(CanBus.CANivore).build();
 
         this.SimGains =
             Gains.builder().kS(0.0).kG(0.0).kV(0.0).kA(0.0).kP(0.1).kI(0.0).kD(0.0).build();
@@ -40,7 +40,7 @@ public class ShoulderConstants extends ArmJointConstants {
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);
         this.ZPosition = Meters.of(0.377);
-        this.PitchModifier = Degrees.of(84);
+        this.PitchModifier = Degrees.of(64);
 
         this.LoggedName = "Shoulder";
         this.mechanismSimCallback = (d) -> {

@@ -10,7 +10,7 @@ import frc.robot.util.Gains;
 
 public class ElbowConstants extends ArmJointConstants {
     public ElbowConstants() {
-        this.LeaderProfile = CanDef.builder().id(10).bus(CanBus.Rio).build();
+        this.LeaderProfile = CanDef.builder().id(10).bus(CanBus.CANivore).build();
         this.CanCoderProfile = null;
 
         this.SimGains =
@@ -46,7 +46,7 @@ public class ElbowConstants extends ArmJointConstants {
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);
         this.ZPosition = Meters.of(0.377);
-        this.PitchModifier = Degrees.of(84);
+        this.PitchModifier = Degrees.of(0);
 
         this.LoggedName = "Elbow";
         /**

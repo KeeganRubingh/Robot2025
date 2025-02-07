@@ -2,7 +2,10 @@ package frc.robot.subsystems.arm;
 
 import static edu.wpi.first.units.Units.Amp;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,8 +15,10 @@ import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.subsystems.arm.constants.ArmJointConstants;
@@ -21,7 +26,7 @@ import frc.robot.util.Gains;
 import frc.robot.util.PhoenixUtil;
 
 public class ArmJointIOTalonFX implements ArmJointIO {
-  public PositionVoltage Request;
+  public MotionMagicVoltage Request;
   public TalonFX Motor;
 
   public ArmInputs inputs;
@@ -38,7 +43,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
       this.cancoder = new CANcoder(constants.CanCoderProfile.id(),constants.CanCoderProfile.bus());
     }
     Motor = new TalonFX(constants.LeaderProfile.id(),constants.LeaderProfile.bus());
-    Request = new PositionVoltage(constants.StartingAngle);
+    Request = new MotionMagicVoltage(constants.StartingAngle);
     configureTalons(motorInversion);
   }
 
@@ -52,6 +57,9 @@ public class ArmJointIOTalonFX implements ArmJointIO {
     cfg.Slot0.kS = m_Constants.TalonFXGains.kS;
     cfg.Slot0.kV = m_Constants.TalonFXGains.kV;
     cfg.Slot0.kA = m_Constants.TalonFXGains.kA;
+    cfg.MotionMagic.MotionMagicAcceleration = m_Constants.MaxAcceleration.in(RotationsPerSecondPerSecond);
+    cfg.MotionMagic.MotionMagicCruiseVelocity = m_Constants.MaxVelocity.in(RotationsPerSecond);
+    cfg.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     cfg.CurrentLimits.SupplyCurrentLimit = m_Constants.SupplyCurrentLimit.in(Amp);
     cfg.CurrentLimits.StatorCurrentLimit = m_Constants.TorqueCurrentLimit.in(Amp);
     cfg.MotorOutput.Inverted = motorInversion;
@@ -61,6 +69,10 @@ public class ArmJointIOTalonFX implements ArmJointIO {
     if(cancoder != null) {
       cfg.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
       cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+
+      CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
+      cc_cfg.MagnetSensor.MagnetOffset = m_Constants.PitchModifier.in(Rotations);//UNIT: ROTATIONS
+      PhoenixUtil.tryUntilOk(5, () -> cancoder.getConfigurator().apply(cc_cfg));
     }
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }
