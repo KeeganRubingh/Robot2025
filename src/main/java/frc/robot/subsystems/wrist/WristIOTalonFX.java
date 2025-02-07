@@ -21,13 +21,13 @@ import frc.robot.util.Gains;
 import frc.robot.util.PhoenixUtil;
 
 public class WristIOTalonFX implements WristIO {
-  public PositionVoltage Request;
+  public MotionMagicVoltage Request;
   public TalonFX Motor;
   public CANcoder canCoder;
 
   public WristIOTalonFX(CanDef canbus,CanDef canCoderDef) {
     Motor= new TalonFX(canbus.id(), canbus.bus());
-    Request = new PositionVoltage(0);
+    Request = new MotionMagicVoltage(0);
     canCoder = new CANcoder(canCoderDef.id(), canCoderDef.bus());
 
     configureTalons();

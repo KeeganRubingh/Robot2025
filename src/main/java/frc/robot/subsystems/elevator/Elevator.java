@@ -19,8 +19,11 @@ public class Elevator extends SubsystemBase {
 
   ElevatorInputsAutoLogged loggedelevator = new ElevatorInputsAutoLogged();
 
+  public static final double SPOOL_RADIUS = 1.751;
+  public static final double INCHES_PER_ROT = (1.0/3.0) * (2.0 * Math.PI * SPOOL_RADIUS);
+
   public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
-    "Wrist", 
+    "Elevator", 
     0, 0, 0, 
     0, 0, 0, 0, 
     0, 0, 0, 0, 0

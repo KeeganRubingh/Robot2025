@@ -34,7 +34,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
   private CANcoder cancoder = null;
 
   private final ArmJointConstants m_Constants;
-  
+
   private Angle m_setPoint = Angle.ofRelativeUnits(0, Rotations);
 
   public ArmJointIOTalonFX(ArmJointConstants constants, InvertedValue motorInversion) {

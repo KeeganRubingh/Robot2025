@@ -17,12 +17,12 @@ import frc.robot.util.Gains;
 import frc.robot.util.PhoenixUtil;
 
 public class IntakeExtenderIOTalonFX implements IntakeExtenderIO {
-  public PositionVoltage Request;
+  public MotionMagicVoltage Request;
   public TalonFX Motor;
 
   public IntakeExtenderIOTalonFX(CanDef canbus) {
     Motor= new TalonFX(canbus.id(), canbus.bus());
-    Request = new PositionVoltage(0);
+    Request = new MotionMagicVoltage(0);
 
     configureTalons();
   }

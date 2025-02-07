@@ -23,7 +23,7 @@ public class IntakeExtender extends SubsystemBase {
   IntakeExtenderInputsAutoLogged loggedintakeExtender = new IntakeExtenderInputsAutoLogged();
 
   public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
-    "Wrist", 
+    "IntakeExtender", 
     0, 0, 0, 
     0, 0, 0, 0, 
     0, 0, 0, 0, 0
