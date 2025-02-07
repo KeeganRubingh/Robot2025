@@ -28,7 +28,7 @@ public class ArmJointIOSim implements ArmJointIO {
   public ArmJointIOSim(ArmJointConstants constants) {
     sim = new SingleJointedArmSim(
                       DCMotor.getKrakenX60Foc(1),
-                      constants.Gearing,
+                      constants.MotorToSensorGearing,
                       SingleJointedArmSim.estimateMOI(constants.Length.in(Meters), constants.Weight.in(Kilograms)),
                       constants.Length.in(Meters),
                       constants.MinimumAngle.in(Radians),

@@ -10,7 +10,8 @@ import frc.robot.util.Gains;
 
 public class ElbowConstants extends ArmJointConstants {
     public ElbowConstants() {
-        this.LeaderProfile = CanDef.builder().id(10).bus(CanBus.CANivore).build();
+        this.LeaderProfile = CanDef.builder().id(10).bus(CanBus.Rio).build();
+        this.CanCoderProfile = null;
 
         this.SimGains =
             Gains.builder()
@@ -33,7 +34,8 @@ public class ElbowConstants extends ArmJointConstants {
         this.ReverseTorqueLimit = Amps.of(-80);
 
         this.NumMotors = 1;
-        this.Gearing = 50;
+        this.SensorToMechanismGearing = 50;
+        this.MotorToSensorGearing = 1;
         this.Length = Inches.of(15);
         this.Weight = Pounds.of(8.5);
         this.Motors = DCMotor.getKrakenX60(NumMotors);
