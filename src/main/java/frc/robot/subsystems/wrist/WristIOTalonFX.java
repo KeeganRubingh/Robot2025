@@ -5,15 +5,14 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.util.CanDef;
@@ -24,6 +23,8 @@ public class WristIOTalonFX implements WristIO {
   public MotionMagicVoltage Request;
   public TalonFX Motor;
   public CANcoder canCoder;
+  public Angle canCoderOffset = Degrees.of(0);
+  private Angle m_setPoint = Angle.ofRelativeUnits(0, Rotations);
 
   public WristIOTalonFX(CanDef canbus,CanDef canCoderDef) {
     Motor= new TalonFX(canbus.id(), canbus.bus());
@@ -41,6 +42,7 @@ public class WristIOTalonFX implements WristIO {
     cfg.CurrentLimits.StatorCurrentLimit = 80;
     cfg.CurrentLimits.StatorCurrentLimitEnable = true;
     cfg.CurrentLimits.SupplyCurrentLimit = 40;
+    cfg.Slot0.GravityType = GravityTypeValue.Elevator_Static; //Not arm because gravity should not take effect
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     //Motion magic gains TODO: Add to gains object (probably extend to a TalonFx specific version)
@@ -57,24 +59,24 @@ public class WristIOTalonFX implements WristIO {
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
 
     CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
-    cc_cfg.MagnetSensor.MagnetOffset = -0.223 - 0.137;//UNIT: ROTATIONS
+    cc_cfg.MagnetSensor.MagnetOffset = canCoderOffset.in(Rotations);//UNIT: ROTATIONS
     //AdvantageScope publishes in radians
 
     PhoenixUtil.tryUntilOk(5, () -> canCoder.getConfigurator().apply(cc_cfg));
   }
 
+  @Override
   public void setTarget(Angle target) {
     Request = Request.withPosition(target).withSlot(0);
     Motor.setControl(Request);
+    m_setPoint = target;
   }
 
   @Override
   public void updateInputs(WristInputs inputs) {
     inputs.wristAngle.mut_replace(Motor.getPosition().getValue());
     inputs.wristAngularVelocity.mut_replace(Motor.getVelocity().getValue());
-    inputs.wristSetPoint.mut_replace(
-        Angle.ofRelativeUnits(
-            PhoenixUtil.getPositionFromController(Motor, 0.0), Rotations));
+    inputs.wristSetPoint.mut_replace(m_setPoint);
     inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(Motor.getStatorCurrent().getValue());
   }
@@ -89,6 +91,7 @@ public class WristIOTalonFX implements WristIO {
     slot0Configs.kG = gains.kG;
     slot0Configs.kV = gains.kV;
     slot0Configs.kA = gains.kA;
+    slot0Configs.GravityType = GravityTypeValue.Elevator_Static; //Not arm because gravity should not take effect
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(slot0Configs));
 
     MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();

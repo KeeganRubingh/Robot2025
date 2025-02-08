@@ -41,7 +41,7 @@ public abstract class ArmJointConstants {
     public Distance XPosition;
     public Distance YPosition;
     public Distance ZPosition;
-    public Angle PitchModifier;
+    public Angle CanCoderOffset;
 
     public String LoggedName;
 

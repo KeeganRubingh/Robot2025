@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -34,6 +35,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   public ArmInputs inputs;
 
+  private Distance m_setPoint = Distance.ofBaseUnits(0, Inches);
+
   public ElevatorIOTalonFX(CanDef leftDef, CanDef rightDef) {
     leaderMotor = new TalonFX(leftDef.id(), leftDef.bus());
     followerMotor = new TalonFX(rightDef.id(), rightDef.bus());
@@ -51,6 +54,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     cfg.CurrentLimits.StatorCurrentLimitEnable = true;
     cfg.CurrentLimits.SupplyCurrentLimit = 40;
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
+    cfg.Slot0.GravityType = GravityTypeValue.Elevator_Static;
     cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
     cfg.Feedback.SensorToMechanismRatio = Elevator.INCHES_PER_ROT;
@@ -78,9 +82,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   public void updateInputs(ElevatorInputs inputs) {
     inputs.distance.mut_replace(Meters.of(leaderMotor.getPosition().getValue().in(Degrees) ));
     inputs.velocity.mut_replace(MetersPerSecond.of(leaderMotor.getVelocity().getValue().in(DegreesPerSecond)));
-    inputs.setPoint.mut_replace(
-        Distance.ofRelativeUnits(
-          PhoenixUtil.getPositionFromController(leaderMotor, 0.0), Meters));
+    inputs.setPoint.mut_replace(m_setPoint);
     inputs.supplyCurrent.mut_replace(leaderMotor.getStatorCurrent().getValue());
   }
 
@@ -88,6 +90,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   public void setTarget(Distance target) {
     Request = Request.withPosition(target.in(Inches));
     leaderMotor.setControl(Request);
+    m_setPoint = target;
   }
 
   @Override
@@ -105,6 +108,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     slot0Configs.kG = gains.kG;
     slot0Configs.kV = gains.kV;
     slot0Configs.kA = gains.kA;
+    slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
     PhoenixUtil.tryUntilOk(5, () -> leaderMotor.getConfigurator().apply(slot0Configs));
 
     MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
