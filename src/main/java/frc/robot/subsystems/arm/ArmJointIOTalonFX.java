@@ -1,16 +1,10 @@
 package frc.robot.subsystems.arm;
 
-import static edu.wpi.first.units.Units.Amp;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -18,8 +12,11 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
+import static edu.wpi.first.units.Units.Amp;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.subsystems.arm.constants.ArmJointConstants;
 import frc.robot.util.Gains;
@@ -72,6 +69,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
 
       CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
       cc_cfg.MagnetSensor.MagnetOffset = m_Constants.CanCoderOffset.in(Rotations);//UNIT: ROTATIONS
+      // cc_cfg.MagnetSensor.SensorDirection = SenserDirectionValue.CounterClockwise_Positive; // TODO
       PhoenixUtil.tryUntilOk(5, () -> cancoder.getConfigurator().apply(cc_cfg));
     }
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));

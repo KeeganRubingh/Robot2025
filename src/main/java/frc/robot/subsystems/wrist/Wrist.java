@@ -1,13 +1,12 @@
 package frc.robot.subsystems.wrist;
 
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.MathUtil;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Volts;
-
-import org.littletonrobotics.junction.Logger;
-
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -24,9 +23,9 @@ public class Wrist extends SubsystemBase {
 
   public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
     "Wrist", 
-    32, 0, 0, 
+    50, 0, 0, 
     0, 0, 0, 0, 
-    0.25, 0.5, 0.5, 0, 0
+    5.0, 10.0, 0.0, 0, 0
   );
 
   //WRIST WEIGHT
