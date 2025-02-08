@@ -33,8 +33,6 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
@@ -184,7 +182,7 @@ public class RobotContainer {
 
         elevator = new Elevator(new ElevatorIOTalonFX(canivoreCanBuilder.id(13).build(),canivoreCanBuilder.id(14).build()));
 
-        shoulder = new ArmJoint(new ArmJointIOTalonFX(new ShoulderConstants(), InvertedValue.Clockwise_Positive));
+        shoulder = new ArmJoint(new ArmJointIOTalonFX(new ShoulderConstants(), InvertedValue.CounterClockwise_Positive));
         elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants(), InvertedValue.CounterClockwise_Positive));
 
         fingeys = new Fingeys(new FingeysIOTalonFX(canivoreCanBuilder.id(12).build()));
@@ -344,14 +342,14 @@ public class RobotContainer {
   }
 
   public void configureTestButtonBindings (){
-    testcontroller.y().onTrue(elevator.getNewSetDistanceCommand(setElevatorDistance)).onFalse(elevator.getNewSetDistanceCommand(0));
+    // testcontroller.y().onTrue(elevator.getNewSetDistanceCommand(setElevatorDistance)).onFalse(elevator.getNewSetDistanceCommand(0));
     // testcontroller.leftBumper().onTrue(wrist.getNewWristTurnCommand(setWristAngle)).onFalse(wrist.getNewWristTurnCommand(0));
     // testcontroller.rightBumper().onTrue(toesies.getNewSetVoltsCommand(setToesiesVolts)).onFalse(toesies.getNewSetVoltsCommand(0));
     // testcontroller.leftTrigger().onTrue(fingeys.getNewSetVoltsCommand(setFingeysVolts)).onFalse(fingeys.getNewSetVoltsCommand(0));
     // testcontroller.rightTrigger().onTrue(intake.getNewSetVoltsCommand(setIntakeVolts)).onFalse(intake.getNewSetVoltsCommand(0));
     // testcontroller.x().onTrue(intakeExtender.getNewIntakeExtenderTurnCommand(setIntakeExtenderAngle)).onFalse(intakeExtender.getNewIntakeExtenderTurnCommand(0));
-    // testcontroller.a().onTrue(shoulder.getNewSetAngleCommand(setShoulderAngle)).onFalse(shoulder.getNewSetAngleCommand(0));
-    // testcontroller.b().onTrue(elbow.getNewSetAngleCommand(setElbowAngle)).onFalse(elbow.getNewSetAngleCommand(0));
+    testcontroller.a().onTrue(shoulder.getNewSetAngleCommand(setShoulderAngle)).onFalse(shoulder.getNewSetAngleCommand(30));
+    testcontroller.b().onTrue(elbow.getNewSetAngleCommand(setElbowAngle)).onFalse(elbow.getNewSetAngleCommand(0));
   }
 
   /**

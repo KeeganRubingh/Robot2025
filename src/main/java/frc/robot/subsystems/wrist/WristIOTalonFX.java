@@ -23,7 +23,7 @@ public class WristIOTalonFX implements WristIO {
   public MotionMagicVoltage Request;
   public TalonFX Motor;
   public CANcoder canCoder;
-  public Angle canCoderOffset = Degrees.of(0);
+  public Angle canCoderOffset = Degrees.of(-163);
   private Angle m_setPoint = Angle.ofRelativeUnits(0, Rotations);
 
   public WristIOTalonFX(CanDef canbus,CanDef canCoderDef) {
@@ -46,8 +46,8 @@ public class WristIOTalonFX implements WristIO {
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     //Motion magic gains TODO: Add to gains object (probably extend to a TalonFx specific version)
-    cfg.MotionMagic.MotionMagicCruiseVelocity = 0.25;
-    cfg.MotionMagic.MotionMagicAcceleration = 0.5;
+    cfg.MotionMagic.MotionMagicCruiseVelocity = 5.0;
+    cfg.MotionMagic.MotionMagicAcceleration = 10.0;
 
     cfg.Feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();
     cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
@@ -65,6 +65,7 @@ public class WristIOTalonFX implements WristIO {
     PhoenixUtil.tryUntilOk(5, () -> canCoder.getConfigurator().apply(cc_cfg));
   }
 
+  // TODO The two setPoints to be used are 0 degrees & 90 degrees (use an enum)
   @Override
   public void setTarget(Angle target) {
     Request = Request.withPosition(target).withSlot(0);

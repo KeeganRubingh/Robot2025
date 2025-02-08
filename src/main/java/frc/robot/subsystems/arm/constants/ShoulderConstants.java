@@ -1,8 +1,13 @@
 package frc.robot.subsystems.arm.constants;
 
-import static edu.wpi.first.units.Units.*;
-
 import edu.wpi.first.math.system.plant.DCMotor;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import frc.robot.RobotState;
 import frc.robot.util.CanDef;
 import frc.robot.util.CanDef.CanBus;
@@ -17,10 +22,10 @@ public class ShoulderConstants extends ArmJointConstants {
             Gains.builder().kS(0.0).kG(0.0).kV(0.0).kA(0.0).kP(0.1).kI(0.0).kD(0.0).build();
 
         this.TalonFXGains =
-            Gains.builder().kS(0.0).kG(0.0).kV(0.0).kA(0.0).kP(0.0).kI(0.0).kD(0.0).build();
+            Gains.builder().kS(0.0).kG(0.0).kV(0.0).kA(0.0).kP(30.0).kI(0.0).kD(0.0).build();
 
-        this.MaxVelocity = DegreesPerSecond.of(360);
-        this.MaxAcceleration = DegreesPerSecondPerSecond.of(360);
+        this.MaxVelocity = RotationsPerSecond.of(1);
+        this.MaxAcceleration = RotationsPerSecondPerSecond.of(5);
         this.MaxJerk = 0.0;
         this.TorqueCurrentLimit = Amps.of(120);
         this.SupplyCurrentLimit = Amps.of(40);
@@ -40,7 +45,7 @@ public class ShoulderConstants extends ArmJointConstants {
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);
         this.ZPosition = Meters.of(0.377);
-        this.CanCoderOffset = Degrees.of(64);
+        this.CanCoderOffset = Degrees.of(68);
 
         this.LoggedName = "Shoulder";
         this.mechanismSimCallback = (d) -> {
