@@ -9,6 +9,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.arm.ArmJoint;
@@ -20,10 +21,10 @@ import frc.robot.util.LoggedTunableNumber;
 public class StowToL3 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("MoveToL4Command/shoulder/StartingDegrees", 0)),
-        MidPoint(new LoggedTunableNumber("MoveToL4Command/shoulder/MidPointDegrees", 110)),
-        SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", 100)),
-        Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", 90));
+        Starting(new LoggedTunableNumber("StowToL3Command/shoulder/StartingDegrees", 0)),
+        MidPoint(new LoggedTunableNumber("StowToL3Command/shoulder/MidPointDegrees", 110)),
+        SafeToSwingElbow(new LoggedTunableNumber("StowToL3Command/shoulder/SafeToSwingElbowDegrees", 100)),
+        Final(new LoggedTunableNumber("StowToL3Command/shoulder/FinalDegrees", 90));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -40,9 +41,9 @@ public class StowToL3 extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber("MoveToL4Command/elbow/StartingDegrees", 0)),
-        ShoulderSafeSwing(new LoggedTunableNumber("MoveToL4Command/elbow/ShoulderSafeSwingDegrees", 45)),
-        Final(new LoggedTunableNumber("MoveToL4Command/elbow/FinalDegrees", 90));
+        Starting(new LoggedTunableNumber("StowToL3Command/elbow/StartingDegrees", 0)),
+        ShoulderSafeSwing(new LoggedTunableNumber("StowToL3Command/elbow/ShoulderSafeSwingDegrees", 45)),
+        Final(new LoggedTunableNumber("StowToL3Command/elbow/FinalDegrees", 90));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -59,8 +60,8 @@ public class StowToL3 extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Starting(new LoggedTunableNumber("MoveToL4Command/wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("MoveToL4Command/wrist/FinalDegrees", 90));
+        Starting(new LoggedTunableNumber("StowToL3Command/wrist/StartingDegrees", 0)),
+        Final(new LoggedTunableNumber("StowToL3Command/wrist/FinalDegrees", 90));
 
         DoubleSupplier position;
         MutAngle distance;

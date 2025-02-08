@@ -45,11 +45,13 @@ public class ArmJoint extends SubsystemBase {
     m_constants = armJointIO.getConstants();
     m_constants.mechanismSimCallback.accept(m_loggedArm.angle);
     tunableGains = new LoggedTunableGainsBuilder("ArmJoint"+m_constants.LoggedName, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    m_loggedArm.angle.mut_replace(m_constants.StartingAngle);
   }
 
   public void setAngle(Angle angle) {
     m_armJointIO.setTarget(angle);
   }
+  
   public Command getNewSetAngleCommand(LoggedTunableNumber degrees) {
     return new InstantCommand(
         () -> {

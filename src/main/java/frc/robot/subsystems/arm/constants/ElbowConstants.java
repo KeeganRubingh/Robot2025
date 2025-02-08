@@ -44,11 +44,9 @@ public class ElbowConstants extends ArmJointConstants {
         this.Length = Inches.of(15);
         this.Weight = Pounds.of(8.5);
         this.Motors = DCMotor.getKrakenX60(NumMotors);
-
-        // 0 is default position (straight out from the back), 90 is straight up
         this.MaximumAngle = Degrees.of(360);
         this.MinimumAngle = Degrees.of(0);
-        this.StartingAngle = Degrees.zero();
+        this.StartingAngle = Degrees.of(90);
 
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);

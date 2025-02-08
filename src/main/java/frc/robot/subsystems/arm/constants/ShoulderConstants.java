@@ -40,7 +40,7 @@ public class ShoulderConstants extends ArmJointConstants {
         this.Motors = DCMotor.getKrakenX60(NumMotors);
         this.MaximumAngle = Degrees.of(180);
         this.MinimumAngle = Degrees.of(-180);
-        this.StartingAngle = Degrees.zero();
+        this.StartingAngle = Degrees.of(90);
 
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);
