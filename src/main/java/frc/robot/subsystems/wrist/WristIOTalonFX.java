@@ -1,5 +1,7 @@
 package frc.robot.subsystems.wrist;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -10,6 +12,8 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.util.CanDef;
@@ -17,16 +21,15 @@ import frc.robot.util.Gains;
 import frc.robot.util.PhoenixUtil;
 
 public class WristIOTalonFX implements WristIO {
-  public PositionVoltage Request;
+  public MotionMagicVoltage Request;
   public TalonFX Motor;
   public CANcoder canCoder;
 
   public WristIOTalonFX(CanDef canbus,CanDef canCoderDef) {
     Motor= new TalonFX(canbus.id(), canbus.bus());
-    Request = new PositionVoltage(0);
+    Request = new MotionMagicVoltage(0);
     canCoder = new CANcoder(canCoderDef.id(), canCoderDef.bus());
 
-    Motor.setControl(Request);
     configureTalons();
   }
 
@@ -40,6 +43,10 @@ public class WristIOTalonFX implements WristIO {
     cfg.CurrentLimits.SupplyCurrentLimit = 40;
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
 
+    //Motion magic gains TODO: Add to gains object (probably extend to a TalonFx specific version)
+    cfg.MotionMagic.MotionMagicCruiseVelocity = 0.25;
+    cfg.MotionMagic.MotionMagicAcceleration = 0.5;
+
     cfg.Feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();
     cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     cfg.Feedback.SensorToMechanismRatio = 1.0;
@@ -47,13 +54,17 @@ public class WristIOTalonFX implements WristIO {
 
     cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
-    cfg.Slot0.kP = 1.0;
-
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
+
+    CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
+    cc_cfg.MagnetSensor.MagnetOffset = -0.223 - 0.137;//UNIT: ROTATIONS
+    //AdvantageScope publishes in radians
+
+    PhoenixUtil.tryUntilOk(5, () -> canCoder.getConfigurator().apply(cc_cfg));
   }
 
   public void setTarget(Angle target) {
-    Request = Request.withPosition(target);
+    Request = Request.withPosition(target).withSlot(0);
     Motor.setControl(Request);
   }
 
@@ -63,7 +74,8 @@ public class WristIOTalonFX implements WristIO {
     inputs.wristAngularVelocity.mut_replace(Motor.getVelocity().getValue());
     inputs.wristSetPoint.mut_replace(
         Angle.ofRelativeUnits(
-            ((MotionMagicVoltage) Motor.getAppliedControl()).Position, Rotations));
+            PhoenixUtil.getPositionFromController(Motor, 0.0), Rotations));
+    inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(Motor.getStatorCurrent().getValue());
   }
 
@@ -78,5 +90,13 @@ public class WristIOTalonFX implements WristIO {
     slot0Configs.kV = gains.kV;
     slot0Configs.kA = gains.kA;
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(slot0Configs));
+
+    MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
+    motionMagicConfigs.MotionMagicCruiseVelocity = gains.kMMV;
+    motionMagicConfigs.MotionMagicAcceleration = gains.kMMA;
+    motionMagicConfigs.MotionMagicJerk = gains.kMMJ;
+    motionMagicConfigs.MotionMagicExpo_kV = gains.kMMEV;
+    motionMagicConfigs.MotionMagicExpo_kA = gains.kMMEA;
+    PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(motionMagicConfigs));
   }
 }

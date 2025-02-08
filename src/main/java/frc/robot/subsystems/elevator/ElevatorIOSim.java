@@ -1,6 +1,7 @@
 package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -16,8 +17,8 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.util.Gains;
 
 public class ElevatorIOSim implements ElevatorIO {
-  private ElevatorFeedforward ff = new ElevatorFeedforward(0.0, 0.0, 0.0, 0.0);
-  private final ProfiledPIDController controller = new ProfiledPIDController(0.4, 0.0, 0.0, new Constraints(100000, 361));
+  private final ElevatorFeedforward ff = new ElevatorFeedforward(0.0, 0.0, 0.0, 0.0);
+  private final ProfiledPIDController controller = new ProfiledPIDController(0.8, 0.0, 0.0, new Constraints(100000, 361));
   private final ElevatorSim sim;
 
   private Voltage appliedVoltage = Volts.mutable(0.0);
@@ -28,13 +29,13 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void setTarget(Distance target) {
-    controller.setGoal(new State(target.in(Meters), 0));
+    controller.setGoal(target.in(Inches));
   }
 
   private void updateVoltageSetpoint() {
     Distance currentPosition = Meters.of(sim.getPositionMeters());
 
-    Voltage controllerVoltage = Volts.of(controller.calculate(currentPosition.in(Meters)));
+    Voltage controllerVoltage = Volts.of(controller.calculate(currentPosition.in(Inches)));
     Voltage feedForwardVoltage =
           Volts.of(
               ff.calculate(controller.getSetpoint().position, controller.getSetpoint().velocity));

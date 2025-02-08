@@ -16,6 +16,7 @@ public interface WristIO {
     public MutAngle wristAngle;
     public MutAngularVelocity wristAngularVelocity;
     public MutAngle wristSetPoint;
+    public MutVoltage voltage;
     public MutVoltage voltageSetPoint;
     public MutCurrent supplyCurrent;
     public MutCurrent torqueCurrent;

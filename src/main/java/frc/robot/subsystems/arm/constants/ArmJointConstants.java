@@ -14,6 +14,7 @@ import frc.robot.util.Gains;
 
 public abstract class ArmJointConstants {
     public CanDef LeaderProfile;
+    public CanDef CanCoderProfile;
 
     public Gains SimGains;
 
@@ -28,7 +29,8 @@ public abstract class ArmJointConstants {
     public Current ReverseTorqueLimit;
 
     public int NumMotors;
-    public double Gearing;
+    public double SensorToMechanismGearing;
+    public double MotorToSensorGearing;
     public Distance Length;
     public Mass Weight;
     public DCMotor Motors;

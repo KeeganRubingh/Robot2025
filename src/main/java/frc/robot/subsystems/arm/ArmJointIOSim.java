@@ -28,7 +28,7 @@ public class ArmJointIOSim implements ArmJointIO {
   public ArmJointIOSim(ArmJointConstants constants) {
     sim = new SingleJointedArmSim(
                       DCMotor.getKrakenX60Foc(1),
-                      constants.Gearing,
+                      constants.MotorToSensorGearing,
                       SingleJointedArmSim.estimateMOI(constants.Length.in(Meters), constants.Weight.in(Kilograms)),
                       constants.Length.in(Meters),
                       constants.MinimumAngle.in(Radians),
@@ -82,6 +82,7 @@ public class ArmJointIOSim implements ArmJointIO {
     input.supplyCurrent.mut_replace(sim.getCurrentDrawAmps(), Amps);
     input.torqueCurrent.mut_replace(input.supplyCurrent.in(Amps), Amps);
     input.voltageSetPoint.mut_replace(m_appliedVoltage);
+    input.voltage.mut_replace(m_appliedVoltage);
 
     // Periodic
     updateVoltageSetpoint();

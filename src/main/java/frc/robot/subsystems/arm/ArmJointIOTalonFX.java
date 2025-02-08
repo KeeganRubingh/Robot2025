@@ -1,33 +1,49 @@
 package frc.robot.subsystems.arm;
 
+import static edu.wpi.first.units.Units.Amp;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
-import static edu.wpi.first.units.Units.Amp;
-import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.subsystems.arm.constants.ArmJointConstants;
 import frc.robot.util.Gains;
 import frc.robot.util.PhoenixUtil;
 
 public class ArmJointIOTalonFX implements ArmJointIO {
-  public PositionVoltage Request;
+  public MotionMagicVoltage Request;
   public TalonFX Motor;
 
   public ArmInputs inputs;
+  
+  private CANcoder cancoder = null;
 
   private final ArmJointConstants m_Constants;
 
+  private Angle m_setPoint = Angle.ofRelativeUnits(0, Rotations);
+
   public ArmJointIOTalonFX(ArmJointConstants constants, InvertedValue motorInversion) {
     m_Constants = constants;
-    Motor = new TalonFX(constants.LeaderProfile.id(), constants.LeaderProfile.bus());
-    Request = new PositionVoltage(constants.StartingAngle);
+    if(constants.CanCoderProfile != null) {
+      this.cancoder = new CANcoder(constants.CanCoderProfile.id(),constants.CanCoderProfile.bus());
+    }
+    Motor = new TalonFX(constants.LeaderProfile.id(),constants.LeaderProfile.bus());
+    Request = new MotionMagicVoltage(constants.StartingAngle);
     configureTalons(motorInversion);
   }
 
@@ -41,9 +57,23 @@ public class ArmJointIOTalonFX implements ArmJointIO {
     cfg.Slot0.kS = m_Constants.TalonFXGains.kS;
     cfg.Slot0.kV = m_Constants.TalonFXGains.kV;
     cfg.Slot0.kA = m_Constants.TalonFXGains.kA;
+    cfg.MotionMagic.MotionMagicAcceleration = m_Constants.MaxAcceleration.in(RotationsPerSecondPerSecond);
+    cfg.MotionMagic.MotionMagicCruiseVelocity = m_Constants.MaxVelocity.in(RotationsPerSecond);
+    cfg.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     cfg.CurrentLimits.SupplyCurrentLimit = m_Constants.SupplyCurrentLimit.in(Amp);
     cfg.CurrentLimits.StatorCurrentLimit = m_Constants.TorqueCurrentLimit.in(Amp);
     cfg.MotorOutput.Inverted = motorInversion;
+    cfg.Feedback.SensorToMechanismRatio = m_Constants.SensorToMechanismGearing;
+    cfg.Feedback.RotorToSensorRatio = m_Constants.MotorToSensorGearing;
+
+    if(cancoder != null) {
+      cfg.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
+      cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+
+      CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
+      cc_cfg.MagnetSensor.MagnetOffset = m_Constants.PitchModifier.in(Rotations);//UNIT: ROTATIONS
+      PhoenixUtil.tryUntilOk(5, () -> cancoder.getConfigurator().apply(cc_cfg));
+    }
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }
 
@@ -51,9 +81,8 @@ public class ArmJointIOTalonFX implements ArmJointIO {
   public void updateInputs(ArmInputs inputs) {
     inputs.angle.mut_replace(Motor.getPosition().getValue());
     inputs.angularVelocity.mut_replace(Motor.getVelocity().getValue());
-    inputs.setPoint.mut_replace(
-        Angle.ofRelativeUnits(
-            ((MotionMagicVoltage) Motor.getAppliedControl()).Position, Rotations));
+    inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
+    inputs.setPoint.mut_replace(m_setPoint);
     inputs.supplyCurrent.mut_replace(Motor.getStatorCurrent().getValue());
   }
 
@@ -61,6 +90,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
   public void setTarget(Angle target) {
     Request = Request.withPosition(target);
     Motor.setControl(Request);
+    m_setPoint = target;
   }
 
   @Override
@@ -84,5 +114,13 @@ public class ArmJointIOTalonFX implements ArmJointIO {
     slot0Configs.kV = gains.kV;
     slot0Configs.kA = gains.kA;
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(slot0Configs));
+
+    MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
+    motionMagicConfigs.MotionMagicCruiseVelocity = gains.kMMV;
+    motionMagicConfigs.MotionMagicAcceleration = gains.kMMA;
+    motionMagicConfigs.MotionMagicJerk = gains.kMMJ;
+    motionMagicConfigs.MotionMagicExpo_kV = gains.kMMEV;
+    motionMagicConfigs.MotionMagicExpo_kA = gains.kMMEA;
+    PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(motionMagicConfigs));
   }
 }

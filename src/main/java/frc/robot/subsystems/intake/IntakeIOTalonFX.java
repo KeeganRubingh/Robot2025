@@ -27,7 +27,6 @@ public class IntakeIOTalonFX implements IntakeIO {
     Request = new VoltageOut(0.0);
     rangeSensor = new CANrange(sensorCanDef.id(),sensorCanDef.bus());
 
-    Motor.setControl(Request);
     configureTalons();
   }
 
@@ -45,9 +44,9 @@ public class IntakeIOTalonFX implements IntakeIO {
   @Override
   public void updateInputs(IntakeInputs inputs) {
     inputs.angularVelocity.mut_replace(Motor.getVelocity().getValue());
-    inputs.voltageSetPoint.mut_replace(
-        Voltage.ofRelativeUnits(
-            ((VoltageOut) Motor.getAppliedControl()).Output, Volts));
+    // inputs.voltageSetPoint.mut_replace(
+    //     Voltage.ofRelativeUnits(
+    //         ((VoltageOut) Motor.getAppliedControl()).Output, Volts));
     inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(Motor.getStatorCurrent().getValue());
     inputs.sensorDistance.mut_replace(rangeSensor.getDistance().getValue());

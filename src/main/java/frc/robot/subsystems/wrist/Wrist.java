@@ -22,10 +22,19 @@ public class Wrist extends SubsystemBase {
 
   WristInputsAutoLogged loggedwrist = new WristInputsAutoLogged();
 
-  public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder("Wrist", 0, 0, 0, 0, 0, 0, 0);
+  public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
+    "Wrist", 
+    32, 0, 0, 
+    0, 0, 0, 0, 
+    0.25, 0.5, 0.5, 0, 0
+  );
 
   //WRIST WEIGHT
   //2.173 lbs
+
+  //WRISt POSITIONS
+  // 0 - Horizontal
+  // 90 - Vertical
   public Wrist(WristIO wristIO) {
     m_WristIO = wristIO;
     loggedwrist.wristAngle = Degrees.mutable(0);
@@ -34,6 +43,9 @@ public class Wrist extends SubsystemBase {
     loggedwrist.supplyCurrent = Amps.mutable(0);
     loggedwrist.torqueCurrent = Amps.mutable(0);
     loggedwrist.voltageSetPoint = Volts.mutable(0);
+    loggedwrist.voltage = Volts.mutable(0);
+
+    this.m_WristIO.setGains(tunableGains.build());
 
     RobotState.instance().setWristSource(loggedwrist.wristAngle);
   }
