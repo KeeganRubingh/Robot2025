@@ -82,9 +82,9 @@ public class RobotState extends VirtualSubsystem {
 
     primaryMechanism2d = new Mechanism2d(500, 300);
     elevatorLigament2d = new MechanismLigament2d("ElevatorLigament", elevatorHeight.in(Centimeters), 90);
-    shoulderLigament2d = new MechanismLigament2d("ShoulderLigament", Centimeters.convertFrom(15, Inches), shoulderAngle.in(Degrees));
+    shoulderLigament2d = new MechanismLigament2d("ShoulderLigament", Centimeters.convertFrom(15 + 5, Inches), shoulderAngle.in(Degrees));
     elbowLigament2d = new MechanismLigament2d("ElbowLigament", Centimeters.convertFrom(18, Inches), elbowAngle.in(Degrees), 7, new Color8Bit(Color.kOrange));
-    wristMechanismLigament = new MechanismLigament2d("WristLigament", Centimeters.convertFrom(18, Inches), wristTwist.in(Degrees), 5, new Color8Bit(Color.kOrange));
+    wristMechanismLigament = new MechanismLigament2d("WristLigament", Centimeters.convertFrom(18 , Inches), wristTwist.in(Degrees), 5, new Color8Bit(Color.kOrange));
     intakeExtenderMechanismLigament = new MechanismLigament2d("IntakeExtenderLigament", Centimeters.convertFrom(18, Inches), intakeExtenderAngle.in(Degrees),5,new Color8Bit(Color.kMagenta));
 
     robotBaseRoot = primaryMechanism2d.getRoot("2dBaseRoot", 225, 20);

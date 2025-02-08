@@ -351,7 +351,8 @@ public class RobotContainer {
     // testcontroller.x().onTrue(intakeExtender.getNewIntakeExtenderTurnCommand(setIntakeExtenderAngle)).onFalse(intakeExtender.getNewIntakeExtenderTurnCommand(0));
     // testcontroller.a().onTrue(shoulder.getNewSetAngleCommand(setShoulderAngle)).onFalse(shoulder.getNewSetAngleCommand(0));
     // testcontroller.b().onTrue(elbow.getNewSetAngleCommand(setElbowAngle)).onFalse(elbow.getNewSetAngleCommand(0));
-    testcontroller.a().whileTrue(new StowToL3(shoulder, elbow, wrist, fingeys)).onFalse(shoulder.getNewSetAngleCommand(0).alongWith(elbow.getNewSetAngleCommand(0)));
+    testcontroller.a().whileTrue(new StowToL3(shoulder, elbow, wrist, fingeys));
+    testcontroller.povDown().onTrue(shoulder.getNewSetAngleCommand(80).alongWith(elbow.getNewSetAngleCommand(-80)).alongWith(wrist.getNewWristTurnCommand(0)));
   }
   
   /**
