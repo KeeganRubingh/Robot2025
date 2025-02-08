@@ -12,6 +12,7 @@ import frc.robot.RobotState;
 import frc.robot.util.CanDef;
 import frc.robot.util.CanDef.CanBus;
 import frc.robot.util.Gains;
+import frc.robot.util.LoggedTunableGainsBuilder;
 
 public class ElbowConstants extends ArmJointConstants {
     public ElbowConstants() {
@@ -27,8 +28,7 @@ public class ElbowConstants extends ArmJointConstants {
                 .kA(0.0)
                 .kP(0.1).kI(0.0).kD(0.0).build();
 
-        this.TalonFXGains =
-            Gains.builder().kS(0.0).kG(0.0).kV(0.0).kA(0.0).kP(30.0).kI(0.0).kD(0.0).kMMV(5.0).kMMA(10.0).kMMJ(0.0).build();
+        this.TalonFXGains = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName, 30.0, 0, 0, 0, 0, 0, 0, 5.0, 10.0, 0, 0, 0);
 
         this.MaxVelocity = RotationsPerSecond.of(1);
         this.MaxAcceleration = RotationsPerSecondPerSecond.of(5);

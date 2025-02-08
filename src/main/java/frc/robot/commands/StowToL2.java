@@ -18,13 +18,13 @@ import frc.robot.subsystems.fingeys.Fingeys;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
-public class StowToL3 extends SequentialCommandGroup {
+public class StowToL2 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("StowToL3Command/shoulder/StartingDegrees", 10)),
         // MidPoint(new LoggedTunableNumber("StowToL3Command/shoulder/MidPointDegrees", 110)),
         // SafeToSwingElbow(new LoggedTunableNumber("StowToL3Command/shoulder/SafeToSwingElbowDegrees", 100)),
-        Final(new LoggedTunableNumber("StowToL3Command/shoulder/FinalDegrees", -10));
+        Final(new LoggedTunableNumber("StowToL3Command/shoulder/FinalDegrees", 55));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -43,7 +43,7 @@ public class StowToL3 extends SequentialCommandGroup {
     private enum ElbowPositions {
         Starting(new LoggedTunableNumber("StowToL3Command/elbow/StartingDegrees", 10)),
         // ShoulderSafeSwing(new LoggedTunableNumber("StowToL3Command/elbow/ShoulderSafeSwingDegrees", 45)),
-        Final(new LoggedTunableNumber("StowToL3Command/elbow/FinalDegrees", -70));
+        Final(new LoggedTunableNumber("StowToL3Command/elbow/FinalDegrees", 50));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -61,7 +61,7 @@ public class StowToL3 extends SequentialCommandGroup {
 
     private enum WristPositions {
         Starting(new LoggedTunableNumber("StowToL3Command/wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("StowToL3Command/wrist/FinalDegrees", 90));
+        Final(new LoggedTunableNumber("StowToL3Command/wrist/FinalDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -77,7 +77,7 @@ public class StowToL3 extends SequentialCommandGroup {
         }
     }
 
-    public StowToL3(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, Fingeys fingeys) {
+    public StowToL2(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, Fingeys fingeys) {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.angle().in(Degrees)),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.angle().in(Degrees))
