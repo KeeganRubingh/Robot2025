@@ -223,10 +223,10 @@ public class RobotState extends VirtualSubsystem {
                         Degrees.of(0), wristTwist, Degrees.zero())))
             .transformBy(WRIST_PIVOT_OFFSET.inverse());
 
-    double tempShoulderAngle = -90 - shoulderAngle.in(Degrees);
-    double tempElbowAngle = 90 + elbowAngle.in(Degrees) - tempShoulderAngle;
+    double tempShoulderAngle = 90+shoulderAngle.in(Degrees);
+    double tempElbowAngle = 90 - elbowAngle.in(Degrees) - tempShoulderAngle;
 
-    elevatorLigament2d.setLength(elevatorHeight.in(Centimeters));
+    elevatorLigament2d.setLength(elevatorHeight.in(Centimeters) + 103.5);
     shoulderLigament2d.setAngle(tempShoulderAngle);
     elbowLigament2d.setAngle(tempElbowAngle);
     wristMechanismLigament.setAngle(wristTwist.in(Degrees));
