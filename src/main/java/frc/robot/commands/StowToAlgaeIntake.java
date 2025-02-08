@@ -26,6 +26,7 @@ public class StowToAlgaeIntake extends SequentialCommandGroup {
         MidPoint(new LoggedTunableNumber("StowToAlgaeIntake/Shoulder/MidPointDegrees", 110)),
         SafeToSwingElbow(new LoggedTunableNumber("StowToAlgaeIntake/Shoulder/SafeToSwingElbowDegrees", 100)),
         Final(new LoggedTunableNumber("StowToAlgaeIntake/Shoulder/FinalDegrees", 90));
+        
 
         DoubleSupplier position;
         MutAngle distance;

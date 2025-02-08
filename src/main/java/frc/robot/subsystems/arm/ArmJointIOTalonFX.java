@@ -55,8 +55,6 @@ public class ArmJointIOTalonFX implements ArmJointIO {
     cfg.Slot0.kV = m_Constants.TalonFXGains.kV;
     cfg.Slot0.kA = m_Constants.TalonFXGains.kA;
     cfg.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-    cfg.MotionMagic.MotionMagicAcceleration = m_Constants.MaxAcceleration.in(RotationsPerSecondPerSecond);
-    cfg.MotionMagic.MotionMagicCruiseVelocity = m_Constants.MaxVelocity.in(RotationsPerSecond);
     cfg.CurrentLimits.SupplyCurrentLimit = m_Constants.SupplyCurrentLimit.in(Amp);
     cfg.CurrentLimits.StatorCurrentLimit = m_Constants.TorqueCurrentLimit.in(Amp);
     cfg.MotorOutput.Inverted = motorInversion;
