@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -42,6 +43,7 @@ public class WristIOTalonFX implements WristIO {
     cfg.CurrentLimits.StatorCurrentLimit = 80;
     cfg.CurrentLimits.StatorCurrentLimitEnable = true;
     cfg.CurrentLimits.SupplyCurrentLimit = 40;
+    cfg.Slot0.GravityType = GravityTypeValue.Elevator_Static; //Not arm because gravity should not take effect
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     //Motion magic gains TODO: Add to gains object (probably extend to a TalonFx specific version)
@@ -90,6 +92,7 @@ public class WristIOTalonFX implements WristIO {
     slot0Configs.kG = gains.kG;
     slot0Configs.kV = gains.kV;
     slot0Configs.kA = gains.kA;
+    slot0Configs.GravityType = GravityTypeValue.Elevator_Static; //Not arm because gravity should not take effect
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(slot0Configs));
 
     MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();

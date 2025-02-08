@@ -57,9 +57,9 @@ public class ArmJointIOTalonFX implements ArmJointIO {
     cfg.Slot0.kS = m_Constants.TalonFXGains.kS;
     cfg.Slot0.kV = m_Constants.TalonFXGains.kV;
     cfg.Slot0.kA = m_Constants.TalonFXGains.kA;
+    cfg.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     cfg.MotionMagic.MotionMagicAcceleration = m_Constants.MaxAcceleration.in(RotationsPerSecondPerSecond);
     cfg.MotionMagic.MotionMagicCruiseVelocity = m_Constants.MaxVelocity.in(RotationsPerSecond);
-    cfg.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     cfg.CurrentLimits.SupplyCurrentLimit = m_Constants.SupplyCurrentLimit.in(Amp);
     cfg.CurrentLimits.StatorCurrentLimit = m_Constants.TorqueCurrentLimit.in(Amp);
     cfg.MotorOutput.Inverted = motorInversion;
@@ -113,6 +113,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
     slot0Configs.kG = gains.kG;
     slot0Configs.kV = gains.kV;
     slot0Configs.kA = gains.kA;
+    slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(slot0Configs));
 
     MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();

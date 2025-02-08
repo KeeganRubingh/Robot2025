@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -51,6 +52,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     cfg.CurrentLimits.StatorCurrentLimitEnable = true;
     cfg.CurrentLimits.SupplyCurrentLimit = 40;
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
+    cfg.Slot0.GravityType = GravityTypeValue.Elevator_Static;
     cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
     cfg.Feedback.SensorToMechanismRatio = Elevator.INCHES_PER_ROT;
@@ -105,6 +107,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     slot0Configs.kG = gains.kG;
     slot0Configs.kV = gains.kV;
     slot0Configs.kA = gains.kA;
+    slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
     PhoenixUtil.tryUntilOk(5, () -> leaderMotor.getConfigurator().apply(slot0Configs));
 
     MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
