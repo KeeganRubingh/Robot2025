@@ -1,5 +1,7 @@
 package frc.robot.subsystems.toesies;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -17,6 +19,8 @@ public class ToesiesIOTalonFX implements ToesiesIO {
   public TalonFX Motor;
 
   public ArmInputs inputs;
+
+  private Voltage m_setPoint = Voltage.ofBaseUnits(0, Volts);
 
   public ToesiesIOTalonFX(CanDef canbus) {
     Motor = new TalonFX(canbus.id(),canbus.bus());
@@ -39,10 +43,8 @@ public class ToesiesIOTalonFX implements ToesiesIO {
   @Override
   public void updateInputs(ToesiesInputs inputs) {
     inputs.angularVelocity.mut_replace(Motor.getVelocity().getValue());
-    // inputs.voltageSetPoint.mut_replace(
-    //     Voltage.ofRelativeUnits(
-    //         ((VoltageOut) Motor.getAppliedControl()).Output, Volts));
-    // inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
+    inputs.voltageSetPoint.mut_replace(m_setPoint);
+    inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
     inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(Motor.getStatorCurrent().getValue());
   }
@@ -51,6 +53,7 @@ public class ToesiesIOTalonFX implements ToesiesIO {
   public void setTarget(Voltage target) {
     Request = Request.withOutput(target);
     Motor.setControl(Request);
+    m_setPoint = target;
   }
 
   @Override

@@ -26,6 +26,7 @@ public class WristIOTalonFX implements WristIO {
   public TalonFX Motor;
   public CANcoder canCoder;
   public Angle canCoderOffset = Degrees.of(0);
+  private Angle m_setPoint = Angle.ofRelativeUnits(0, Rotations);
 
   public WristIOTalonFX(CanDef canbus,CanDef canCoderDef) {
     Motor= new TalonFX(canbus.id(), canbus.bus());
@@ -69,15 +70,14 @@ public class WristIOTalonFX implements WristIO {
   public void setTarget(Angle target) {
     Request = Request.withPosition(target).withSlot(0);
     Motor.setControl(Request);
+    m_setPoint = target;
   }
 
   @Override
   public void updateInputs(WristInputs inputs) {
     inputs.wristAngle.mut_replace(Motor.getPosition().getValue());
     inputs.wristAngularVelocity.mut_replace(Motor.getVelocity().getValue());
-    inputs.wristSetPoint.mut_replace(
-        Angle.ofRelativeUnits(
-            PhoenixUtil.getPositionFromController(Motor, 0.0), Rotations));
+    inputs.wristSetPoint.mut_replace(m_setPoint);
     inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(Motor.getStatorCurrent().getValue());
   }

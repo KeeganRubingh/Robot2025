@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intakeextender;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.CANBus;
@@ -19,6 +20,8 @@ import frc.robot.util.PhoenixUtil;
 public class IntakeExtenderIOTalonFX implements IntakeExtenderIO {
   public MotionMagicVoltage Request;
   public TalonFX Motor;
+
+  private Angle m_setPoint = Angle.ofBaseUnits(0, Degrees);
 
   public IntakeExtenderIOTalonFX(CanDef canbus) {
     Motor= new TalonFX(canbus.id(), canbus.bus());
@@ -43,15 +46,14 @@ public class IntakeExtenderIOTalonFX implements IntakeExtenderIO {
   public void setTarget(Angle target) {
     Request = Request.withPosition(target);
     Motor.setControl(Request);
+    m_setPoint = target;
   }
 
   @Override
   public void updateInputs(IntakeExtenderInputs inputs) {
     inputs.Angle.mut_replace(Motor.getPosition().getValue());
     inputs.IntakeExtenderAngularVelocity.mut_replace(Motor.getVelocity().getValue());
-    inputs.IntakeExtenderSetPoint.mut_replace(
-        Angle.ofRelativeUnits(
-          PhoenixUtil.getPositionFromController(Motor, 0.0), Rotations));
+    inputs.IntakeExtenderSetPoint.mut_replace(m_setPoint);
     inputs.supplyCurrent.mut_replace(Motor.getStatorCurrent().getValue());
   }
 
