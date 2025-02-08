@@ -18,10 +18,6 @@ import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
 public class StowToL3 extends SequentialCommandGroup {
-    public ArmJoint shoulder;
-    public ArmJoint elbow;
-    public Wrist wrist;
-    public Fingeys fingeys;
 
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("MoveToL4Command/shoulder/StartingDegrees", 0)),
@@ -84,11 +80,11 @@ public class StowToL3 extends SequentialCommandGroup {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.angle().in(Degrees)),
             shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.angle().in(Degrees))
-                .raceWith(
+                .alongWith(
                     new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.angle().in(Degrees)))
                         .andThen(
                             elbow.getNewSetAngleCommand(ElbowPositions.Final.angle().in(Degrees))
-                                .raceWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.angle().in(Degrees)))
+                                .alongWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.angle().in(Degrees)))
                         )
                     )
                 ),

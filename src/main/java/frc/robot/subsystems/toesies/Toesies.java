@@ -16,7 +16,7 @@ import frc.robot.util.LoggedTunableGainsBuilder;
 import frc.robot.util.LoggedTunableNumber;
 
 /**
- * <h1>Algae end effector</h1>
+ * <h1>Algae End Effector</h1>
  * <h3>(toesies)</h3>
  * <p>Controls the rollers on the end of our algae end effector</p>
  * <ul>
