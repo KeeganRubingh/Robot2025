@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
@@ -70,10 +72,54 @@ public class ArmJoint extends SubsystemBase {
     });
   }
 
+  /**
+   * @deprecated lmao don't use it. GREG HAS SPOKEN!
+   * @return
+   */
   public Trigger getNewAtSetpointTrigger() {
     return new Trigger(() -> {
       return MathUtil.isNear(m_loggedArm.setPoint.baseUnitMagnitude(), m_loggedArm.angle.baseUnitMagnitude(), Degrees.of(0.25).baseUnitMagnitude());
     });
+  }
+
+  /**
+   * Returns when this joint is greater than 'angle' away from the forward horizontal
+   * @param angle
+   * @return
+   */
+  public Trigger getNewGreaterThanAngleTrigger(Supplier<Double> angle) {
+    return new Trigger(() -> {
+      return m_loggedArm.angle.in(Degrees) > angle.get();
+    });
+  }
+
+  /**
+   * Returns when this joint is greater than 'angle' away from the forward horizontal
+   * @param angle
+   * @return
+   */
+  public Trigger getNewGreaterThanAngleTrigger(Double angle) {
+    return getNewGreaterThanAngleTrigger(() -> angle);
+  }
+
+  /**
+   * Returns when this joint is less than 'angle' away from the forward horizontal
+   * @param angle
+   * @return
+   */
+  public Trigger getNewLessThanAngleTrigger(Supplier<Double> angle) {
+    return new Trigger(() -> {
+      return m_loggedArm.angle.in(Degrees) < angle.get();
+    });
+  }
+
+  /**
+   * Returns when this joint is less than 'angle' away from the forward horizontal
+   * @param angle
+   * @return
+   */
+  public Trigger getNewLessThanAngleTrigger(Double angle) {
+    return getNewLessThanAngleTrigger(() -> angle);
   }
 
   @Override
