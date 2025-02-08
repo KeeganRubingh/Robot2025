@@ -5,6 +5,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import static edu.wpi.first.units.Units.Degrees;
@@ -35,6 +36,7 @@ public class IntakeExtenderIOTalonFX implements IntakeExtenderIO {
     cfg.CurrentLimits.SupplyCurrentLimit = 40;
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
     cfg.Voltage.PeakReverseVoltage = 7;
+    cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }
