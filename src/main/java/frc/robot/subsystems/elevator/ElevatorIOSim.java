@@ -51,7 +51,7 @@ public class ElevatorIOSim implements ElevatorIO {
   
   @Override
   public void updateInputs(ElevatorInputs input) {
-    input.distance.mut_replace(Distance.ofRelativeUnits(sim.getPositionMeters(), Meters));
+    input.distance.mut_replace(Distance.ofRelativeUnits(sim.getPositionMeters()-1.035, Meters));
     input.velocity.mut_replace(MetersPerSecond.of(sim.getVelocityMetersPerSecond()));
     input.setPoint.mut_replace(Meters.of(controller.getGoal().position));
     input.supplyCurrent.mut_replace(sim.getCurrentDrawAmps(), Amps);

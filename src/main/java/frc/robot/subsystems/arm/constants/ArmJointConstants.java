@@ -11,6 +11,7 @@ import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MutAngle;
 import frc.robot.util.CanDef;
 import frc.robot.util.Gains;
+import frc.robot.util.LoggedTunableGainsBuilder;
 
 public abstract class ArmJointConstants {
     public CanDef LeaderProfile;
@@ -18,7 +19,7 @@ public abstract class ArmJointConstants {
 
     public Gains SimGains;
 
-    public Gains TalonFXGains;
+    public LoggedTunableGainsBuilder TalonFXGains;
 
     public AngularVelocity MaxVelocity;
     public AngularAcceleration MaxAcceleration;

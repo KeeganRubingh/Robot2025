@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
@@ -42,12 +44,14 @@ public class ArmJoint extends SubsystemBase {
     //    to pass the constants instance back up from the IO to get an instance of it in the subsystem.
     m_constants = armJointIO.getConstants();
     m_constants.mechanismSimCallback.accept(m_loggedArm.angle);
-    tunableGains = new LoggedTunableGainsBuilder("ArmJoint"+m_constants.LoggedName, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    tunableGains = m_constants.TalonFXGains;
+    m_loggedArm.angle.mut_replace(m_constants.StartingAngle);
   }
 
   public void setAngle(Angle angle) {
     m_armJointIO.setTarget(angle);
   }
+  
   public Command getNewSetAngleCommand(LoggedTunableNumber degrees) {
     return new InstantCommand(
         () -> {
@@ -70,10 +74,54 @@ public class ArmJoint extends SubsystemBase {
     });
   }
 
+  /**
+   * @deprecated lmao don't use it. GREG HAS SPOKEN!
+   * @return
+   */
   public Trigger getNewAtSetpointTrigger() {
     return new Trigger(() -> {
       return MathUtil.isNear(m_loggedArm.setPoint.baseUnitMagnitude(), m_loggedArm.angle.baseUnitMagnitude(), Degrees.of(0.25).baseUnitMagnitude());
     });
+  }
+
+  /**
+   * Returns when this joint is greater than 'angle' away from the forward horizontal
+   * @param angle
+   * @return
+   */
+  public Trigger getNewGreaterThanAngleTrigger(Supplier<Double> angle) {
+    return new Trigger(() -> {
+      return m_loggedArm.angle.in(Degrees) > angle.get();
+    });
+  }
+
+  /**
+   * Returns when this joint is greater than 'angle' away from the forward horizontal
+   * @param angle
+   * @return
+   */
+  public Trigger getNewGreaterThanAngleTrigger(Double angle) {
+    return getNewGreaterThanAngleTrigger(() -> angle);
+  }
+
+  /**
+   * Returns when this joint is less than 'angle' away from the forward horizontal
+   * @param angle
+   * @return
+   */
+  public Trigger getNewLessThanAngleTrigger(Supplier<Double> angle) {
+    return new Trigger(() -> {
+      return m_loggedArm.angle.in(Degrees) < angle.get();
+    });
+  }
+
+  /**
+   * Returns when this joint is less than 'angle' away from the forward horizontal
+   * @param angle
+   * @return
+   */
+  public Trigger getNewLessThanAngleTrigger(Double angle) {
+    return getNewLessThanAngleTrigger(() -> angle);
   }
 
   @Override

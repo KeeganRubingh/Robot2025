@@ -20,6 +20,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.subsystems.arm.constants.ArmJointConstants;
 import frc.robot.util.Gains;
+import frc.robot.util.LoggedTunableGainsBuilder;
 import frc.robot.util.PhoenixUtil;
 
 public class ArmJointIOTalonFX implements ArmJointIO {
@@ -47,16 +48,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
   private void configureTalons(InvertedValue motorInversion) {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
     cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    cfg.Slot0.kP = m_Constants.TalonFXGains.kP;
-    cfg.Slot0.kI = m_Constants.TalonFXGains.kI;
-    cfg.Slot0.kD = m_Constants.TalonFXGains.kD;
-    cfg.Slot0.kG = m_Constants.TalonFXGains.kG;
-    cfg.Slot0.kS = m_Constants.TalonFXGains.kS;
-    cfg.Slot0.kV = m_Constants.TalonFXGains.kV;
-    cfg.Slot0.kA = m_Constants.TalonFXGains.kA;
     cfg.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-    cfg.MotionMagic.MotionMagicAcceleration = m_Constants.MaxAcceleration.in(RotationsPerSecondPerSecond);
-    cfg.MotionMagic.MotionMagicCruiseVelocity = m_Constants.MaxVelocity.in(RotationsPerSecond);
     cfg.CurrentLimits.SupplyCurrentLimit = m_Constants.SupplyCurrentLimit.in(Amp);
     cfg.CurrentLimits.StatorCurrentLimit = m_Constants.TorqueCurrentLimit.in(Amp);
     cfg.MotorOutput.Inverted = motorInversion;
@@ -73,6 +65,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
       PhoenixUtil.tryUntilOk(5, () -> cancoder.getConfigurator().apply(cc_cfg));
     }
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
+    setGains(Gains.getEmpty());
   }
 
   @Override

@@ -82,9 +82,9 @@ public class RobotState extends VirtualSubsystem {
 
     primaryMechanism2d = new Mechanism2d(500, 300);
     elevatorLigament2d = new MechanismLigament2d("ElevatorLigament", elevatorHeight.in(Centimeters), 90);
-    shoulderLigament2d = new MechanismLigament2d("ShoulderLigament", Centimeters.convertFrom(15, Inches), shoulderAngle.in(Degrees));
-    elbowLigament2d = new MechanismLigament2d("ElbowLigament", Centimeters.convertFrom(18, Inches),elbowAngle.in(Degrees));
-    wristMechanismLigament = new MechanismLigament2d("WristLigament", Centimeters.convertFrom(18, Inches), wristTwist.in(Degrees), 5,new Color8Bit(Color.kLightBlue));
+    shoulderLigament2d = new MechanismLigament2d("ShoulderLigament", Centimeters.convertFrom(15 + 5, Inches), shoulderAngle.in(Degrees));
+    elbowLigament2d = new MechanismLigament2d("ElbowLigament", Centimeters.convertFrom(18, Inches), elbowAngle.in(Degrees), 7, new Color8Bit(Color.kOrange));
+    wristMechanismLigament = new MechanismLigament2d("WristLigament", Centimeters.convertFrom(18 , Inches), wristTwist.in(Degrees), 5, new Color8Bit(Color.kOrange));
     intakeExtenderMechanismLigament = new MechanismLigament2d("IntakeExtenderLigament", Centimeters.convertFrom(18, Inches), intakeExtenderAngle.in(Degrees),5,new Color8Bit(Color.kMagenta));
 
     robotBaseRoot = primaryMechanism2d.getRoot("2dBaseRoot", 225, 20);
@@ -180,8 +180,9 @@ public class RobotState extends VirtualSubsystem {
     this.intakeExtenderAngle = intakeExtenderAngle;
   }
 
-  private void visualize() {
+  int counter = 0;
 
+  private void visualize() {
     Pose3d elevatorPose =
         new Pose3d(ELEVATOR_ATTACH_OFFSET.getTranslation(), ELEVATOR_ATTACH_OFFSET.getRotation())
             .transformBy(
@@ -207,7 +208,7 @@ public class RobotState extends VirtualSubsystem {
                 new Transform3d(
                     new Translation3d(),
                     new Rotation3d(
-                        this.elbowAngle, Degrees.zero(), Degrees.zero())))
+                        this.shoulderAngle.minus(this.elbowAngle), Degrees.zero(), Degrees.zero())))
             .transformBy(ELBOW_PIVOT_OFFSET.inverse());
 
     testStuff.mut_replace(testStuff.plus(Degrees.of(.25)));
@@ -222,9 +223,12 @@ public class RobotState extends VirtualSubsystem {
                         Degrees.of(0), wristTwist, Degrees.zero())))
             .transformBy(WRIST_PIVOT_OFFSET.inverse());
 
-    elevatorLigament2d.setLength(elevatorHeight.in(Centimeters));
-    shoulderLigament2d.setAngle(shoulderAngle.in(Degrees) + 180);
-    elbowLigament2d.setAngle(elbowAngle.in(Degrees));
+    double tempShoulderAngle = 90+shoulderAngle.in(Degrees);
+    double tempElbowAngle = 90 - elbowAngle.in(Degrees) - tempShoulderAngle;
+
+    elevatorLigament2d.setLength(elevatorHeight.in(Centimeters) + 103.5);
+    shoulderLigament2d.setAngle(tempShoulderAngle);
+    elbowLigament2d.setAngle(tempElbowAngle);
     wristMechanismLigament.setAngle(wristTwist.in(Degrees));
     intakeExtenderMechanismLigament.setAngle(intakeExtenderAngle.in(Degrees));
 

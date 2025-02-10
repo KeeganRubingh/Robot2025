@@ -75,6 +75,12 @@ public class Wrist extends SubsystemBase {
     });
   }
 
+  public Trigger getNewAtSetpointTrigger() {
+    return new Trigger(() -> {
+      return MathUtil.isNear(loggedwrist.wristSetPoint.baseUnitMagnitude(), loggedwrist.wristAngle.baseUnitMagnitude(), Degrees.of(0.25).baseUnitMagnitude());
+    });
+  }
+
   @Override
   public void periodic() {
     tunableGains.ifGainsHaveChanged((gains) -> this.m_WristIO.setGains(gains));

@@ -45,10 +45,6 @@ public class WristIOTalonFX implements WristIO {
     cfg.Slot0.GravityType = GravityTypeValue.Elevator_Static; //Not arm because gravity should not take effect
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    //Motion magic gains TODO: Add to gains object (probably extend to a TalonFx specific version)
-    cfg.MotionMagic.MotionMagicCruiseVelocity = 5.0;
-    cfg.MotionMagic.MotionMagicAcceleration = 10.0;
-
     cfg.Feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();
     cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     cfg.Feedback.SensorToMechanismRatio = 1.0;

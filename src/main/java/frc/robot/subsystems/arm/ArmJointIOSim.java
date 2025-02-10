@@ -28,7 +28,7 @@ public class ArmJointIOSim implements ArmJointIO {
   public ArmJointIOSim(ArmJointConstants constants) {
     sim = new SingleJointedArmSim(
                       DCMotor.getKrakenX60Foc(1),
-                      constants.MotorToSensorGearing,
+                      constants.MotorToSensorGearing * constants.SensorToMechanismGearing,
                       SingleJointedArmSim.estimateMOI(constants.Length.in(Meters), constants.Weight.in(Kilograms)),
                       constants.Length.in(Meters),
                       constants.MinimumAngle.in(Radians),
@@ -40,11 +40,12 @@ public class ArmJointIOSim implements ArmJointIO {
     controller = new ProfiledPIDController(constants.SimGains.kP, constants.SimGains.kI, constants.SimGains.kD, new Constraints(constants.MaxVelocity.in(DegreesPerSecond), constants.MaxAcceleration.in(DegreesPerSecondPerSecond)));
     ff = new ArmFeedforward(constants.SimGains.kS, constants.SimGains.kG, constants.SimGains.kV, constants.SimGains.kA);
     m_Constants = constants;
+    controller.setGoal(constants.StartingAngle.in(Degrees));
   }
 
   @Override
   public void setTarget(Angle target) {
-    controller.setGoal(new State(target.in(Degrees), 0));
+    controller.setGoal(target.in(Degrees));
   }
 
   /**

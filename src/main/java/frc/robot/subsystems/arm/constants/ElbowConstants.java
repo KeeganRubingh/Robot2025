@@ -12,6 +12,7 @@ import frc.robot.RobotState;
 import frc.robot.util.CanDef;
 import frc.robot.util.CanDef.CanBus;
 import frc.robot.util.Gains;
+import frc.robot.util.LoggedTunableGainsBuilder;
 
 public class ElbowConstants extends ArmJointConstants {
     public ElbowConstants() {
@@ -27,8 +28,7 @@ public class ElbowConstants extends ArmJointConstants {
                 .kA(0.0)
                 .kP(0.1).kI(0.0).kD(0.0).build();
 
-        this.TalonFXGains =
-            Gains.builder().kS(0.0).kG(0.0).kV(0.0).kA(0.0).kP(30.0).kI(0.0).kD(0.0).build();
+        this.TalonFXGains = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName, 30.0, 0, 0, 0, 0, 0, 0, 5.0, 10.0, 0, 0, 0);
 
         this.MaxVelocity = RotationsPerSecond.of(1);
         this.MaxAcceleration = RotationsPerSecondPerSecond.of(5);
@@ -44,11 +44,9 @@ public class ElbowConstants extends ArmJointConstants {
         this.Length = Inches.of(15);
         this.Weight = Pounds.of(8.5);
         this.Motors = DCMotor.getKrakenX60(NumMotors);
-
-        // 0 is default position (straight out from the back), 90 is straight up
         this.MaximumAngle = Degrees.of(360);
         this.MinimumAngle = Degrees.of(0);
-        this.StartingAngle = Degrees.zero();
+        this.StartingAngle = Degrees.of(90);
 
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);

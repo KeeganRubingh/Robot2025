@@ -33,9 +33,11 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.StowToL2;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.arm.ArmJointIOSim;
@@ -254,29 +256,29 @@ public class RobotContainer {
             () -> -controller.getRightX() * ANGULAR_SPEED)
           );
 
-    // Lock to 0° when A button is held
-    controller
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> new Rotation2d()));
+    // // Lock to 0° when A button is held
+    // controller
+    //     .a()
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAtAngle(
+    //             drive,
+    //             () -> -controller.getLeftY(),
+    //             () -> -controller.getLeftX(),
+    //             () -> new Rotation2d()));
 
-    // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // // Switch to X pattern when X button is pressed
+    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-                    drive)
-                .ignoringDisable(true));
+    // // Reset gyro to 0° when B button is pressed
+    // controller
+    //     .b()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () ->
+    //                     drive.setPose(
+    //                         new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+    //                 drive)
+    //             .ignoringDisable(true));
 
     characterizeController
         .back()
@@ -313,32 +315,36 @@ public class RobotContainer {
                   System.out.println("Stopped Logger");
                 }));
     
-    // controller.rightBumper()
-    // .onTrue(
-    //   elbow.getNewSetAngleCommand(-30).alongWith(shoulder.getNewSetAngleCommand(75))
-    //   .andThen(new WaitUntilCommand(elbow.getNewAtSetpointTrigger().and(shoulder.getNewAtSetpointTrigger())))
-    //   .andThen(
-    //     elbow.getNewSetAngleCommand(70)
-    //     .until(elbow.getNewAtSetpointTrigger().and(shoulder.getNewAtSetpointTrigger()))
-    //   )
+    // // controller.rightBumper()
+    // // .onTrue(
+    // //   elbow.getNewSetAngleCommand(-30).alongWith(shoulder.getNewSetAngleCommand(75))
+    // //   .andThen(new WaitUntilCommand(elbow.getNewAtSetpointTrigger().and(shoulder.getNewAtSetpointTrigger())))
+    // //   .andThen(
+    // //     elbow.getNewSetAngleCommand(70)
+    // //     .until(elbow.getNewAtSetpointTrigger().and(shoulder.getNewAtSetpointTrigger()))
+    // //   )
     
-    // ).onFalse(elbow.getNewSetAngleCommand(0).alongWith(shoulder.getNewSetAngleCommand(0)));
+    // // ).onFalse(elbow.getNewSetAngleCommand(0).alongWith(shoulder.getNewSetAngleCommand(0)));
 
-    // Auto aim command example FOR DIFFERENTIAL DRIVE
-    // @SuppressWarnings("resource")
-    // PIDController aimController = new PIDController(0.2, 0.0, 0.0);
-    // aimController.enableContinuousInput(-Math.PI, Math.PI);
-    // keyboard
-    //     .button(1)
-    //     .whileTrue(
-    //         Commands.startRun(
-    //             () -> {
-    //               aimController.reset();
-    //             },
-    //             () -> {
-    //               drive.run(0.0, aimController.calculate(vision.getTargetX(0).getRadians()));
-    //             },
-    //             drive));
+    // // Auto aim command example FOR DIFFERENTIAL DRIVE
+    // // @SuppressWarnings("resource")
+    // // PIDController aimController = new PIDController(0.2, 0.0, 0.0);
+    // // aimController.enableContinuousInput(-Math.PI, Math.PI);
+    // // keyboard
+    // //     .button(1)
+    // //     .whileTrue(
+    // //         Commands.startRun(
+    // //             () -> {
+    // //               aimController.reset();
+    // //             },
+    // //             () -> {
+    // //               drive.run(0.0, aimController.calculate(vision.getTargetX(0).getRadians()));
+    // //             },
+    // //             drive));
+  }
+
+  public Command TEMPgetStowCommand() {
+    return shoulder.getNewSetAngleCommand(68).alongWith(elbow.getNewSetAngleCommand(65)).alongWith(wrist.getNewWristTurnCommand(0));
   }
 
   public void configureTestButtonBindings (){
@@ -348,10 +354,13 @@ public class RobotContainer {
     // testcontroller.leftTrigger().onTrue(fingeys.getNewSetVoltsCommand(setFingeysVolts)).onFalse(fingeys.getNewSetVoltsCommand(0));
     // testcontroller.rightTrigger().onTrue(intake.getNewSetVoltsCommand(setIntakeVolts)).onFalse(intake.getNewSetVoltsCommand(0));
     // testcontroller.x().onTrue(intakeExtender.getNewIntakeExtenderTurnCommand(setIntakeExtenderAngle)).onFalse(intakeExtender.getNewIntakeExtenderTurnCommand(0));
-    testcontroller.a().onTrue(shoulder.getNewSetAngleCommand(setShoulderAngle)).onFalse(shoulder.getNewSetAngleCommand(30));
-    testcontroller.b().onTrue(elbow.getNewSetAngleCommand(setElbowAngle)).onFalse(elbow.getNewSetAngleCommand(0));
+    // testcontroller.a().onTrue(shoulder.getNewSetAngleCommand(setShoulderAngle)).onFalse(shoulder.getNewSetAngleCommand(0));
+    // testcontroller.b().onTrue(elbow.getNewSetAngleCommand(setElbowAngle)).onFalse(elbow.getNewSetAngleCommand(0));
+    controller.rightBumper().whileTrue(new StowToL2(shoulder, elbow, wrist, fingeys)).onFalse(new StowToL2(shoulder, elbow, wrist, fingeys)).onFalse(TEMPgetStowCommand());
+    controller.a().whileTrue(elbow.getNewSetAngleCommand(10).alongWith(new WaitCommand(0.5)).andThen(fingeys.getNewSetVoltsCommand(-4))).onFalse(fingeys.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
+    controller.leftTrigger().whileTrue(wrist.getNewWristTurnCommand(-90).alongWith(elbow.getNewSetAngleCommand(33)).andThen(fingeys.getNewSetVoltsCommand(6)).alongWith(shoulder.getNewSetAngleCommand(55))).onFalse(fingeys.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
   }
-
+  
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
