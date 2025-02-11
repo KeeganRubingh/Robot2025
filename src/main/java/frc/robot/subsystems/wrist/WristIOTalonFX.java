@@ -42,7 +42,6 @@ public class WristIOTalonFX implements WristIO {
     cfg.CurrentLimits.StatorCurrentLimit = 80;
     cfg.CurrentLimits.StatorCurrentLimitEnable = true;
     cfg.CurrentLimits.SupplyCurrentLimit = 40;
-    cfg.Slot0.GravityType = GravityTypeValue.Elevator_Static; //Not arm because gravity should not take effect
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     cfg.Feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();

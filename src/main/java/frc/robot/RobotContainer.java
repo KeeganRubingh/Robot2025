@@ -182,7 +182,7 @@ public class RobotContainer {
 
         wrist = new Wrist(new WristIOTalonFX(canivoreCanBuilder.id(11).build(),canivoreCanBuilder.id(15).build()));
 
-        elevator = new Elevator(new ElevatorIOTalonFX(canivoreCanBuilder.id(13).build(),canivoreCanBuilder.id(14).build()));
+        elevator = new Elevator(new ElevatorIOTalonFX(rioCanBuilder.id(13).build(),rioCanBuilder.id(14).build()));
 
         shoulder = new ArmJoint(new ArmJointIOTalonFX(new ShoulderConstants(), InvertedValue.CounterClockwise_Positive));
         elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants(), InvertedValue.CounterClockwise_Positive));
