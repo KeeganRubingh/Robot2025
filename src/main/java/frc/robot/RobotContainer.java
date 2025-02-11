@@ -191,7 +191,7 @@ public class RobotContainer {
         
         intake = new Intake(new IntakeIOTalonFX(canivoreCanBuilder.id(18).build(),canivoreCanBuilder.id(17).build()));
 
-        intakeExtender = new IntakeExtender(new IntakeExtenderIOTalonFX(canivoreCanBuilder.id(16).build()));
+        intakeExtender = new IntakeExtender(new IntakeExtenderIOTalonFX(rioCanBuilder.id(16).build()));
 
         toesies = new Toesies(new ToesiesIOTalonFX(canivoreCanBuilder.id(15).build()));
 
