@@ -62,7 +62,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
     cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
-    cfg.Feedback.SensorToMechanismRatio = Elevator.INCHES_PER_ROT;
+    cfg.Feedback.SensorToMechanismRatio = Elevator.REDUCTION;
 
     PhoenixUtil.tryUntilOk(5, () -> leaderMotor.getConfigurator().apply(cfg));
 
@@ -75,7 +75,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     cfg2.CurrentLimits.SupplyCurrentLimit = 40;
     cfg2.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    cfg2.Feedback.SensorToMechanismRatio = Elevator.INCHES_PER_ROT;
+    cfg2.Feedback.SensorToMechanismRatio = Elevator.REDUCTION;
 
     PhoenixUtil.tryUntilOk(5, ()->followerMotor.getConfigurator().apply(cfg2));
 
@@ -85,21 +85,23 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorInputs inputs) {
-    double inches=leaderMotor.getPosition().getValue().in(Rotations);
+    double rotations=leaderMotor.getPosition().getValue().in(Rotations);
     // SmartDashboard.putNumber("ElevatorrotorPos", leaderMotor.getRotorPosition().getValue().in(Rotations));
     // SmartDashboard.putNumber("ElevatorPos", inches);
-    inputs.distance.mut_replace(Inches.of(inches));
-    //inputs.distance.mut_replace(Inches.of(leaderMotor.getRotorPosition().getValue().in(Rotations)*Elevator.INCHES_PER_ROT));
+    inputs.distance.mut_replace(Inches.of(rotations * Elevator.INCHES_PER_ROT));
+    // inputs.distance.mut_replace(Inches.of(leaderMotor.getRotorPosition().getValue().in(Rotations)*Elevator.INCHES_PER_ROT));
     inputs.velocity.mut_replace(InchesPerSecond.of(leaderMotor.getVelocity().getValue().in(RotationsPerSecond)));
     inputs.setPoint.mut_replace(m_setPoint);
-    inputs.supplyCurrent.mut_replace(leaderMotor.getStatorCurrent().getValue());
+    inputs.supplyCurrent.mut_replace(leaderMotor.getSupplyCurrent().getValue());
+    inputs.voltage.mut_replace(leaderMotor.getMotorVoltage().getValue());
   }
 
   @Override
   public void setTarget(Distance target) {
-    Request = Request.withPosition(target.in(Inches)).withSlot(0);
+    Request = Request.withPosition(target.in(Inches)/Elevator.INCHES_PER_ROT).withSlot(0);
     leaderMotor.setControl(Request);
     m_setPoint = target;
+    
   }
 
   @Override

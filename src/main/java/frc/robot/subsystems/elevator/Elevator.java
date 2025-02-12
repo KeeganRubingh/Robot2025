@@ -1,6 +1,10 @@
 package frc.robot.subsystems.elevator;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.InchesPerSecond;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Volts;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -21,13 +25,15 @@ public class Elevator extends SubsystemBase {
 
   public static final double SPOOL_RADIUS = 1.751 / 2.0;
 
-  public static final double INCHES_PER_ROT = (3.0/1.0) * (1.0 /(2.0 * Math.PI * SPOOL_RADIUS));
+  public static final double INCHES_PER_ROT = (2.0 * Math.PI * SPOOL_RADIUS);
+  
+  public static final double REDUCTION = (3.0/1.0);
 
   public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
     "Elevator", 
-    0, 0, 0, 
-    0, 0.86, 0, 0, 
-    0, 0, 0, 0, 0
+    3.0, 0, 0, 
+    0, 0.8, 0, 0, 
+    80.0, 60.0, 0, 0, 0
   );
   
   public Elevator(ElevatorIO elevatorIO) {
@@ -38,6 +44,7 @@ public class Elevator extends SubsystemBase {
     loggedelevator.supplyCurrent = Amps.mutable(0);
     loggedelevator.torqueCurrent = Amps.mutable(0);
     loggedelevator.voltageSetPoint = Volts.mutable(0);
+    loggedelevator.voltage = Volts.mutable(0);
 
     this.m_ElevatorIO.setGains(tunableGains.build());
     RobotState.instance().setElevatorSource(loggedelevator.distance);
