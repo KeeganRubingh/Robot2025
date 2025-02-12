@@ -19,29 +19,31 @@
  */
 package frc.robot;
 
+import java.util.Optional;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.InvertedValue;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.GroundIntakeToStow;
+import frc.robot.commands.L2.StowToL2;
+import frc.robot.commands.L2.TakeAlgaeL2;
+import frc.robot.commands.StowToAlgaeStow;
 import frc.robot.commands.StowToGroundIntake;
-import frc.robot.commands.StowToL2;
+import frc.robot.commands.StowToL1;
+import frc.robot.commands.StowToL3;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.arm.ArmJointIOSim;
@@ -73,9 +75,6 @@ import static frc.robot.subsystems.vision.VisionConstants.limelightBackName;
 import static frc.robot.subsystems.vision.VisionConstants.limelightFrontName;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBack;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCameraFront;
-
-import java.util.Optional;
-
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.wrist.Wrist;
@@ -378,6 +377,8 @@ public class RobotContainer {
 
     SmartDashboard.putData(new GroundIntakeToStow(shoulder, elbow, wrist, fingeys));
     SmartDashboard.putData(new StowToGroundIntake(shoulder, elbow, wrist, fingeys));
+    SmartDashboard.putData(new StowToAlgaeStow(shoulder, elbow, wrist, fingeys));
+    SmartDashboard.putData(new TakeAlgaeL2(shoulder, elbow, wrist, toesies, elevator));
   }
   
   /**
