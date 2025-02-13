@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
@@ -48,6 +50,10 @@ public class Elevator extends SubsystemBase {
 
     this.m_ElevatorIO.setGains(tunableGains.build());
     RobotState.instance().setElevatorSource(loggedelevator.distance);
+  }
+
+  public Supplier<Distance> getDistanceExtendedSupplier() {
+    return () -> loggedelevator.distance;
   }
 
   public void setDistance(Distance target) {
