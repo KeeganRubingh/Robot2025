@@ -24,9 +24,9 @@ public class IntakeExtender extends SubsystemBase {
 
   public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
     "IntakeExtender", 
-    0, 0, 0, 
+    120.0, 0, 0, 
     0, 0, 0, 0, 
-    0, 0, 0, 0, 0
+    2.0, 1.0, 0, 0, 0
   );
   
   public IntakeExtender(IntakeExtenderIO intakeExtenderIO) {
@@ -37,6 +37,7 @@ public class IntakeExtender extends SubsystemBase {
     loggedintakeExtender.supplyCurrent = Amps.mutable(0);
     loggedintakeExtender.torqueCurrent = Amps.mutable(0);
     loggedintakeExtender.voltageSetPoint = Volts.mutable(0);
+    // loggedintakeExtender.voltage = Volts.mutable(0);
 
     RobotState.instance().setIntakeExtenderSource(loggedintakeExtender.Angle);
   }

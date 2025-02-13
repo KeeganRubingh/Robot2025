@@ -182,7 +182,7 @@ public class RobotContainer {
 
         wrist = new Wrist(new WristIOTalonFX(canivoreCanBuilder.id(11).build(),canivoreCanBuilder.id(15).build()));
 
-        elevator = new Elevator(new ElevatorIOTalonFX(canivoreCanBuilder.id(13).build(),canivoreCanBuilder.id(14).build()));
+        elevator = new Elevator(new ElevatorIOTalonFX(rioCanBuilder.id(13).build(),rioCanBuilder.id(14).build()));
 
         shoulder = new ArmJoint(new ArmJointIOTalonFX(new ShoulderConstants(), InvertedValue.CounterClockwise_Positive));
         elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants(), InvertedValue.CounterClockwise_Positive));
@@ -191,7 +191,7 @@ public class RobotContainer {
         
         intake = new Intake(new IntakeIOTalonFX(canivoreCanBuilder.id(18).build(),canivoreCanBuilder.id(17).build()));
 
-        intakeExtender = new IntakeExtender(new IntakeExtenderIOTalonFX(canivoreCanBuilder.id(16).build()));
+        intakeExtender = new IntakeExtender(new IntakeExtenderIOTalonFX(rioCanBuilder.id(16).build()));
 
         toesies = new Toesies(new ToesiesIOTalonFX(canivoreCanBuilder.id(15).build()));
 
@@ -348,7 +348,7 @@ public class RobotContainer {
   }
 
   public void configureTestButtonBindings (){
-    // testcontroller.y().onTrue(elevator.getNewSetDistanceCommand(setElevatorDistance)).onFalse(elevator.getNewSetDistanceCommand(0));
+    testcontroller.y().onTrue(elevator.getNewSetDistanceCommand(setElevatorDistance)).onFalse(elevator.getNewSetDistanceCommand(.16));
     // testcontroller.leftBumper().onTrue(wrist.getNewWristTurnCommand(setWristAngle)).onFalse(wrist.getNewWristTurnCommand(0));
     // testcontroller.rightBumper().onTrue(toesies.getNewSetVoltsCommand(setToesiesVolts)).onFalse(toesies.getNewSetVoltsCommand(0));
     // testcontroller.leftTrigger().onTrue(fingeys.getNewSetVoltsCommand(setFingeysVolts)).onFalse(fingeys.getNewSetVoltsCommand(0));
@@ -356,9 +356,12 @@ public class RobotContainer {
     // testcontroller.x().onTrue(intakeExtender.getNewIntakeExtenderTurnCommand(setIntakeExtenderAngle)).onFalse(intakeExtender.getNewIntakeExtenderTurnCommand(0));
     // testcontroller.a().onTrue(shoulder.getNewSetAngleCommand(setShoulderAngle)).onFalse(shoulder.getNewSetAngleCommand(0));
     // testcontroller.b().onTrue(elbow.getNewSetAngleCommand(setElbowAngle)).onFalse(elbow.getNewSetAngleCommand(0));
-    controller.rightBumper().whileTrue(new StowToL2(shoulder, elbow, wrist, fingeys)).onFalse(new StowToL2(shoulder, elbow, wrist, fingeys)).onFalse(TEMPgetStowCommand());
-    controller.a().whileTrue(elbow.getNewSetAngleCommand(10).alongWith(new WaitCommand(0.5)).andThen(fingeys.getNewSetVoltsCommand(-4))).onFalse(fingeys.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
-    controller.leftTrigger().whileTrue(wrist.getNewWristTurnCommand(-90).alongWith(elbow.getNewSetAngleCommand(33)).andThen(fingeys.getNewSetVoltsCommand(6)).alongWith(shoulder.getNewSetAngleCommand(55))).onFalse(fingeys.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
+    // controller.rightBumper().whileTrue(new StowToL2(shoulder, elbow, wrist, fingeys)).onFalse(new StowToL2(shoulder, elbow, wrist, fingeys)).onFalse(TEMPgetStowCommand());
+    // controller.a().whileTrue(elbow.getNewSetAngleCommand(10).alongWith(new WaitCommand(0.5)).andThen(fingeys.getNewSetVoltsCommand(-4))).onFalse(fingeys.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
+    // controller.leftTrigger().whileTrue(wrist.getNewWristTurnCommand(-90).alongWith(elbow.getNewSetAngleCommand(33)).andThen(fingeys.getNewSetVoltsCommand(6)).alongWith(shoulder.getNewSetAngleCommand(55))).onFalse(fingeys.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
+    testcontroller.rightBumper().whileTrue(new StowToL2(shoulder, elbow, wrist, fingeys)).onFalse(new StowToL2(shoulder, elbow, wrist, fingeys)).onFalse(TEMPgetStowCommand());
+    // controller.a().whileTrue(elbow.getNewSetAngleCommand(10).alongWith(new WaitCommand(0.5)).andThen(fingeys.getNewSetVoltsCommand(-4))).onFalse(fingeys.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
+    testcontroller.leftTrigger().whileTrue(wrist.getNewWristTurnCommand(0).alongWith(elbow.getNewSetAngleCommand(130)).andThen(toesies.getNewSetVoltsCommand(6)).alongWith(shoulder.getNewSetAngleCommand(0)).alongWith(elevator.getNewSetDistanceCommand(16.0))).onFalse(toesies.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
   }
   
   /**

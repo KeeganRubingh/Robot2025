@@ -37,13 +37,13 @@ public class IntakeExtenderIOTalonFX implements IntakeExtenderIO {
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
     cfg.Voltage.PeakReverseVoltage = 7;
     cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
+    cfg.Feedback.SensorToMechanismRatio = 37.5;
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }
 
   @Override
   public void setTarget(Angle target) {
-    Request = Request.withPosition(target);
+    Request = Request.withPosition(target).withSlot(0);
     Motor.setControl(Request);
     m_setPoint = target;
   }
@@ -53,7 +53,8 @@ public class IntakeExtenderIOTalonFX implements IntakeExtenderIO {
     inputs.Angle.mut_replace(Motor.getPosition().getValue());
     inputs.IntakeExtenderAngularVelocity.mut_replace(Motor.getVelocity().getValue());
     inputs.IntakeExtenderSetPoint.mut_replace(m_setPoint);
-    inputs.supplyCurrent.mut_replace(Motor.getStatorCurrent().getValue());
+    inputs.supplyCurrent.mut_replace(Motor.getSupplyCurrent().getValue());
+    // inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
   }
 
     @Override
