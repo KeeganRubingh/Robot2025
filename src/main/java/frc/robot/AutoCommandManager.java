@@ -24,6 +24,8 @@ public class AutoCommandManager {
     PathPlannerAuto Straight = new PathPlannerAuto("Straight");
     PathPlannerAuto Diagonal = new PathPlannerAuto("Diagonal");
     PathPlannerAuto simpleAuto = new PathPlannerAuto("simpleAuto");
+    PathPlannerAuto advancedPath = new PathPlannerAuto("advancedPath");
+    PathPlannerAuto exitZone = new PathPlannerAuto("exitZone");
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -44,6 +46,9 @@ public class AutoCommandManager {
     autoChooser.addOption("Straight", Straight);
     autoChooser.addOption("Diagonal", Diagonal);
     autoChooser.addOption("simpleAuto", simpleAuto);
+    autoChooser.addOption("advancedPath", advancedPath);
+    autoChooser.addOption("exitZone", exitZone);
+
   }
 
   public Command getAutonomousCommand() {
