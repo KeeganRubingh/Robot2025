@@ -3,8 +3,10 @@ package frc.robot;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
@@ -15,6 +17,8 @@ public class AutoCommandManager {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   public AutoCommandManager(Drive drive) {
+    configureNamedCommands();
+    
 
     PathPlannerAuto CharacterizationTest = new PathPlannerAuto("CharacterizeAuto");
     PathPlannerAuto ChoreoStraightAuto = new PathPlannerAuto("ChoreoStraightAuto");
@@ -25,6 +29,8 @@ public class AutoCommandManager {
     PathPlannerAuto Straight = new PathPlannerAuto("Straight");
     PathPlannerAuto Diagonal = new PathPlannerAuto("Diagonal");
     PathPlannerAuto simpleAuto = new PathPlannerAuto("simpleAuto");
+    PathPlannerAuto advancedPath = new PathPlannerAuto("advancedPath");
+    PathPlannerAuto exitZone = new PathPlannerAuto("exitZone");
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -45,6 +51,9 @@ public class AutoCommandManager {
     autoChooser.addOption("Straight", Straight);
     autoChooser.addOption("Diagonal", Diagonal);
     autoChooser.addOption("simpleAuto", simpleAuto);
+    autoChooser.addOption("advancedPath", advancedPath);
+    autoChooser.addOption("exitZone", exitZone);
+
 
     // Add Choreo Paths
     autoChooser.addOption("Characterization Test Path", CharacterizationTest);
@@ -53,5 +62,10 @@ public class AutoCommandManager {
 
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  private void configureNamedCommands() {
+    NamedCommands.registerCommand("groundIntake", new PrintCommand("Intaking sir!"));
+    NamedCommands.registerCommand("L1Score", new PrintCommand("Scoring sir!"));
   }
 }
