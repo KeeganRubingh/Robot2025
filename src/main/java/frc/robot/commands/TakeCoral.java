@@ -37,7 +37,7 @@ public class TakeCoral extends SequentialCommandGroup {
     private enum ElbowPositions {
         Starting(new LoggedTunableNumber("TakeCoral/elbow/StartingDegrees", 10)),
         // ShoulderSafeSwing(new LoggedTunableNumber("StowToL3Command/elbow/ShoulderSafeSwingDegrees", 45)),
-        Final(new LoggedTunableNumber("TakeCoral/elbow/FinalDegrees", 50));
+        Final(new LoggedTunableNumber("TakeCoral/elbow/FinalDegrees", 33));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -55,7 +55,7 @@ public class TakeCoral extends SequentialCommandGroup {
 
     private enum WristPositions {
         Starting(new LoggedTunableNumber("TakeCoral/wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("TakeCoral/wrist/FinalDegrees", 0));
+        Final(new LoggedTunableNumber("TakeCoral/wrist/FinalDegrees", -90));
 
         DoubleSupplier position;
         MutAngle distance;
