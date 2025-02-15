@@ -16,7 +16,7 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
-public class StowToL4 extends SequentialCommandGroup {
+public class BargeScore extends SequentialCommandGroup {
     public ArmJoint shoulder;
     public ArmJoint elbow;
     public Elevator elevator;
@@ -24,10 +24,10 @@ public class StowToL4 extends SequentialCommandGroup {
     public CoralEndEffector fingeys;
 
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("MoveToL4Command/shoulder/StartingDegrees", 0)),
-        MidPoint(new LoggedTunableNumber("MoveToL4Command/shoulder/MidPointDegrees", 0)),
-        SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", 40)),
-        Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", -70));
+        Starting(new LoggedTunableNumber("BargeScoreCommand/shoulder/StartingDegrees", 0)),
+        MidPoint(new LoggedTunableNumber("BargeScoreCommand/shoulder/MidPointDegrees", 0)),
+        SafeToSwingElbow(new LoggedTunableNumber("BargeScoreCommand/shoulder/SafeToSwingElbowDegrees", 40)),
+        Final(new LoggedTunableNumber("BargeScoreCommand/shoulder/FinalDegrees", -70));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -44,9 +44,9 @@ public class StowToL4 extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber("MoveToL4Command/elbow/StartingDegrees", 0)),
-        ShoulderSafeSwing(new LoggedTunableNumber("MoveToL4Command/elbow/ShoulderSafeSwingDegrees", 45)),
-        Final(new LoggedTunableNumber("MoveToL4Command/elbow/FinalDegrees", -100));
+        Starting(new LoggedTunableNumber("BargeScoreCommand/elbow/StartingDegrees", 0)),
+        ShoulderSafeSwing(new LoggedTunableNumber("BargeScoreCommand/elbow/ShoulderSafeSwingDegrees", 45)),
+        Final(new LoggedTunableNumber("BargeScoreCommand/elbow/FinalDegrees", 65));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -63,8 +63,8 @@ public class StowToL4 extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Starting(new LoggedTunableNumber("MoveToL4Command/wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("MoveToL4Command/wrist/FinalDegrees", 0));
+        Starting(new LoggedTunableNumber("BargeScoreCommand/wrist/StartingDegrees", 0)),
+        Final(new LoggedTunableNumber("BargeScoreCommand/wrist/FinalDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -81,8 +81,8 @@ public class StowToL4 extends SequentialCommandGroup {
     }
 
     private enum ElevatorPositions {
-        Starting(new LoggedTunableNumber("MoveToL4Command/elevator/StartingInches", 0)),
-        Final(new LoggedTunableNumber("MoveToL4Command/elevator/FinalInches", 16));
+        Starting(new LoggedTunableNumber("BargeScoreCommand/elevator/StartingInches", 0)),
+        Final(new LoggedTunableNumber("BargeScoreCommand/elevator/FinalInches", 28));
 
         DoubleSupplier position;
         MutDistance distance;
@@ -98,8 +98,8 @@ public class StowToL4 extends SequentialCommandGroup {
         }
     }
 
-    public StowToL4(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector fingeys) {
-        super(
+    public BargeScore(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector fingeys) {
+        super( 
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position)
                 .raceWith(
