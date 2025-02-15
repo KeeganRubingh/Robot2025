@@ -46,13 +46,14 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.GroundIntakeToStow;
+import frc.robot.commands.OutakeAlgae;
+import frc.robot.commands.OutakeCoral;
 import frc.robot.commands.StowCommand;
 import frc.robot.commands.StowToAlgaeStow;
 import frc.robot.commands.StowToGroundIntake;
-import frc.robot.commands.StowToL1;
 import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
-import frc.robot.commands.TakeAlgaeL3;
+import frc.robot.commands.TakeCoral;
 import frc.robot.commands.L2.StowToL2;
 import frc.robot.commands.L2.TakeAlgaeL2;
 import frc.robot.generated.TunerConstants;
@@ -405,7 +406,7 @@ public class RobotContainer {
     // testcontroller.leftTrigger().onTrue(fingeys.getNewSetVoltsCommand(setFingeysVolts)).onFalse(fingeys.getNewSetVoltsCommand(0));
     // testcontroller.rightTrigger().onTrue(intake.getNewSetVoltsCommand(setIntakeVolts)).onFalse(intake.getNewSetVoltsCommand(0));
     // testcontroller.x().onTrue(intakeExtender.getNewIntakeExtenderTurnCommand(setIntakeExtenderAngle)).onFalse(intakeExtender.getNewIntakeExtenderTurnCommand(0));
-    testcontroller.a().onTrue(shoulder.getNewSetAngleCommand(setShoulderAngle)).onFalse(shoulder.getNewSetAngleCommand(90));
+    // testcontroller.a().onTrue(shoulder.getNewSetAngleCommand(setShoulderAngle)).onFalse(shoulder.getNewSetAngleCommand(90));
     // testcontroller.b().onTrue(elbow.getNewSetAngleCommand(setElbowAngle)).onFalse(elbow.getNewSetAngleCommand(0));
     // controller.rightBumper().onTrue(new StowToL2(shoulder, elbow, wrist, coralEndEffector)).onFalse(TEMPgetStowCommand());
     // controller.a().whileTrue(elbow.getNewSetAngleCommand(10).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4))).onFalse(coralEndEffector.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
@@ -413,6 +414,9 @@ public class RobotContainer {
     controller.leftBumper().onTrue(new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator)).onFalse(TEMPgetStowCommand());
     controller.leftTrigger().onTrue(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator)).onFalse(algaeEndEffector.getNewSetVoltsCommand(0).alongWith(elevator.getNewSetDistanceCommand(0)));
     controller.x().onTrue(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    testcontroller.a().onTrue(new OutakeAlgae(algaeEndEffector));
+    testcontroller.b().onTrue(new OutakeCoral(coralEndEffector));
+    testcontroller.y().onTrue(new TakeCoral(shoulder, elbow, elevator, wrist));
 
     //L4
     controller.y().onTrue(new StowToL4(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
