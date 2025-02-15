@@ -39,7 +39,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.commands.BargeScore;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.GroundIntakeToStow;
 import frc.robot.commands.L2.StowToL2;
@@ -63,6 +62,9 @@ import frc.robot.subsystems.arm.ArmJointIOSim;
 import frc.robot.subsystems.arm.ArmJointIOTalonFX;
 import frc.robot.subsystems.arm.constants.ElbowConstants;
 import frc.robot.subsystems.arm.constants.ShoulderConstants;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.coralendeffector.CoralEndEffectorIOSim;
 import frc.robot.subsystems.coralendeffector.CoralEndEffectorIOTalonFX;
@@ -94,8 +96,6 @@ import frc.robot.util.CanDef;
 import frc.robot.util.CanDef.CanBus;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
-import frc.robot.util.ReefPositionsUtil.DeAlgaeLevel;
-import frc.robot.util.ReefPositionsUtil.ScoreLevel;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -124,6 +124,8 @@ public class RobotContainer {
 
   private final IntakeExtender intakeExtender;
 
+  private final Climber climber;
+
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
   private final CommandXboxController co_controller = new CommandXboxController(1);
@@ -146,6 +148,7 @@ public class RobotContainer {
   final LoggedTunableNumber setIntakeVolts = new LoggedTunableNumber("RobotState/Intake/setVolts", 4);
   final LoggedTunableNumber setShoulderAngle = new LoggedTunableNumber("RobotState/Shoulder/setAngle", 0);
   final LoggedTunableNumber setElbowAngle = new LoggedTunableNumber("RobotState/Elbow/setAngle", 0);
+  final LoggedTunableNumber setClimberVolts = new LoggedTunableNumber("dashboardKey:RobotState/Climber/setVolts", 0);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer(){
 
@@ -195,7 +198,8 @@ public class RobotContainer {
         coralEndEffector = new CoralEndEffector(new CoralEndEffectorIOSim(121));
         intake = new Intake(new IntakeIOSim(15));
         algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIOSim(12));
-        intakeExtender = new IntakeExtender( new IntakeExtenderIOSim(16));
+        intakeExtender = new IntakeExtender(new IntakeExtenderIOSim(16));
+        climber = new Climber(new ClimberIOSim(19));
         
       break;
       
@@ -231,6 +235,8 @@ public class RobotContainer {
         intakeExtender = new IntakeExtender(new IntakeExtenderIOTalonFX(rioCanBuilder.id(16).build()));
 
         algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIOTalonFX(canivoreCanBuilder.id(15).build(), canivoreCanBuilder.id(24).build()));
+
+        climber = new Climber(new ClimberIOTalonFX(canivoreCanBuilder.id(19).build()));
 
         // vision =
         //     new Vision(
@@ -457,6 +463,7 @@ public class RobotContainer {
     // testcontroller.x().onTrue(intakeExtender.getNewIntakeExtenderTurnCommand(setIntakeExtenderAngle)).onFalse(intakeExtender.getNewIntakeExtenderTurnCommand(0));
     // testcontroller.a().onTrue(shoulder.getNewSetAngleCommand(setShoulderAngle)).onFalse(shoulder.getNewSetAngleCommand(90));
     // testcontroller.b().onTrue(elbow.getNewSetAngleCommand(setElbowAngle)).onFalse(elbow.getNewSetAngleCommand(0));
+    // testcontroller.a().onTrue(climber.getNewSetVoltsCommand(setClimberVolts)).onFalse(climber.getNewSetVoltsCommand(0));
     // testcontroller.rightBumper().onTrue(new StowToL2(shoulder, elbow, wrist, coralEndEffector)).onFalse(TEMPgetStowCommand());
     // controller.a().whileTrue(elbow.getNewSetAngleCommand(10).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4))).onFalse(coralEndEffector.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
     // testcontroller.povRight().whileTrue(new TakeCoral(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(coralEndEffector.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
