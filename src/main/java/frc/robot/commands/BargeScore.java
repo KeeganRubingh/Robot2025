@@ -82,7 +82,7 @@ public class BargeScore extends SequentialCommandGroup {
 
     private enum ElevatorPositions {
         Starting(new LoggedTunableNumber("BargeScoreCommand/elevator/StartingInches", 0)),
-        Final(new LoggedTunableNumber("BargeScoreCommand/elevator/FinalInches", 16));
+        Final(new LoggedTunableNumber("BargeScoreCommand/elevator/FinalInches", 28));
 
         DoubleSupplier position;
         MutDistance distance;
@@ -111,7 +111,7 @@ public class BargeScore extends SequentialCommandGroup {
                     )
                 ),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
-                .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.distance().in(Inches)))  
+                .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position))  
         );
         addRequirements(shoulder, elbow, wrist, elevator);
     }

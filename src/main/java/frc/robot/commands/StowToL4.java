@@ -111,7 +111,7 @@ public class StowToL4 extends SequentialCommandGroup {
                     )
                 ),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
-                .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.distance().in(Inches)))  
+                .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position))  
         );
         addRequirements(shoulder, elbow, wrist, elevator);
     }
