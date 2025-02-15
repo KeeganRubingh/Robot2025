@@ -396,11 +396,10 @@ public class RobotContainer {
   }
 
   public Command TEMPgetStowCommand() {
-    return shoulder.getNewSetAngleCommand(68).alongWith(elbow.getNewSetAngleCommand(65)).alongWith(wrist.getNewWristTurnCommand(0));
+    return shoulder.getNewSetAngleCommand(68).alongWith(elbow.getNewSetAngleCommand(65)).alongWith(wrist.getNewWristTurnCommand(0)).alongWith(elevator.getNewSetDistanceCommand(0));
   }
 
   public void configureTestButtonBindings (){
-    // controller.y().onTrue(elevator.getNewSetDistanceCommand(setElevatorDistance)).onFalse(elevator.getNewSetDistanceCommand(.16));
     // testcontroller.leftBumper().onTrue(wrist.getNewWristTurnCommand(setWristAngle)).onFalse(wrist.getNewWristTurnCommand(0));
     // testcontroller.rightBumper().onTrue(toesies.getNewSetVoltsCommand(setToesiesVolts)).onFalse(toesies.getNewSetVoltsCommand(0));
     // testcontroller.leftTrigger().onTrue(fingeys.getNewSetVoltsCommand(setFingeysVolts)).onFalse(fingeys.getNewSetVoltsCommand(0));
@@ -411,11 +410,35 @@ public class RobotContainer {
     // controller.rightBumper().onTrue(new StowToL2(shoulder, elbow, wrist, coralEndEffector)).onFalse(TEMPgetStowCommand());
     // controller.a().whileTrue(elbow.getNewSetAngleCommand(10).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4))).onFalse(coralEndEffector.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
     // controller.leftTrigger().whileTrue(wrist.getNewWristTurnCommand(-90).alongWith(elbow.getNewSetAngleCommand(33)).andThen(fingeys.getNewSetVoltsCommand(6)).alongWith(shoulder.getNewSetAngleCommand(55))).onFalse(fingeys.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
-    controller.leftBumper().onTrue(new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator)).onFalse(elevator.getNewSetDistanceCommand(0).alongWith(TEMPgetStowCommand()));
-    controller.rightTrigger().onTrue(new StowToL1(shoulder, elbow, wrist, coralEndEffector));
+    controller.leftBumper().onTrue(new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator)).onFalse(TEMPgetStowCommand());
     controller.leftTrigger().onTrue(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator)).onFalse(algaeEndEffector.getNewSetVoltsCommand(0).alongWith(elevator.getNewSetDistanceCommand(0)));
-    testcontroller.x().onTrue(new TakeAlgaeL3(shoulder, elbow, wrist, algaeEndEffector, elevator)).onFalse(algaeEndEffector.getNewSetVoltsCommand(0).alongWith(elevator.getNewSetDistanceCommand(0)));
-    controller.b().onTrue(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    controller.x().onTrue(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+
+    //L4
+    controller.y().onTrue(new StowToL4(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    //L3
+    controller.b().onTrue(new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    //L2
+    controller.a().onTrue(new StowToL2(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+
+    final double L4_READY_POS = -100;
+    final double L3_READY_POS = 50;
+    final double L2_READY_POS = 50;
+
+    //Return Positions
+    controller.rightTrigger().and(controller.y())
+      .onTrue(elbow.getNewSetAngleCommand(L4_READY_POS-80).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(0).alongWith(elbow.getNewSetAngleCommand(L4_READY_POS)));
+    
+    controller.rightTrigger().and(controller.b())
+      .onTrue(elbow.getNewSetAngleCommand(L3_READY_POS-80).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(0).alongWith(elbow.getNewSetAngleCommand(L3_READY_POS)));
+
+    controller.rightTrigger().and(controller.a())
+      .onTrue(elbow.getNewSetAngleCommand(L2_READY_POS-80).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(0).alongWith(elbow.getNewSetAngleCommand(L2_READY_POS)));
+
+
     SmartDashboard.putData(new GroundIntakeToStow(shoulder, elbow, wrist, coralEndEffector));
     SmartDashboard.putData(new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector));
     SmartDashboard.putData(new StowToAlgaeStow(shoulder, elbow, wrist, coralEndEffector));

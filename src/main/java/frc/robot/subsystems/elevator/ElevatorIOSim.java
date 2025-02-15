@@ -59,7 +59,7 @@ public class ElevatorIOSim implements ElevatorIO {
     sim.update(0.02);
     input.distance.mut_replace(sim.getPositionMeters(), Meters);
     input.velocity.mut_replace(MetersPerSecond.of(sim.getVelocityMetersPerSecond()));
-    input.setPoint.mut_replace(Meters.of(controller.getGoal().position));
+    input.setPoint.mut_replace(Inches.of(controller.getGoal().position));
     input.supplyCurrent.mut_replace(sim.getCurrentDrawAmps(), Amps);
     input.torqueCurrent.mut_replace(input.supplyCurrent.in(Amps), Amps);
     input.voltageSetPoint.mut_replace(appliedVoltage);
