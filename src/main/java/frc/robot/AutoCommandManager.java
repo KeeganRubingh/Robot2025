@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.StopDrivetrainCommand;
 import frc.robot.subsystems.drive.Drive;
 
 public class AutoCommandManager {
@@ -17,7 +18,7 @@ public class AutoCommandManager {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   public AutoCommandManager(Drive drive) {
-    configureNamedCommands();
+    configureNamedCommands(drive);
     
 
     PathPlannerAuto CharacterizationTest = new PathPlannerAuto("CharacterizeAuto");
@@ -64,8 +65,12 @@ public class AutoCommandManager {
     return autoChooser.get();
   }
 
-  private void configureNamedCommands() {
-    NamedCommands.registerCommand("groundIntake", new PrintCommand("Intaking sir!"));
-    NamedCommands.registerCommand("L1Score", new PrintCommand("Scoring sir!"));
+  private void configureNamedCommands(Drive drive) {
+      NamedCommands.registerCommand("Intake", new PrintCommand("***********Intaking sir!").alongWith(new StopDrivetrainCommand(drive)));
+      NamedCommands.registerCommand("StopIntake", new PrintCommand("stop intake sir!").alongWith(new StopDrivetrainCommand(drive)));
+      NamedCommands.registerCommand("StartIntake", new PrintCommand("Start intake sir!").alongWith(new StopDrivetrainCommand(drive)));
+      NamedCommands.registerCommand("L4Score", new PrintCommand("Scoring L4 sir!").alongWith(new StopDrivetrainCommand(drive)));
+      NamedCommands.registerCommand("L1Score", new PrintCommand("Scoring sir!").alongWith(new StopDrivetrainCommand(drive)));
+      NamedCommands.registerCommand("L2Score", new PrintCommand("***************Scoring L2 sir!").alongWith(new StopDrivetrainCommand(drive)));
   }
 }
