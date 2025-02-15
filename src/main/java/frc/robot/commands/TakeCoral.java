@@ -71,11 +71,12 @@ public class TakeCoral extends SequentialCommandGroup {
         }
     }
 
-    public TakeCoral(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
+    public TakeCoral(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEndEffector) {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
             .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
+            .alongWith(coralEndEffector.getNewSetVoltsCommand(6))
 
             // LOGIC NEEDED FOR INTAKE TO STOW
             // .alongWith(

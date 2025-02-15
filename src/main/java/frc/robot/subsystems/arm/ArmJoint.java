@@ -41,6 +41,7 @@ public class ArmJoint extends SubsystemBase {
     m_loggedArm.torqueCurrent = Amps.mutable(0);
     m_loggedArm.voltageSetPoint = Volts.mutable(0);
     m_loggedArm.voltage = Volts.mutable(0);
+    m_loggedArm.internalSetPoint = Degrees.mutable(0);
     
     previousJointAngleSupplier = () -> Degrees.zero();
     previousJoint.ifPresent((j)->{previousJointAngleSupplier = j.getAngleSupplier();});

@@ -23,7 +23,7 @@ public class ShoulderConstants extends ArmJointConstants {
             Gains.builder().kS(0.0).kG(0.0).kV(0.0).kA(0.0).kP(0.1).kI(0.0).kD(0.0).build();
 
         this.LoggedName = "Shoulder";
-        this.TalonFXGains = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName, 85.0, 0, 5.0, 0, -0.70, 0, 0, 0.5, 0.1, 0, 0, 0);
+        this.TalonFXGains = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName, 20.0, 0, 0.0, 0, -0.70, 0, 0, 2.0, 1.25, 0, 0, 0);
 
         this.MaxVelocity = RotationsPerSecond.of(1);
         this.MaxAcceleration = RotationsPerSecondPerSecond.of(5);
@@ -46,7 +46,7 @@ public class ShoulderConstants extends ArmJointConstants {
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);
         this.ZPosition = Meters.of(0.377);
-        this.CanCoderOffset = Degrees.of(90);
+        this.CanCoderOffset = Degrees.of(82);
 
         this.mechanismSimCallback = (d) -> {
             RobotState.instance().setShoulderSource(d);
