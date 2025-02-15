@@ -96,17 +96,17 @@ public class StowCommand extends SequentialCommandGroup {
 
     public StowCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
         super(
-            wrist.getNewWristTurnCommand(WristPositions.Final.angle().in(Degrees)),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.angle().in(Degrees))
+            wrist.getNewWristTurnCommand(WristPositions.Final.position),
+            shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position)
                 .raceWith(
-                    new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.angle().in(Degrees)))
+                    new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
                 )
                 .andThen(
-                    elbow.getNewSetAngleCommand(ElbowPositions.Final.angle().in(Degrees))
-                        .raceWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.angle().in(Degrees)))                    
+                    elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
+                        .raceWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.position))                    
                     )
                 ),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.angle().in(Degrees))
+            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
                 .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.distance().in(Inches))),
             coralEE.getNewSetVoltsCommand(0)
                 .alongWith(algaeEE.getNewSetVoltsCommand(0))

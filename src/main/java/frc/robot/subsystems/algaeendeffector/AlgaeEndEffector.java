@@ -3,6 +3,7 @@ package frc.robot.subsystems.algaeendeffector;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -51,10 +52,10 @@ public class AlgaeEndEffector extends SubsystemBase {
     return () -> false;
   }
 
-  public Command getNewSetVoltsCommand(LoggedTunableNumber volts) {
+  public Command getNewSetVoltsCommand(DoubleSupplier volts) {
     return new InstantCommand(
         () -> {
-          setTarget(Volts.of((volts.get())));
+          setTarget(Volts.of((volts.getAsDouble())));
         },
         this);
   }

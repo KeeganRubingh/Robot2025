@@ -73,9 +73,9 @@ public class StowToL3 extends SequentialCommandGroup {
 
     public StowToL3(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector, Elevator elevator) {
         super(
-            wrist.getNewWristTurnCommand(WristPositions.Final.angle().in(Degrees)),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.angle().in(Degrees))
-            .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.angle().in(Degrees)))
+            wrist.getNewWristTurnCommand(WristPositions.Final.position),
+            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
+            .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
             .alongWith(elevator.getNewSetDistanceCommand(16))
 
             // LOGIC NEEDED FOR INTAKE TO STOW

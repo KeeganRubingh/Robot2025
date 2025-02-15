@@ -75,17 +75,17 @@ public class StowToSource extends SequentialCommandGroup {
 
     public StowToSource(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys) {
                 super(
-            wrist.getNewWristTurnCommand(WristPositions.Final.angle().in(Degrees)),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.angle().in(Degrees))
+            wrist.getNewWristTurnCommand(WristPositions.Final.position),
+            shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position)
                 .alongWith(
-                    new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.angle().in(Degrees)))
+                    new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
                         .andThen(
-                            elbow.getNewSetAngleCommand(ElbowPositions.Final.angle().in(Degrees))
-                                .alongWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.angle().in(Degrees)))
+                            elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
+                                .alongWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.position))
                         )
                     )
                 ),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.angle().in(Degrees))
+            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
         );
         addRequirements(shoulder, elbow, wrist, fingeys);
     }

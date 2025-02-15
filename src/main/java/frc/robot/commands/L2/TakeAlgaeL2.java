@@ -73,10 +73,10 @@ public class TakeAlgaeL2 extends SequentialCommandGroup {
 
     public TakeAlgaeL2(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, AlgaeEndEffector toesies, Elevator elevator) {
         super(
-            wrist.getNewWristTurnCommand(WristPositions.Final.angle().in(Degrees))
-            .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.angle().in(Degrees))),
+            wrist.getNewWristTurnCommand(WristPositions.Final.position)
+            .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position)),
             toesies.getNewSetVoltsCommand(6)
-            .alongWith(shoulder.getNewSetAngleCommand(ShoulderPositions.Final.angle().in(Degrees)))
+            .alongWith(shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position))
             .alongWith(elevator.getNewSetDistanceCommand(16))
 
             // LOGIC NEEDED FOR INTAKE TO STOW
