@@ -1,4 +1,4 @@
-package frc.robot.commands.L2;
+package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -15,13 +15,13 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
-public class TakeAlgaeL2 extends SequentialCommandGroup {
+public class TakeAlgaeL3 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("TakeAlgaeL2/shoulder/StartingDegrees", 10)),
+        Starting(new LoggedTunableNumber("TakeAlgaeL3/shoulder/StartingDegrees", 10)),
         // MidPoint(new LoggedTunableNumber("StowToL3Command/shoulder/MidPointDegrees", 110)),
         // SafeToSwingElbow(new LoggedTunableNumber("StowToL3Command/shoulder/SafeToSwingElbowDegrees", 100)),
-        Final(new LoggedTunableNumber("TakeAlgaeL2/shoulder/FinalDegrees", 20));
+        Final(new LoggedTunableNumber("TakeAlgaeL3/shoulder/FinalDegrees", 20));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -38,9 +38,9 @@ public class TakeAlgaeL2 extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber("TakeAlgaeL2/elbow/StartingDegrees", 10)),
+        Starting(new LoggedTunableNumber("TakeAlgaeL3/elbow/StartingDegrees", 10)),
         // ShoulderSafeSwing(new LoggedTunableNumber("StowToL3Command/elbow/ShoulderSafeSwingDegrees", 45)),
-        Final(new LoggedTunableNumber("TakeAlgaeL2/elbow/FinalDegrees", 100));
+        Final(new LoggedTunableNumber("TakeAlgaeL3/elbow/FinalDegrees", 100));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -57,8 +57,8 @@ public class TakeAlgaeL2 extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Starting(new LoggedTunableNumber("TakeAlgaeL2/wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("TakeAlgaeL2/wrist/FinalDegrees", 0));
+        Starting(new LoggedTunableNumber("TakeAlgaeL3/wrist/StartingDegrees", 0)),
+        Final(new LoggedTunableNumber("TakeAlgaeL3/wrist/FinalDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -75,8 +75,8 @@ public class TakeAlgaeL2 extends SequentialCommandGroup {
     }
 
     private enum ElevatorPositions {
-        Starting(new LoggedTunableNumber("TakeAlgaeL2/elevator/StartingInches", 0)),
-        Final(new LoggedTunableNumber("TakeAlgaeL2/elevator/FinalInches", 5));
+        Starting(new LoggedTunableNumber("TakeAlgaeL3/elevator/StartingInches", 0)),
+        Final(new LoggedTunableNumber("TakeAlgaeL3/elevator/FinalInches", 5));
 
         DoubleSupplier position;
         MutDistance distance;
@@ -92,7 +92,7 @@ public class TakeAlgaeL2 extends SequentialCommandGroup {
         }
     }
 
-    public TakeAlgaeL2(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, AlgaeEndEffector toesies, Elevator elevator) {
+    public TakeAlgaeL3(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, AlgaeEndEffector toesies, Elevator elevator) {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position)
             .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position)),
