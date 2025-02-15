@@ -169,7 +169,24 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(limelightBackName, robotToCameraBack, drive::getPose));
 
         wrist = new Wrist(new WristIOSim(3));
-        elevator = new Elevator(new ElevatorIOSim(4,new ElevatorSim(LinearSystemId.createElevatorSystem(DCMotor.getKrakenX60Foc(2), Kilograms.convertFrom(45, Pounds), Elevator.SPOOL_RADIUS, Elevator.REDUCTION), DCMotor.getKrakenX60Foc(2), Meters.convertFrom(40.75, Inches), Meters.convertFrom(68.25, Inches), true, Meters.convertFrom(40.75, Inches), 0.001, 0.001)));
+        elevator = new Elevator(
+          new ElevatorIOSim(
+            4,
+            new ElevatorSim(
+              LinearSystemId.createElevatorSystem(
+                DCMotor.getKrakenX60Foc(2), 
+                Pounds.of(45).in(Kilograms),
+                Inches.of(Elevator.SPOOL_RADIUS).in(Meters), 
+                Elevator.REDUCTION
+              ), 
+              DCMotor.getKrakenX60Foc(2), 
+              Inches.of(0).in(Meters),
+              Inches.of(32).in(Meters),
+              true, 
+              Inches.of(0).in(Meters)
+            )
+          )
+        );
 
         shoulder = new ArmJoint(new ArmJointIOSim(new ShoulderConstants()),Optional.empty());
         elbow = new ArmJoint(new ArmJointIOSim(new ElbowConstants()),Optional.of(shoulder));
@@ -401,6 +418,7 @@ public class RobotContainer {
     SmartDashboard.putData(new GroundIntakeToStow(shoulder, elbow, wrist, coralEndEffector));
     SmartDashboard.putData(new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector));
     SmartDashboard.putData(new StowToAlgaeStow(shoulder, elbow, wrist, coralEndEffector));
+    SmartDashboard.putData(new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator));
     SmartDashboard.putData(new StowToL4(shoulder, elbow, elevator, wrist, coralEndEffector));
     SmartDashboard.putData(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator));
     SmartDashboard.putData(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));

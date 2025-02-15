@@ -25,9 +25,9 @@ public class StowToL4 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("MoveToL4Command/shoulder/StartingDegrees", 0)),
-        MidPoint(new LoggedTunableNumber("MoveToL4Command/shoulder/MidPointDegrees", 110)),
-        SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", 100)),
-        Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", 90));
+        MidPoint(new LoggedTunableNumber("MoveToL4Command/shoulder/MidPointDegrees", 0)),
+        SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", 40)),
+        Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", -70));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -46,7 +46,7 @@ public class StowToL4 extends SequentialCommandGroup {
     private enum ElbowPositions {
         Starting(new LoggedTunableNumber("MoveToL4Command/elbow/StartingDegrees", 0)),
         ShoulderSafeSwing(new LoggedTunableNumber("MoveToL4Command/elbow/ShoulderSafeSwingDegrees", 45)),
-        Final(new LoggedTunableNumber("MoveToL4Command/elbow/FinalDegrees", 90));
+        Final(new LoggedTunableNumber("MoveToL4Command/elbow/FinalDegrees", -100));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -64,7 +64,7 @@ public class StowToL4 extends SequentialCommandGroup {
 
     private enum WristPositions {
         Starting(new LoggedTunableNumber("MoveToL4Command/wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("MoveToL4Command/wrist/FinalDegrees", 90));
+        Final(new LoggedTunableNumber("MoveToL4Command/wrist/FinalDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -82,7 +82,7 @@ public class StowToL4 extends SequentialCommandGroup {
 
     private enum ElevatorPositions {
         Starting(new LoggedTunableNumber("MoveToL4Command/elevator/StartingInches", 0)),
-        Final(new LoggedTunableNumber("MoveToL4Command/elevator/FinalInches", 6));
+        Final(new LoggedTunableNumber("MoveToL4Command/elevator/FinalInches", 16));
 
         DoubleSupplier position;
         MutDistance distance;
