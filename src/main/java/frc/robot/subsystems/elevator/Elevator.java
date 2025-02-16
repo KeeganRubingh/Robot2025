@@ -6,6 +6,9 @@ import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
@@ -50,14 +53,18 @@ public class Elevator extends SubsystemBase {
     RobotState.instance().setElevatorSource(loggedelevator.distance);
   }
 
+  public Supplier<Distance> getDistanceExtendedSupplier() {
+    return () -> loggedelevator.distance;
+  }
+
   public void setDistance(Distance target) {
     m_ElevatorIO.setTarget(target);
   }
 
-  public Command getNewSetDistanceCommand(LoggedTunableNumber distance) {
+  public Command getNewSetDistanceCommand(DoubleSupplier distance) {
     return new InstantCommand(
         () -> {
-          setDistance(Inches.of(distance.get()));
+          setDistance(Inches.of(distance.getAsDouble()));
         },
         this);
   }

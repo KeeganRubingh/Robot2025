@@ -15,28 +15,14 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDistance;
-import frc.robot.util.LoggedTunableNumber;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.MutAngle;
-import edu.wpi.first.units.measure.MutDistance;
-import frc.robot.util.LoggedTunableNumber;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.util.VirtualSubsystem;
-import org.littletonrobotics.junction.Logger;
+import frc.robot.util.safezones.SafeZones;
+
 import org.littletonrobotics.junction.Logger;
 
 public class RobotState extends VirtualSubsystem {
@@ -49,13 +35,13 @@ public class RobotState extends VirtualSubsystem {
   private MutAngle intakeExtenderAngle = Degrees.mutable(0);
 
   // private final LoggedTunableNumber elevatorHeightTune =
-  //     new LoggedTunableNumber("robotState/elevatorHeight", 0);
+      // new LoggedTunableNumber("robotState/elevatorHeight", 0);
   // private final LoggedTunableNumber shoulderAngleTune =
-  //     new LoggedTunableNumber("robotState/shoulderAngle", 0);
+  //     new LoggedTunableNumber("robotState/elbowAngleZ", 0);
   // private final LoggedTunableNumber elbowAngleTune =
-  //     new LoggedTunableNumber("robotState/elbowAngle", 0);
+  //     new LoggedTunableNumber("robotState/elbowAngleX", 0);
   // private final LoggedTunableNumber wristTwistTune =
-  //     new LoggedTunableNumber("robotState/wristTwist", 0);
+  //     new LoggedTunableNumber("robotState/elbowAngleY", 0);
 
   private final Mechanism2d primaryMechanism2d;
 
@@ -118,6 +104,7 @@ public class RobotState extends VirtualSubsystem {
   @Override
   public void periodic() {
     visualize();
+    SafeZones.logSafeZones();
   }
 
   public Distance getElevatorHeight() {
@@ -188,7 +175,7 @@ public class RobotState extends VirtualSubsystem {
             .transformBy(
                 new Transform3d(
                     new Translation3d(
-                        Meters.zero(), Meters.zero(), this.elevatorHeight),
+                        0, 0, -this.elevatorHeight.in(Meters)),
                     new Rotation3d()));
 
     Pose3d shoulderPose =
@@ -198,7 +185,7 @@ public class RobotState extends VirtualSubsystem {
                 new Transform3d(
                     new Translation3d(),
                     new Rotation3d(
-                        this.shoulderAngle, Degrees.zero(), Degrees.zero())))
+                      Degrees.of(-136).minus(this.shoulderAngle), Degrees.zero(), Degrees.zero())))
             .transformBy(SHOULDER_PIVOT_OFFSET.inverse());
 
     Pose3d elbowPose =
@@ -208,7 +195,7 @@ public class RobotState extends VirtualSubsystem {
                 new Transform3d(
                     new Translation3d(),
                     new Rotation3d(
-                        this.shoulderAngle.minus(this.elbowAngle), Degrees.zero(), Degrees.zero())))
+                      Degrees.of(66).plus(this.elbowAngle), Degrees.zero(), Degrees.zero())))
             .transformBy(ELBOW_PIVOT_OFFSET.inverse());
 
     testStuff.mut_replace(testStuff.plus(Degrees.of(.25)));
@@ -220,11 +207,11 @@ public class RobotState extends VirtualSubsystem {
                 new Transform3d(
                     new Translation3d(),
                     new Rotation3d(
-                        Degrees.of(0), wristTwist, Degrees.zero())))
+                        Degrees.of(0), Degrees.zero().minus(wristTwist), Degrees.zero())))
             .transformBy(WRIST_PIVOT_OFFSET.inverse());
 
-    double tempShoulderAngle = 90+shoulderAngle.in(Degrees);
-    double tempElbowAngle = 90 - elbowAngle.in(Degrees) - tempShoulderAngle;
+    double tempShoulderAngle = 90 + shoulderAngle.in(Degrees);
+    double tempElbowAngle = - 90 - elbowAngle.in(Degrees);
 
     elevatorLigament2d.setLength(elevatorHeight.in(Centimeters) + 103.5);
     shoulderLigament2d.setAngle(tempShoulderAngle);
@@ -240,36 +227,36 @@ public class RobotState extends VirtualSubsystem {
 
   private static final Transform3d ELEVATOR_ATTACH_OFFSET =
       new Transform3d(
-          new Translation3d(Inches.of(-1), Inches.of(-0.5), Inches.of(22.6)),
-          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(90)));
+          new Translation3d(Inches.of(2.125), Inches.of(-11.5), Inches.of(3.5)),
+          new Rotation3d(Degrees.of(180), Degrees.of(0), Degrees.of(90)));
 
   private static final Transform3d SHOULDER_PIVOT_OFFSET =
       new Transform3d(
-          new Translation3d(Inches.of(0.0), Inches.of(0.0), Inches.of(0.0)),
+          new Translation3d(Inches.of(0), Inches.of(0), Inches.of(-38)),
           new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
 
   private static final Transform3d SHOULDER_ATTACH_OFFSET =
       new Transform3d(
-          new Translation3d(Inches.of(0.5), Inches.of(-1), Inches.of(17)),
+          new Translation3d(Inches.of(10.5), Inches.of(-1), Inches.of(-34.5)),
           new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
 
   private static final Transform3d ELBOW_PIVOT_OFFSET =
       new Transform3d(
-          new Translation3d(Inches.of(0.0), Inches.of(0.0), Inches.of(0)),
-          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
+          new Translation3d(Inches.of(0), Inches.of(-7.44), Inches.of(-22.42)),
+          new Rotation3d(Degrees.of(0), Degrees.of(0.0), Degrees.of(0)));
 
   private static final Transform3d ELBOW_ATTACH_OFFSET =
       new Transform3d(
-          new Translation3d(Inches.of(0.0), Inches.of(18.0), Inches.of(0.0)),
+          new Translation3d(Inches.of(1), Inches.of(13.25), Inches.of(-50.25)),
           new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
 
   private static final Transform3d WRIST_ATTACH_OFFSET =
       new Transform3d(
-          new Translation3d(Inches.of(-0.4), Inches.of(18.0), Inches.of(0)),
-          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
+          new Translation3d(Inches.of(.375), Inches.of(4.825), Inches.of(-25.5)),
+          new Rotation3d(Degrees.of(-200), Degrees.of(0), Degrees.of(0)));
 
   private static final Transform3d WRIST_PIVOT_OFFSET =
       new Transform3d(
           new Translation3d(Inches.of(0.0), Inches.of(0.0), Inches.of(0)),
-          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0.6)));
+          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
 }

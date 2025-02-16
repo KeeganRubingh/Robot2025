@@ -19,31 +19,51 @@
  */
 package frc.robot;
 
+import java.util.Optional;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.InvertedValue;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Pounds;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.StowToL2;
+import frc.robot.commands.GroundIntakeToStow;
+import frc.robot.commands.L2.StowToL2;
+import frc.robot.commands.L2.TakeAlgaeL2;
+import frc.robot.commands.OutakeAlgae;
+import frc.robot.commands.OutakeCoral;
+import frc.robot.commands.StowCommand;
+import frc.robot.commands.StowToAlgaeStow;
+import frc.robot.commands.StowToGroundIntake;
+import frc.robot.commands.StowToL3;
+import frc.robot.commands.StowToL4;
+import frc.robot.commands.TakeAlgaeL3;
+import frc.robot.commands.TakeCoral;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
+import frc.robot.subsystems.algaeendeffector.AlgaeEndEffectorIOSim;
+import frc.robot.subsystems.algaeendeffector.AlgaeEndEffectorIOTalonFX;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.arm.ArmJointIOSim;
 import frc.robot.subsystems.arm.ArmJointIOTalonFX;
 import frc.robot.subsystems.arm.constants.ElbowConstants;
 import frc.robot.subsystems.arm.constants.ShoulderConstants;
+import frc.robot.subsystems.coralendeffector.CoralEndEffector;
+import frc.robot.subsystems.coralendeffector.CoralEndEffectorIOSim;
+import frc.robot.subsystems.coralendeffector.CoralEndEffectorIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -52,18 +72,12 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
-import frc.robot.subsystems.fingeys.Fingeys;
-import frc.robot.subsystems.fingeys.FingeysIOSim;
-import frc.robot.subsystems.fingeys.FingeysIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOSim;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOTalonFX;
-import frc.robot.subsystems.toesies.Toesies;
-import frc.robot.subsystems.toesies.ToesiesIOSim;
-import frc.robot.subsystems.toesies.ToesiesIOTalonFX;
 import frc.robot.subsystems.vision.AprilTagVision;
 import static frc.robot.subsystems.vision.VisionConstants.limelightBackName;
 import static frc.robot.subsystems.vision.VisionConstants.limelightFrontName;
@@ -75,9 +89,11 @@ import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.subsystems.wrist.WristIOSim;
 import frc.robot.subsystems.wrist.WristIOTalonFX;
 import frc.robot.util.CanDef;
-import frc.robot.util.CommandFactory;
 import frc.robot.util.CanDef.CanBus;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.ReefPositionsUtil;
+import frc.robot.util.ReefPositionsUtil.DeAlgaeLevel;
+import frc.robot.util.ReefPositionsUtil.ScoreLevel;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -98,11 +114,11 @@ public class RobotContainer {
 
   private final Elevator elevator;
 
-  private final Fingeys fingeys;
+  private final CoralEndEffector coralEndEffector;
 
   private final Intake intake;
 
-  private final Toesies toesies;
+  private final AlgaeEndEffector algaeEndEffector;
 
   private final IntakeExtender intakeExtender;
 
@@ -116,6 +132,7 @@ public class RobotContainer {
 
   private AutoCommandManager autoCommandManager;
   private RobotState robotState;
+  private ReefPositionsUtil reefPositions;
 
   private boolean m_TeleopInitialized = false;
 
@@ -152,13 +169,30 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(limelightBackName, robotToCameraBack, drive::getPose));
 
         wrist = new Wrist(new WristIOSim(3));
-        elevator = new Elevator(new ElevatorIOSim(4,new ElevatorSim(0.5, 0.2, DCMotor.getKrakenX60Foc(1), Meters.convertFrom(40.75, Inches), Meters.convertFrom(68.25, Inches), false, Meters.convertFrom(40.75, Inches), 0.001, 0.001)));
+        elevator = new Elevator(
+          new ElevatorIOSim(
+            4,
+            new ElevatorSim(
+              LinearSystemId.createElevatorSystem(
+                DCMotor.getKrakenX60Foc(2), 
+                Pounds.of(45).in(Kilograms),
+                Inches.of(Elevator.SPOOL_RADIUS).in(Meters), 
+                Elevator.REDUCTION
+              ), 
+              DCMotor.getKrakenX60Foc(2), 
+              Inches.of(0).in(Meters),
+              Inches.of(32).in(Meters),
+              true, 
+              Inches.of(0).in(Meters)
+            )
+          )
+        );
 
-        shoulder = new ArmJoint(new ArmJointIOSim(new ShoulderConstants()));
-        elbow = new ArmJoint(new ArmJointIOSim(new ElbowConstants()));
-        fingeys = new Fingeys(new FingeysIOSim(121));
+        shoulder = new ArmJoint(new ArmJointIOSim(new ShoulderConstants()),Optional.empty());
+        elbow = new ArmJoint(new ArmJointIOSim(new ElbowConstants()),Optional.of(shoulder));
+        coralEndEffector = new CoralEndEffector(new CoralEndEffectorIOSim(121));
         intake = new Intake(new IntakeIOSim(15));
-        toesies = new Toesies(new ToesiesIOSim(12));
+        algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIOSim(12));
         intakeExtender = new IntakeExtender( new IntakeExtenderIOSim(16));
         
       break;
@@ -185,16 +219,16 @@ public class RobotContainer {
 
         elevator = new Elevator(new ElevatorIOTalonFX(rioCanBuilder.id(13).build(),rioCanBuilder.id(14).build()));
 
-        shoulder = new ArmJoint(new ArmJointIOTalonFX(new ShoulderConstants(), InvertedValue.CounterClockwise_Positive));
-        elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants(), InvertedValue.CounterClockwise_Positive));
+        shoulder = new ArmJoint(new ArmJointIOTalonFX(new ShoulderConstants(), InvertedValue.CounterClockwise_Positive), Optional.empty());
+        elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants(), InvertedValue.CounterClockwise_Positive), Optional.of(shoulder));
 
-        fingeys = new Fingeys(new FingeysIOTalonFX(canivoreCanBuilder.id(12).build()));
+        coralEndEffector = new CoralEndEffector(new CoralEndEffectorIOTalonFX(canivoreCanBuilder.id(12).build()));
         
         intake = new Intake(new IntakeIOTalonFX(canivoreCanBuilder.id(18).build(),canivoreCanBuilder.id(17).build()));
 
         intakeExtender = new IntakeExtender(new IntakeExtenderIOTalonFX(rioCanBuilder.id(16).build()));
 
-        toesies = new Toesies(new ToesiesIOTalonFX(canivoreCanBuilder.id(15).build()));
+        algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIOTalonFX(canivoreCanBuilder.id(15).build()));
 
         // vision =
         //     new Vision(
@@ -228,16 +262,15 @@ public class RobotContainer {
       //   elbow = null;
       //   fingeys = null;
       //   intake = null;
-      //   toesies = null;
+      //   algaeEndEffector = null;
       //   intakeExtender = null;
 
       //   throw new Exception("The robot is in neither sim nor real. Something has gone seriously wrong");
     }
 
-    //Gives all our subsystems to the commandFactory
-    CommandFactory.initialize(shoulder, elbow, elevator, fingeys, intake, intakeExtender, toesies, wrist);
 
     autoCommandManager = new AutoCommandManager(drive);
+    reefPositions = ReefPositionsUtil.getInstance();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -259,6 +292,44 @@ public class RobotContainer {
             () -> -controller.getLeftX() * DRIVE_SPEED,
             () -> -controller.getRightX() * ANGULAR_SPEED)
           );
+    final double L4_READY_POS = -100;
+    final double L3_READY_POS = 50;
+    final double L2_READY_POS = 50;
+    //Return Positions
+    controller.rightTrigger().and(co_controller.y())
+      .onTrue(elbow.getNewSetAngleCommand(L4_READY_POS-80).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(0).alongWith(elbow.getNewSetAngleCommand(L4_READY_POS)));
+    
+    controller.rightTrigger().and(co_controller.x())
+      .onTrue(elbow.getNewSetAngleCommand(L3_READY_POS-80).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(0).alongWith(elbow.getNewSetAngleCommand(L3_READY_POS)));
+
+    controller.rightTrigger().and(co_controller.b())
+      .onTrue(elbow.getNewSetAngleCommand(L2_READY_POS-80).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(0).alongWith(elbow.getNewSetAngleCommand(L2_READY_POS)));
+    controller.leftBumper().onTrue(new TakeCoral(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    // co_controller.y().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L4)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    // co_controller.x().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L3)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    // co_controller.b().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L2)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    // co_controller.a().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L1)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector)); // Trough
+
+    //L4
+    co_controller.y().onTrue(new StowToL4(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    //L3
+    co_controller.x().onTrue(new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    //L2
+    co_controller.b().onTrue(new StowToL2(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+
+
+    // Reef DeAlgaefy scoring position sets
+    // co_controller.rightBumper().onTrue(reefPositions.getNewSetDeAlgaeLevel(DeAlgaeLevel.Top)); // L3/4
+    // co_controller.rightTrigger().onTrue(reefPositions.getNewSetDeAlgaeLevel(DeAlgaeLevel.Low)); // L2/3
+
+    co_controller.rightBumper().onTrue(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator)).onFalse(algaeEndEffector.getNewSetVoltsCommand(4).alongWith(elevator.getNewSetDistanceCommand(0)));
+    // co_controller.rightTrigger().onTrue(new TakeAlgaeL3(shoulder, elbow, wrist, algaeEndEffector, elevator)).onFalse(algaeEndEffector.getNewSetVoltsCommand(4).alongWith(elevator.getNewSetDistanceCommand(0)));
+    co_controller.rightTrigger().onTrue(new OutakeAlgae(algaeEndEffector)).onFalse(algaeEndEffector.getNewSetVoltsCommand(0));
+
+    // TODO: Implement climbing controls (L Bumper climb and (maybe) L Trigger unclimb)
 
     // // Lock to 0° when A button is held
     // controller
@@ -269,12 +340,6 @@ public class RobotContainer {
     //             () -> -controller.getLeftY(),
     //             () -> -controller.getLeftX(),
     //             () -> new Rotation2d()));
-
-    // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-
-    controller.leftTrigger().onTrue(CommandFactory.getInstance().getNewStartIntakeCommand());
-
     // // Reset gyro to 0° when B button is pressed
     // controller
     //     .b()
@@ -350,24 +415,36 @@ public class RobotContainer {
   }
 
   public Command TEMPgetStowCommand() {
-    return shoulder.getNewSetAngleCommand(68).alongWith(elbow.getNewSetAngleCommand(65)).alongWith(wrist.getNewWristTurnCommand(0));
+    return shoulder.getNewSetAngleCommand(68).alongWith(elbow.getNewSetAngleCommand(65)).alongWith(wrist.getNewWristTurnCommand(0)).alongWith(elevator.getNewSetDistanceCommand(0));
   }
 
   public void configureTestButtonBindings (){
-    testcontroller.y().onTrue(elevator.getNewSetDistanceCommand(setElevatorDistance)).onFalse(elevator.getNewSetDistanceCommand(.16));
     // testcontroller.leftBumper().onTrue(wrist.getNewWristTurnCommand(setWristAngle)).onFalse(wrist.getNewWristTurnCommand(0));
     // testcontroller.rightBumper().onTrue(toesies.getNewSetVoltsCommand(setToesiesVolts)).onFalse(toesies.getNewSetVoltsCommand(0));
     // testcontroller.leftTrigger().onTrue(fingeys.getNewSetVoltsCommand(setFingeysVolts)).onFalse(fingeys.getNewSetVoltsCommand(0));
     // testcontroller.rightTrigger().onTrue(intake.getNewSetVoltsCommand(setIntakeVolts)).onFalse(intake.getNewSetVoltsCommand(0));
     // testcontroller.x().onTrue(intakeExtender.getNewIntakeExtenderTurnCommand(setIntakeExtenderAngle)).onFalse(intakeExtender.getNewIntakeExtenderTurnCommand(0));
-    // testcontroller.a().onTrue(shoulder.getNewSetAngleCommand(setShoulderAngle)).onFalse(shoulder.getNewSetAngleCommand(0));
+    // testcontroller.a().onTrue(shoulder.getNewSetAngleCommand(setShoulderAngle)).onFalse(shoulder.getNewSetAngleCommand(90));
     // testcontroller.b().onTrue(elbow.getNewSetAngleCommand(setElbowAngle)).onFalse(elbow.getNewSetAngleCommand(0));
-    // controller.rightBumper().whileTrue(new StowToL2(shoulder, elbow, wrist, fingeys)).onFalse(new StowToL2(shoulder, elbow, wrist, fingeys)).onFalse(TEMPgetStowCommand());
-    // controller.a().whileTrue(elbow.getNewSetAngleCommand(10).alongWith(new WaitCommand(0.5)).andThen(fingeys.getNewSetVoltsCommand(-4))).onFalse(fingeys.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
-    // controller.leftTrigger().whileTrue(wrist.getNewWristTurnCommand(-90).alongWith(elbow.getNewSetAngleCommand(33)).andThen(fingeys.getNewSetVoltsCommand(6)).alongWith(shoulder.getNewSetAngleCommand(55))).onFalse(fingeys.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
-    testcontroller.rightBumper().whileTrue(new StowToL2(shoulder, elbow, wrist, fingeys)).onFalse(new StowToL2(shoulder, elbow, wrist, fingeys)).onFalse(TEMPgetStowCommand());
-    // controller.a().whileTrue(elbow.getNewSetAngleCommand(10).alongWith(new WaitCommand(0.5)).andThen(fingeys.getNewSetVoltsCommand(-4))).onFalse(fingeys.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
-    testcontroller.leftTrigger().whileTrue(wrist.getNewWristTurnCommand(0).alongWith(elbow.getNewSetAngleCommand(130)).andThen(toesies.getNewSetVoltsCommand(6)).alongWith(shoulder.getNewSetAngleCommand(0)).alongWith(elevator.getNewSetDistanceCommand(16.0))).onFalse(toesies.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
+    // testcontroller.rightBumper().onTrue(new StowToL2(shoulder, elbow, wrist, coralEndEffector)).onFalse(TEMPgetStowCommand());
+    // controller.a().whileTrue(elbow.getNewSetAngleCommand(10).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4))).onFalse(coralEndEffector.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
+    // testcontroller.povRight().whileTrue(new TakeCoral(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(coralEndEffector.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
+    // // controller.leftBumper().onTrue(new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator)).onFalse(TEMPgetStowCommand());
+    // testcontroller.leftTrigger().onTrue(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator)).onFalse(algaeEndEffector.getNewSetVoltsCommand(4).alongWith(elevator.getNewSetDistanceCommand(0)));
+    // testcontroller.x().onTrue(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    testcontroller.leftBumper().onTrue(new OutakeAlgae(algaeEndEffector)).onFalse(algaeEndEffector.getNewSetVoltsCommand(0));
+    testcontroller.rightBumper().onTrue(new OutakeCoral(coralEndEffector)).onFalse(coralEndEffector.getNewSetVoltsCommand(0));
+    // testcontroller.y().onTrue(new TakeCoral(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    // testcontroller.povDown().onTrue(new BargeScore(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+
+    
+    SmartDashboard.putData(new GroundIntakeToStow(shoulder, elbow, wrist, coralEndEffector));
+    SmartDashboard.putData(new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector));
+    SmartDashboard.putData(new StowToAlgaeStow(shoulder, elbow, wrist, coralEndEffector));
+    SmartDashboard.putData(new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator));
+    SmartDashboard.putData(new StowToL4(shoulder, elbow, elevator, wrist, coralEndEffector));
+    SmartDashboard.putData(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator));
+    SmartDashboard.putData(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
   }
   
   /**

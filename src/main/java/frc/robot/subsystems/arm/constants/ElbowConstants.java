@@ -14,6 +14,9 @@ import frc.robot.util.CanDef.CanBus;
 import frc.robot.util.Gains;
 import frc.robot.util.LoggedTunableGainsBuilder;
 
+/**
+ * These really should be renamed to configs lol
+ */
 public class ElbowConstants extends ArmJointConstants {
     public ElbowConstants() {
         this.LeaderProfile = CanDef.builder().id(10).bus(CanBus.CANivore).build();
@@ -45,14 +48,16 @@ public class ElbowConstants extends ArmJointConstants {
         this.Length = Inches.of(15);
         this.Weight = Pounds.of(8.5);
         this.Motors = DCMotor.getKrakenX60(NumMotors);
-        this.MaximumAngle = Degrees.of(360);
-        this.MinimumAngle = Degrees.of(0);
-        this.StartingAngle = Degrees.of(90);
+        this.MaximumAngle = Degrees.of(180);
+        this.MinimumAngle = Degrees.of(-180);
+        this.StartingAngle = Degrees.of(180);
 
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);
         this.ZPosition = Meters.of(0.377);
         this.CanCoderOffset = Degrees.of(-54.6);
+
+        this.LoggedName = "Elbow";
 
         /**
          * This callback defines where we will put our mut_angle on initialize for the purpose of mechanism simulation

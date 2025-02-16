@@ -59,17 +59,20 @@ public class TunerConstants {
   // kS: 0.22444
   // kV: 0.68816
   // If loading from WPIlib logs, use Radians, if loading from .hoot, use Rotations.
+
+  // ********** SysID Characterization Results **********
+  // kP: 0.2204171275
+  // kS: 0.155625
+  // kV: 0.7290475
+  // kA: 0.08876375
   private static final Slot0Configs driveGains =
       new Slot0Configs()
-          .withKP(0.5201664)
-          // .withKP(0.47900025)
+          .withKP(0.2204171275)
           .withKI(0)
-          .withKD(0.05201664) // Help reduce roughness of drive PID
-          // .withKS(0.1546825)
-          .withKS(0.1636875)
-          // .withKV(0.79265);
-          .withKV(0.79163)
-          .withKA(0.029705);
+          .withKD(0.02204171275) // Help reduce roughness of drive PID
+          .withKS(0.155625)
+          .withKV(0.7290475)
+          .withKA(0.08876375);
 
     // The closed-loop output type to use for the steer motors;
     // This affects the PID/FF gains for the steer motors
@@ -118,7 +121,7 @@ public class TunerConstants {
     // Theoretical free speed (m/s) at 12 V applied output;
     // This needs to be tuned to your individual robot
   // Theoretical Max is 5.42 M/s^2, with WCP X2i X3 T11
-  public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(5.1);
+  public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.81);
 
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
     // This may need to be tuned to your individual robot
@@ -126,11 +129,11 @@ public class TunerConstants {
 
     private static final double kDriveGearRatio = 5.8909090909090915;
     private static final double kSteerGearRatio = 12.1;
-  //   ********** Wheel Radius Characterization Results **********
-  //   Wheel Delta: 59.201 radians
-  //   Gyro Delta: 6.882 radians
-  //   Wheel Radius: 0.051 meters, 1.997 inches
-  private static final Distance kWheelRadius = Inches.of(1.997);
+    // ********** Wheel Radius Characterization Results **********
+    // Wheel Delta: 55.163 radians
+    // Gyro Delta: 6.350 radians
+    // Wheel Radius: 0.050 meters, 1.978 inches
+    private static final Distance kWheelRadius = Inches.of(1.978);
 
     private static final boolean kInvertLeftSide = false;
     private static final boolean kInvertRightSide = true;

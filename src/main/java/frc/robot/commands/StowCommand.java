@@ -1,33 +1,29 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.*;
-
 import java.util.function.DoubleSupplier;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
-public class StowToL4 extends SequentialCommandGroup {
-    public ArmJoint shoulder;
-    public ArmJoint elbow;
-    public Elevator elevator;
-    public Wrist wrist;
-    public CoralEndEffector fingeys;
+public class StowCommand extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("MoveToL4Command/shoulder/StartingDegrees", 0)),
-        MidPoint(new LoggedTunableNumber("MoveToL4Command/shoulder/MidPointDegrees", 0)),
-        SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", 40)),
-        Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", -70));
+        Starting(new LoggedTunableNumber("StowCommand/shoulder/StartingDegrees", 0)),
+        MidPoint(new LoggedTunableNumber("StowCommand/shoulder/MidPointDegrees", 110)),
+        SafeToSwingElbow(new LoggedTunableNumber("StowCommand/shoulder/SafeToSwingElbowDegrees", 100)),
+        Final(new LoggedTunableNumber("StowCommand/shoulder/FinalDegrees", 68));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -44,9 +40,9 @@ public class StowToL4 extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber("MoveToL4Command/elbow/StartingDegrees", 0)),
-        ShoulderSafeSwing(new LoggedTunableNumber("MoveToL4Command/elbow/ShoulderSafeSwingDegrees", 45)),
-        Final(new LoggedTunableNumber("MoveToL4Command/elbow/FinalDegrees", -100));
+        Starting(new LoggedTunableNumber("StowCommand/elbow/StartingDegrees", 0)),
+        ShoulderSafeSwing(new LoggedTunableNumber("StowCommand/elbow/ShoulderSafeSwingDegrees", 45)),
+        Final(new LoggedTunableNumber("StowCommand/elbow/FinalDegrees", 65));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -63,8 +59,8 @@ public class StowToL4 extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Starting(new LoggedTunableNumber("MoveToL4Command/wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("MoveToL4Command/wrist/FinalDegrees", 0));
+        Starting(new LoggedTunableNumber("StowCommand/wrist/StartingDegrees", 0)),
+        Final(new LoggedTunableNumber("StowCommand/wrist/FinalDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -81,8 +77,8 @@ public class StowToL4 extends SequentialCommandGroup {
     }
 
     private enum ElevatorPositions {
-        Starting(new LoggedTunableNumber("MoveToL4Command/elevator/StartingInches", 0)),
-        Final(new LoggedTunableNumber("MoveToL4Command/elevator/FinalInches", 16));
+        Starting(new LoggedTunableNumber("StowCommand/elevator/StartingInches", 0)),
+        Final(new LoggedTunableNumber("StowCommand/elevator/FinalInches", 0));
 
         DoubleSupplier position;
         MutDistance distance;
@@ -98,21 +94,23 @@ public class StowToL4 extends SequentialCommandGroup {
         }
     }
 
-    public StowToL4(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector fingeys) {
+    public StowCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position)
                 .raceWith(
                     new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
-                        .andThen(
-                            elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
-                                .raceWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.position))
-                        )
+                )
+                .andThen(
+                    elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
+                        .raceWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.position))                    
                     )
                 ),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
-                .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position))  
+                .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.distance().in(Inches))),
+            coralEE.getNewSetVoltsCommand(0)
+                .alongWith(algaeEE.getNewSetVoltsCommand(0))
         );
-        addRequirements(shoulder, elbow, wrist, elevator);
+        addRequirements(shoulder, elbow, wrist, elevator, coralEE, algaeEE);
     }
 }

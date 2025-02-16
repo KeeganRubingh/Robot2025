@@ -1,26 +1,23 @@
 package frc.robot.commands;
+
 import java.util.function.DoubleSupplier;
 
-import static edu.wpi.first.units.Units.*;
-
+import static edu.wpi.first.units.Units.Degrees;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
-import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
-
-public class StowToSource extends SequentialCommandGroup {
+public class StowToL1 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("StowToSourceCommand/Shoulder/StartingDegrees", 0)),
-        MidPoint(new LoggedTunableNumber("StowToSourceCommand/Shoulder/MidPointDegrees", 110)),
-        SafeToSwingElbow(new LoggedTunableNumber("StowToSourceCommand/Shoulder/SafeToSwingElbowDegrees", 100)),
-        Final(new LoggedTunableNumber("StowToSourceCommand/Shoulder/FinalDegrees", 90));
+        Starting(new LoggedTunableNumber("StowToL1/shoulder/StartingDegrees", 10)),
+        // MidPoint(new LoggedTunableNumber("StowToL3Command/shoulder/MidPointDegrees", 110)),
+        // SafeToSwingElbow(new LoggedTunableNumber("StowToL3Command/shoulder/SafeToSwingElbowDegrees", 100)),
+        Final(new LoggedTunableNumber("StowToL1/shoulder/FinalDegrees", 40));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -37,9 +34,9 @@ public class StowToSource extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber("StowToSourceCommand/Elbow/StartingDegrees", 0)),
-        ShoulderSafeSwing(new LoggedTunableNumber("StowToSourceCommand/Elbow/ShoulderSafeSwingDegrees", 45)),
-        Final(new LoggedTunableNumber("StowToSourceCommand/Elbow/FinalDegrees", 90));
+        Starting(new LoggedTunableNumber("StowToL1/elbow/StartingDegrees", 10)),
+        // ShoulderSafeSwing(new LoggedTunableNumber("StowToL3Command/elbow/ShoulderSafeSwingDegrees", 45)),
+        Final(new LoggedTunableNumber("StowToL1/elbow/FinalDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -56,8 +53,8 @@ public class StowToSource extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Starting(new LoggedTunableNumber("StowToSourceCommand/Wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("StowToSourceCommand/Wrist/FinalDegrees", 90));
+        Starting(new LoggedTunableNumber("StowToL1/wrist/StartingDegrees", 0)),
+        Final(new LoggedTunableNumber("StowToL1/wrist/FinalDegrees", 90));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -73,19 +70,22 @@ public class StowToSource extends SequentialCommandGroup {
         }
     }
 
-    public StowToSource(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys) {
-                super(
+    public StowToL1(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys) {
+        super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position)
-                .alongWith(
-                    new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
-                        .andThen(
-                            elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
-                                .alongWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.position))
-                        )
-                    )
-                ),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
+            .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
+
+            // LOGIC NEEDED FOR INTAKE TO STOW
+            // .alongWith(
+            //     new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.angle().in(Degrees)))
+            //         .andThen(
+            //             elbow.getNewSetAngleCommand(ElbowPositions.Final.angle().in(Degrees))
+            //                 .alongWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.angle().in(Degrees)))
+            //         )
+            //     )
+            // ),
+            // shoulder.getNewSetAngleCommand(ShoulderPositions.Final.angle().in(Degrees))
         );
         addRequirements(shoulder, elbow, wrist, fingeys);
     }
