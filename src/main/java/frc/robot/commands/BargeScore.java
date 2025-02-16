@@ -98,7 +98,7 @@ public class BargeScore extends SequentialCommandGroup {
         }
     }
 
-    public BargeScore(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector fingeys) {
+    public BargeScore(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
         super( 
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position)
