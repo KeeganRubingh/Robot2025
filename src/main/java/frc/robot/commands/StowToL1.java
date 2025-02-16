@@ -33,7 +33,7 @@ public class StowToL1 extends SequentialCommandGroup {
 
     private enum ElbowPositions {
         Starting(new LoggedTunableNumber("StowToL1/elbow/StartingDegrees", 10)),
-        Final(new LoggedTunableNumber("StowToL1/elbow/FinalDegrees", -10));
+        Final(new LoggedTunableNumber("StowToL1/elbow/FinalDegrees", -5));
 
         DoubleSupplier position;
         MutAngle distance;
