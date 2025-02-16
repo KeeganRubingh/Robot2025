@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -21,6 +22,7 @@ import frc.robot.util.PhoenixUtil;
 
 public class WristIOTalonFX implements WristIO {
   public MotionMagicVoltage Request;
+  public CoastOut coastRequest;
   public TalonFX Motor;
   public CANcoder canCoder;
   public Angle canCoderOffset = Degrees.of(12.0);
@@ -29,6 +31,7 @@ public class WristIOTalonFX implements WristIO {
   public WristIOTalonFX(CanDef canbus,CanDef canCoderDef) {
     Motor= new TalonFX(canbus.id(), canbus.bus());
     Request = new MotionMagicVoltage(0);
+    coastRequest = new CoastOut();
     canCoder = new CANcoder(canCoderDef.id(), canCoderDef.bus());
     configureTalons();
   }
@@ -98,5 +101,10 @@ public class WristIOTalonFX implements WristIO {
     motionMagicConfigs.MotionMagicExpo_kV = gains.kMMEV;
     motionMagicConfigs.MotionMagicExpo_kA = gains.kMMEA;
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(motionMagicConfigs));
+  }
+
+  @Override
+  public void applyCoastMode() {
+    Motor.setControl(coastRequest);
   }
 }

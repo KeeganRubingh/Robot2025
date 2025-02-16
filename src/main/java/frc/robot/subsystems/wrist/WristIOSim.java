@@ -73,4 +73,9 @@ public class WristIOSim implements WristIO {
   public void setGains(Gains gains) {
     DriverStation.reportWarning("Sim gains tuning not implemented", true);
   }
+
+  @Override
+  public void applyCoastMode() {
+    System.out.println("Applied coast mode!");
+  }
 }

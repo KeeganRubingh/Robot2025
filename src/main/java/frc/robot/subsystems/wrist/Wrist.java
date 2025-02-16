@@ -69,6 +69,14 @@ public class Wrist extends SubsystemBase {
         this);
   }
 
+  public Command getNewApplyCoastModeCommand() {
+    return new InstantCommand(
+        () -> {
+          m_WristIO.applyCoastMode();
+        },
+        this);
+  }
+
   public Command getNewWristTurnCommand(double i) {
     return new InstantCommand(
         () -> {
