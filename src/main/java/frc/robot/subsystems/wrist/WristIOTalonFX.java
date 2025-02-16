@@ -23,14 +23,13 @@ public class WristIOTalonFX implements WristIO {
   public MotionMagicVoltage Request;
   public TalonFX Motor;
   public CANcoder canCoder;
-  public Angle canCoderOffset = Degrees.of(-358.0);
+  public Angle canCoderOffset = Degrees.of(-1.9);
   private Angle m_setPoint = Angle.ofRelativeUnits(0, Rotations);
 
   public WristIOTalonFX(CanDef canbus,CanDef canCoderDef) {
     Motor= new TalonFX(canbus.id(), canbus.bus());
     Request = new MotionMagicVoltage(0);
     canCoder = new CANcoder(canCoderDef.id(), canCoderDef.bus());
-
     configureTalons();
   }
 
@@ -48,6 +47,7 @@ public class WristIOTalonFX implements WristIO {
     cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     cfg.Feedback.SensorToMechanismRatio = 1.0;
     cfg.Feedback.RotorToSensorRatio = 9.0;
+    // cfg.ClosedLoopGeneral.ContinuousWrap = true;
 
     cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
@@ -55,6 +55,7 @@ public class WristIOTalonFX implements WristIO {
 
     CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
     cc_cfg.MagnetSensor.MagnetOffset = canCoderOffset.in(Rotations);//UNIT: ROTATIONS
+    // cc_cfg.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
     //AdvantageScope publishes in radians
 
     PhoenixUtil.tryUntilOk(5, () -> canCoder.getConfigurator().apply(cc_cfg));
