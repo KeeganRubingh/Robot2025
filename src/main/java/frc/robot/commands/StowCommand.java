@@ -108,7 +108,7 @@ public class StowCommand extends SequentialCommandGroup {
                 ),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
                 .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.distance().in(Inches))),
-            coralEE.getNewSetVoltsCommand(3)
+            coralEE.getNewSetVoltsCommand(1)
                 .alongWith(algaeEE.getNewSetVoltsCommand(0))
         );
         addRequirements(shoulder, elbow, wrist, elevator, coralEE, algaeEE);
