@@ -72,6 +72,6 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("L4Score", new PrintCommand("Scoring L4 sir!"));
       NamedCommands.registerCommand("L1Score", new PrintCommand("Scoring sir!"));
       NamedCommands.registerCommand("L2Score", new PrintCommand("***************Scoring L2 sir!"));
-      NamedCommands.registerCommand("StopDrivetrain", new PrintCommand("STOPPING THE DRIVETRAIN SIR**************"));
+      NamedCommands.registerCommand("StopDrivetrain", new StopDrivetrainCommand(drive));
   }
 }
