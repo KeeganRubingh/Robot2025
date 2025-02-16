@@ -50,6 +50,7 @@ import frc.robot.commands.StowToAlgaeStow;
 import frc.robot.commands.StowToGroundIntake;
 import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
+import frc.robot.commands.TakeAlgaeL3;
 import frc.robot.commands.TakeCoral;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
@@ -299,22 +300,34 @@ public class RobotContainer {
       .onTrue(elbow.getNewSetAngleCommand(L4_READY_POS-80).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
       .onFalse(coralEndEffector.getNewSetVoltsCommand(0).alongWith(elbow.getNewSetAngleCommand(L4_READY_POS)));
     
-    controller.rightTrigger().and(co_controller.b())
+    controller.rightTrigger().and(co_controller.x())
       .onTrue(elbow.getNewSetAngleCommand(L3_READY_POS-80).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
       .onFalse(coralEndEffector.getNewSetVoltsCommand(0).alongWith(elbow.getNewSetAngleCommand(L3_READY_POS)));
 
-    controller.rightTrigger().and(co_controller.a())
+    controller.rightTrigger().and(co_controller.b())
       .onTrue(elbow.getNewSetAngleCommand(L2_READY_POS-80).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
       .onFalse(coralEndEffector.getNewSetVoltsCommand(0).alongWith(elbow.getNewSetAngleCommand(L2_READY_POS)));
     controller.leftBumper().onTrue(new TakeCoral(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-    co_controller.y().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L4)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-    co_controller.x().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L3)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-    co_controller.b().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L2)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-    co_controller.a().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L1)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector)); // Trough
+    // co_controller.y().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L4)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    // co_controller.x().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L3)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    // co_controller.b().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L2)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    // co_controller.a().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L1)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector)); // Trough
+
+    //L4
+    co_controller.y().onTrue(new StowToL4(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    //L3
+    co_controller.x().onTrue(new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    //L2
+    co_controller.b().onTrue(new StowToL2(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+
 
     // Reef DeAlgaefy scoring position sets
-    co_controller.rightBumper().onTrue(reefPositions.getNewSetDeAlgaeLevel(DeAlgaeLevel.Top)); // L3/4
-    co_controller.rightTrigger().onTrue(reefPositions.getNewSetDeAlgaeLevel(DeAlgaeLevel.Low)); // L2/3
+    // co_controller.rightBumper().onTrue(reefPositions.getNewSetDeAlgaeLevel(DeAlgaeLevel.Top)); // L3/4
+    // co_controller.rightTrigger().onTrue(reefPositions.getNewSetDeAlgaeLevel(DeAlgaeLevel.Low)); // L2/3
+
+    co_controller.rightBumper().onTrue(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator)).onFalse(algaeEndEffector.getNewSetVoltsCommand(4).alongWith(elevator.getNewSetDistanceCommand(0)));
+    // co_controller.rightTrigger().onTrue(new TakeAlgaeL3(shoulder, elbow, wrist, algaeEndEffector, elevator)).onFalse(algaeEndEffector.getNewSetVoltsCommand(4).alongWith(elevator.getNewSetDistanceCommand(0)));
+    co_controller.rightTrigger().onTrue(new OutakeAlgae(algaeEndEffector)).onFalse(algaeEndEffector.getNewSetVoltsCommand(0));
 
     // TODO: Implement climbing controls (L Bumper climb and (maybe) L Trigger unclimb)
 
@@ -424,13 +437,7 @@ public class RobotContainer {
     // testcontroller.y().onTrue(new TakeCoral(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
     // testcontroller.povDown().onTrue(new BargeScore(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
-    //L4
-    testcontroller.y().onTrue(new StowToL4(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-    //L3
-    testcontroller.b().onTrue(new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-    //L2
-    controller.a().onTrue(new StowToL2(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-
+    
     SmartDashboard.putData(new GroundIntakeToStow(shoulder, elbow, wrist, coralEndEffector));
     SmartDashboard.putData(new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector));
     SmartDashboard.putData(new StowToAlgaeStow(shoulder, elbow, wrist, coralEndEffector));
