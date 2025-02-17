@@ -24,6 +24,8 @@ public interface WristIO {
 
   public void setTarget(Angle target);
 
+  public void applyCoastMode();
+
   public void updateInputs(WristInputs inputs);
 
   public void setGains(Gains gains);

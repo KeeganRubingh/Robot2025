@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -21,16 +22,17 @@ import frc.robot.util.PhoenixUtil;
 
 public class WristIOTalonFX implements WristIO {
   public MotionMagicVoltage Request;
+  public CoastOut coastRequest;
   public TalonFX Motor;
   public CANcoder canCoder;
-  public Angle canCoderOffset = Degrees.of(-271);
+  public Angle canCoderOffset = Degrees.of(26.5);
   private Angle m_setPoint = Angle.ofRelativeUnits(0, Rotations);
 
   public WristIOTalonFX(CanDef canbus,CanDef canCoderDef) {
     Motor= new TalonFX(canbus.id(), canbus.bus());
     Request = new MotionMagicVoltage(0);
+    coastRequest = new CoastOut();
     canCoder = new CANcoder(canCoderDef.id(), canCoderDef.bus());
-
     configureTalons();
   }
 
@@ -48,6 +50,7 @@ public class WristIOTalonFX implements WristIO {
     cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     cfg.Feedback.SensorToMechanismRatio = 1.0;
     cfg.Feedback.RotorToSensorRatio = 9.0;
+    cfg.ClosedLoopGeneral.ContinuousWrap = true;
 
     cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
@@ -55,6 +58,7 @@ public class WristIOTalonFX implements WristIO {
 
     CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
     cc_cfg.MagnetSensor.MagnetOffset = canCoderOffset.in(Rotations);//UNIT: ROTATIONS
+    // cc_cfg.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
     //AdvantageScope publishes in radians
 
     PhoenixUtil.tryUntilOk(5, () -> canCoder.getConfigurator().apply(cc_cfg));
@@ -97,5 +101,10 @@ public class WristIOTalonFX implements WristIO {
     motionMagicConfigs.MotionMagicExpo_kV = gains.kMMEV;
     motionMagicConfigs.MotionMagicExpo_kA = gains.kMMEA;
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(motionMagicConfigs));
+  }
+
+  @Override
+  public void applyCoastMode() {
+    Motor.setControl(coastRequest);
   }
 }

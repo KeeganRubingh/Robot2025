@@ -13,6 +13,12 @@
         {
           "type": "named",
           "data": {
+            "name": "stopDrivetrain"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "L2Score"
           }
         },
@@ -31,7 +37,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Intake"
+            "name": "stopDrivetrain"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L2Score"
           }
         },
         {
@@ -49,7 +61,31 @@
         {
           "type": "named",
           "data": {
-            "name": "Intake"
+            "name": "stopDrivetrain"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L2Score"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "simplePath.3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopDrivetrain"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L2Score"
           }
         }
       ]

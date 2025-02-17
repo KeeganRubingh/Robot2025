@@ -66,11 +66,12 @@ public class AutoCommandManager {
   }
 
   private void configureNamedCommands(Drive drive) {
-      NamedCommands.registerCommand("Intake", new PrintCommand("***********Intaking sir!").alongWith(new StopDrivetrainCommand(drive)));
-      NamedCommands.registerCommand("StopIntake", new PrintCommand("stop intake sir!").alongWith(new StopDrivetrainCommand(drive)));
-      NamedCommands.registerCommand("StartIntake", new PrintCommand("Start intake sir!").alongWith(new StopDrivetrainCommand(drive)));
-      NamedCommands.registerCommand("L4Score", new PrintCommand("Scoring L4 sir!").alongWith(new StopDrivetrainCommand(drive)));
-      NamedCommands.registerCommand("L1Score", new PrintCommand("Scoring sir!").alongWith(new StopDrivetrainCommand(drive)));
-      NamedCommands.registerCommand("L2Score", new PrintCommand("***************Scoring L2 sir!").alongWith(new StopDrivetrainCommand(drive)));
+      NamedCommands.registerCommand("Intake", new PrintCommand("***********Intaking sir!"));
+      NamedCommands.registerCommand("StopIntake", new PrintCommand("stop intake sir!"));
+      NamedCommands.registerCommand("StartIntake", new PrintCommand("Start intake sir!"));
+      NamedCommands.registerCommand("L4Score", new PrintCommand("Scoring L4 sir!"));
+      NamedCommands.registerCommand("L1Score", new PrintCommand("Scoring sir!"));
+      NamedCommands.registerCommand("L2Score", new PrintCommand("***************Scoring L2 sir!"));
+      NamedCommands.registerCommand("StopDrivetrain", new StopDrivetrainCommand(drive));
   }
 }
