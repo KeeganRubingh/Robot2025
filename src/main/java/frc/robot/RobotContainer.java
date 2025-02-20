@@ -56,6 +56,7 @@ import frc.robot.commands.OutakeCoral;
 import frc.robot.commands.StationIntakeCommand;
 import frc.robot.commands.StationIntakeReverseCommand;
 import frc.robot.commands.StationIntakeToStow;
+import frc.robot.commands.RoughAlignToReef;
 import frc.robot.commands.StowCommand;
 import frc.robot.commands.StowToBarge;
 import frc.robot.commands.StowToGroundIntake;
@@ -404,6 +405,31 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
+    //Auto Align
+    // controller.leftStick().onTrue(new RoughAlignToReef(drive,false));
+
+    //Scoring
+      //Constants
+    final double L4_READY_POS = -100;
+    final double L3_READY_POS = 50;
+    final double L2_READY_POS = 50;
+
+      //L4
+    controller.rightTrigger().and(co_controller.y())
+      .onTrue(elbow.getNewSetAngleCommand(L4_READY_POS-80).alongWith(wrist.getNewApplyCoastModeCommand()).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(1).alongWith(elbow.getNewSetAngleCommand(L4_READY_POS)).alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
+      //L3
+    controller.rightTrigger().and(co_controller.x())
+      .onTrue(elbow.getNewSetAngleCommand(L3_READY_POS-80).alongWith(wrist.getNewApplyCoastModeCommand()).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(1).alongWith(elbow.getNewSetAngleCommand(L3_READY_POS)).alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
+      //L2
+    controller.rightTrigger().and(co_controller.b())
+      .onTrue(elbow.getNewSetAngleCommand(L2_READY_POS-80).alongWith(wrist.getNewApplyCoastModeCommand()).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(1).alongWith(elbow.getNewSetAngleCommand(L2_READY_POS)).alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
+      //L1
+    controller.rightTrigger().and(co_controller.a())
+      .onTrue(coralEndEffector.getNewSetVoltsCommand(-4))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(1));
       //Barge
     // controller.rightTrigger().and(co_controller.povUp())
     //   .onTrue(algaeEndEffector.getNewSetVoltsCommand(-6.0))
