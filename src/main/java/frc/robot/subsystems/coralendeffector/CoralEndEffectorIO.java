@@ -1,7 +1,9 @@
 package frc.robot.subsystems.coralendeffector;
 
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutCurrent;
+import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.Gains;
@@ -17,6 +19,7 @@ public interface CoralEndEffectorIO {
     public MutVoltage voltageSetPoint;
     public MutCurrent supplyCurrent;
     public MutCurrent torqueCurrent;
+    public MutDistance sensorDistance;
   }
 
   public void setTarget(Voltage target);
@@ -30,4 +33,6 @@ public interface CoralEndEffectorIO {
   public void updateInputs(FingeysInputs input);
 
   public void stop();
+
+  public Distance getDistance();
 }

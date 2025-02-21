@@ -9,6 +9,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -39,6 +40,7 @@ public class AlgaeEndEffector extends SubsystemBase {
     logged.torqueCurrent = Amps.mutable(0);
     logged.voltage = Volts.mutable(0);
     logged.voltageSetPoint = Volts.mutable(0);
+    logged.sensorDistance = Meters.mutable(0);
   }
 
   /**
@@ -62,6 +64,10 @@ public class AlgaeEndEffector extends SubsystemBase {
 
   public void setTarget(Voltage target) {
     m_IO.setTarget(target);
+  }
+
+  public Distance getDistance() {
+    return m_IO.getDistance();
   }
 
   public Command getNewSetVoltsCommand(double i) {
