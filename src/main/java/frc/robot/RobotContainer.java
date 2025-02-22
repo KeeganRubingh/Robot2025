@@ -19,11 +19,7 @@
  */
 package frc.robot;
 
-import static frc.robot.subsystems.vision.VisionConstants.limelightBackLeftName;
-import static frc.robot.subsystems.vision.VisionConstants.limelightBackRightName;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBackLeft;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBackRight;
-
+import java.util.HashMap;
 import java.util.Optional;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -40,8 +36,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
@@ -88,6 +84,10 @@ import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOSim;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOTalonFX;
 import frc.robot.subsystems.vision.AprilTagVision;
+import static frc.robot.subsystems.vision.VisionConstants.limelightBackLeftName;
+import static frc.robot.subsystems.vision.VisionConstants.limelightBackRightName;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBackLeft;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBackRight;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.wrist.Wrist;
@@ -97,6 +97,8 @@ import frc.robot.util.CanDef;
 import frc.robot.util.CanDef.CanBus;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
+import frc.robot.util.ReefPositionsUtil.DeAlgaeLevel;
+import frc.robot.util.ReefPositionsUtil.ScoreLevel;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -285,8 +287,72 @@ public class RobotContainer {
     reefPositions = ReefPositionsUtil.getInstance();
 
     // Configure the button bindings
-    configureButtonBindings();
+    configureDriverBindings();
     configureTestButtonBindings();
+  }
+
+  public void configureDriverBindings() {
+    // Default command, normal field-relative drive
+    drive.setDefaultCommand(
+      DriveCommands.joystickDrive(
+          drive,
+          () -> -controller.getLeftY() * DRIVE_SPEED,
+          () -> -controller.getLeftX() * DRIVE_SPEED,
+          () -> -controller.getRightX() * ANGULAR_SPEED
+        )
+    );
+    
+    controller.leftTrigger()
+    .onTrue(new ConditionalCommand(
+      (new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator)), 
+      (new TakeAlgaeL3(shoulder, elbow, wrist, algaeEndEffector, elevator)), 
+      () -> reefPositions.isSelected(DeAlgaeLevel.Low)))
+    .onFalse((new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector)));
+
+    //Intake
+    controller.leftBumper()
+      .onTrue(new TakeCoral(shoulder, elbow, elevator, wrist, coralEndEffector))
+      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+
+    HashMap<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands = new HashMap<>();
+    coralLevelCommands.put(ScoreLevel.L1, new StowToL1(shoulder, elbow, wrist, coralEndEffector));
+    coralLevelCommands.put(ScoreLevel.L2, new StowToL2(elevator, shoulder, elbow, elevator, wrist));
+    coralLevelCommands.put(ScoreLevel.L3, new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator));
+    coralLevelCommands.put(ScoreLevel.L4, new StowToL4(shoulder, elbow, elevator, wrist, coralEndEffector));
+
+    HashMap<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands = new HashMap<>();
+    scoreCoralLevelCommands.put(ScoreLevel.L1, new StowToL1(shoulder, elbow, wrist, coralEndEffector));
+    scoreCoralLevelCommands.put(ScoreLevel.L2, new StowToL2(shoulder, elevator, elbow, wrist, coralEndEffector));
+    scoreCoralLevelCommands.put(ScoreLevel.L3, new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator));
+    scoreCoralLevelCommands.put(ScoreLevel.L4, new StowToL4(shoulder, elbow, elevator, wrist, coralEndEffector));
+    
+    HashMap<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands = new HashMap<>();
+    stopCoralLevelCommands.put(ScoreLevel.L1, new StowToL1(shoulder, elbow, wrist, coralEndEffector));
+    stopCoralLevelCommands.put(ScoreLevel.L2, new StowToL2(shoulder, elevator, elbow, wrist, coralEndEffector));
+    stopCoralLevelCommands.put(ScoreLevel.L3, new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator));
+    stopCoralLevelCommands.put(ScoreLevel.L4, new StowToL4(shoulder, elbow, elevator, wrist, coralEndEffector));
+    
+    controller.rightBumper()
+    .onTrue(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
+    .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+
+    controller.rightTrigger().and(controller.rightBumper())
+      .onTrue(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
+      .onFalse(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands));
+
+    //L4
+    co_controller.y().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L4));
+    //L3
+    co_controller.x().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L3));
+    //L2
+    co_controller.b().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L2));
+    //L1
+    co_controller.a().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L1));
+
+    co_controller.rightBumper().onTrue(reefPositions.getNewSetDeAlgaeLevelCommand(DeAlgaeLevel.Top));
+    co_controller.rightTrigger().onTrue(reefPositions.getNewSetDeAlgaeLevelCommand(DeAlgaeLevel.Low));
+
+    co_controller.povLeft().onTrue(new OutakeAlgae(algaeEndEffector)).onFalse(algaeEndEffector.getNewSetVoltsCommand(0));
   }
 
   /**
@@ -296,63 +362,14 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}. Used for getting SysIDs
    */
   private void configureButtonBindings() {
-    // Default command, normal field-relative drive
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -controller.getLeftY() * DRIVE_SPEED,
-            () -> -controller.getLeftX() * DRIVE_SPEED,
-            () -> -controller.getRightX() * ANGULAR_SPEED)
-          );
 
-    //Scoring
-      //Constants
-    final double L4_READY_POS = -100;
-    final double L3_READY_POS = 50;
-    final double L2_READY_POS = 50;
-
-      //L4
-    controller.rightTrigger().and(co_controller.y())
-      .onTrue(elbow.getNewSetAngleCommand(L4_READY_POS-80).alongWith(wrist.getNewApplyCoastModeCommand()).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
-      .onFalse(coralEndEffector.getNewSetVoltsCommand(1).alongWith(elbow.getNewSetAngleCommand(L4_READY_POS)).alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
-      //L3
-    controller.rightTrigger().and(co_controller.x())
-      .onTrue(elbow.getNewSetAngleCommand(L3_READY_POS-80).alongWith(wrist.getNewApplyCoastModeCommand()).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
-      .onFalse(coralEndEffector.getNewSetVoltsCommand(1).alongWith(elbow.getNewSetAngleCommand(L3_READY_POS)).alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
-      //L2
-    controller.rightTrigger().and(co_controller.b())
-      .onTrue(elbow.getNewSetAngleCommand(L2_READY_POS-80).alongWith(wrist.getNewApplyCoastModeCommand()).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
-      .onFalse(coralEndEffector.getNewSetVoltsCommand(1).alongWith(elbow.getNewSetAngleCommand(L2_READY_POS)).alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
-      //L1
-    controller.rightTrigger().and(co_controller.a())
-      .onTrue(coralEndEffector.getNewSetVoltsCommand(-4))
-      .onFalse(coralEndEffector.getNewSetVoltsCommand(1));
       //Barge
     // controller.rightTrigger().and(co_controller.povUp())
     //   .onTrue(algaeEndEffector.getNewSetVoltsCommand(-6.0))
     //   .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
 
-    // co_controller.y().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L4)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-    // co_controller.x().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L3)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-    // co_controller.b().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L2)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-    // co_controller.a().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L1)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector)); // Trough
-
-    //L4
-    co_controller.y().onTrue(new StowToL4(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-    //L3
-    co_controller.x().onTrue(new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-    //L2
-    co_controller.b().onTrue(new StowToL2(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-    //L1
-    co_controller.a().onTrue(new StowToL1(shoulder, elbow, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
     //Barge
     // co_controller.povUp().onTrue(new BargeScore(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-
-
-    //Intake
-    controller.leftBumper()
-      .onTrue(new TakeCoral(shoulder, elbow, elevator, wrist, coralEndEffector))
-      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
     // Reef DeAlgaefy scoring position sets
     // co_controller.rightBumper().onTrue(reefPositions.getNewSetDeAlgaeLevel(DeAlgaeLevel.Top)); // L3/4
@@ -360,15 +377,15 @@ public class RobotContainer {
 
     //Algae Commands
       //Take Algae L2
-    co_controller.rightTrigger()
-      .onTrue(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator))
-      .onFalse(algaeEndEffector.getNewSetVoltsCommand(4).alongWith(elevator.getNewSetDistanceCommand(0)).alongWith(elbow.getNewSetAngleCommand(70)).alongWith(shoulder.getNewSetAngleCommand(20)));
-      //Take Algae L3
-    co_controller.rightBumper()
-      .onTrue(new TakeAlgaeL3(shoulder, elbow, wrist, algaeEndEffector, elevator))
-      .onFalse(algaeEndEffector.getNewSetVoltsCommand(4).alongWith(elevator.getNewSetDistanceCommand(0)).alongWith(elbow.getNewSetAngleCommand(70)).alongWith(shoulder.getNewSetAngleCommand(20)));
-      //Eject Algae
-    co_controller.leftTrigger().onTrue(new OutakeAlgae(algaeEndEffector)).onFalse(algaeEndEffector.getNewSetVoltsCommand(0));
+    //co_controller.rightTrigger()
+    //  .onTrue(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator))
+    //  .onFalse(algaeEndEffector.getNewSetVoltsCommand(4).alongWith(elevator.getNewSetDistanceCommand(0)).alongWith(elbow.getNewSetAngleCommand(70)).alongWith(shoulder.getNewSetAngleCommand(20)));
+    //  //Take Algae L3
+    //co_controller.rightBumper()
+    //  .onTrue(new TakeAlgaeL3(shoulder, elbow, wrist, algaeEndEffector, elevator))
+    //  .onFalse(algaeEndEffector.getNewSetVoltsCommand(4).alongWith(elevator.getNewSetDistanceCommand(0)).alongWith(elbow.getNewSetAngleCommand(70)).alongWith(shoulder.getNewSetAngleCommand(20)));
+    //  //Eject Algae
+    //co_controller.leftTrigger().onTrue(new OutakeAlgae(algaeEndEffector)).onFalse(algaeEndEffector.getNewSetVoltsCommand(0));
 
     // TODO: Implement climbing controls (L Bumper climb and (maybe) L Trigger unclimb)
 
@@ -471,7 +488,7 @@ public class RobotContainer {
     // testcontroller.rightBumper().onTrue(new StowToL2(shoulder, elbow, wrist, coralEndEffector)).onFalse(TEMPgetStowCommand());
     // controller.a().whileTrue(elbow.getNewSetAngleCommand(10).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4))).onFalse(coralEndEffector.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
     // testcontroller.povRight().whileTrue(new TakeCoral(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(coralEndEffector.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
-    // // controller.leftBumper().onTrue(new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator)).onFalse(TEMPgetStowCommand());
+    // controller.leftBumper().onTrue(new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator)).onFalse(TEMPgetStowCommand());
     // testcontroller.leftTrigger().onTrue(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator)).onFalse(algaeEndEffector.getNewSetVoltsCommand(4).alongWith(elevator.getNewSetDistanceCommand(0)));
     // testcontroller.x().onTrue(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
     testcontroller.leftBumper().onTrue(new OutakeAlgae(algaeEndEffector)).onFalse(algaeEndEffector.getNewSetVoltsCommand(0));
