@@ -26,7 +26,6 @@ public class Intake extends SubsystemBase{
     loggedIntake.angularVelocity = DegreesPerSecond.mutable(0);
     loggedIntake.supplyCurrent = Amps.mutable(0);
     loggedIntake.statorCurrent = Amps.mutable(0);
-    loggedIntake.sensorDistance = Meters.mutable(0);
     loggedIntake.voltage = Volts.mutable(0);
     loggedIntake.voltageSetPoint = Volts.mutable(0);
   }

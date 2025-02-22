@@ -53,18 +53,10 @@ public class IntakeIOSim implements IntakeIO {
     input.statorCurrent.mut_replace(sim.getCurrentDrawAmps(), Amps);
     input.voltageSetPoint.mut_replace(appliedVoltage);
     input.voltage.mut_replace(Volts.of(sim.getInputVoltage()));
-    input.sensorDistance.mut_replace(intakeSensorDistance);
 
     // Periodic
     sim.setInputVoltage(appliedVoltage.in(Volts));
     sim.update(0.02);
-  }
-
-  @Override
-  public Supplier<Distance> intakeSensorBro() {
-    return () -> {
-      return intakeSensorDistance.copy();
-    };
   }
 
   @Override

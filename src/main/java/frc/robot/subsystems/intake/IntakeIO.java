@@ -22,14 +22,9 @@ public interface IntakeIO {
     public MutVoltage voltage;
     public MutCurrent supplyCurrent;
     public MutCurrent statorCurrent;
-    public MutDistance sensorDistance;
   }
 
   public void setTarget(Voltage setpoint);
-  /**
-   * Gets a supplier which will always return the current distance of the intake sensor
-   */
-  public Supplier<Distance> intakeSensorBro();
 
   public void updateInputs(IntakeInputs input);
 
