@@ -56,6 +56,7 @@ import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
 import frc.robot.commands.TakeAlgaeL3;
 import frc.robot.commands.StationIntakeReverseCommand;
+import frc.robot.commands.StationIntakeToStow;
 import frc.robot.commands.StationIntakeCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
@@ -300,19 +301,20 @@ public class RobotContainer {
     // Conditional DeAlgae
     controller.leftTrigger()
     .onTrue(new ConditionalCommand(
-      (new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator)), 
-      (new TakeAlgaeL3(shoulder, elbow, wrist, algaeEndEffector, elevator)), 
+      new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator), 
+      new TakeAlgaeL3(shoulder, elbow, wrist, algaeEndEffector, elevator), 
       () -> reefPositions.isSelected(DeAlgaeLevel.Low)))
-    .onFalse((new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector)));
+    .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
 
     // Coral Station Intake
     controller.leftBumper()
       .onTrue(new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
-      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+      .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
     // Go to barge
     controller.y()
       .onTrue(new StowToBarge(shoulder, elbow, elevator, wrist))
+      // Left as AlgaeStow instead of Stow in case Algae is not removed from Algae End Effector
       .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
 
     // Hashmaps for Coral level commands

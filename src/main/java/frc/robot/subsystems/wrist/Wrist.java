@@ -85,6 +85,17 @@ public class Wrist extends SubsystemBase {
         this);
   }
 
+  /**
+   * Returns when this joint is greater than 'angle' away from the forward horizontal
+   * @param angle
+   * @return
+   */
+  public Trigger getNewGreaterThanAngleTrigger(DoubleSupplier angle) {
+    return new Trigger(() -> {
+      return loggedwrist.wristAngle.in(Degrees) > angle.getAsDouble();
+    });
+  }
+
   public Trigger getNewAtAngleTrigger(Angle angle,Angle tolerance) {
     return new Trigger(() -> {
       return MathUtil.isNear(angle.baseUnitMagnitude(), loggedwrist.wristAngle.baseUnitMagnitude(), tolerance.baseUnitMagnitude());
