@@ -68,8 +68,8 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("Stow", new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
       NamedCommands.registerCommand("StartFrontIntake", new TakeCoralFromFront(shoulder, elbow, elevator, wrist, coralEE));
       NamedCommands.registerCommand("StartIntake", new TakeCoral(shoulder, elbow, elevator, wrist, coralEE));
-      NamedCommands.registerCommand("L4Score", new StowToL4(shoulder, elbow, elevator, wrist, coralEE));
-      NamedCommands.registerCommand("L1Score", new StowToL1(shoulder, elbow, wrist, coralEE));
+      NamedCommands.registerCommand("L4Score", new StowToL4(shoulder, elbow, elevator, wrist));
+      NamedCommands.registerCommand("L1Score", new StowToL1(shoulder, elbow, wrist));
       NamedCommands.registerCommand("CoralOuttake", new OutakeCoral(coralEE));
       NamedCommands.registerCommand("L2Score", new PrintCommand("***************Scoring L2 sir!"));
       NamedCommands.registerCommand("StopDrivetrain", new StopDrivetrainCommand(drive));
