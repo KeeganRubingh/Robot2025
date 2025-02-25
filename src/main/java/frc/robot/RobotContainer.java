@@ -472,10 +472,6 @@ public class RobotContainer {
     // //             drive));
   }
 
-  public Command TEMPgetStowCommand() {
-    return shoulder.getNewSetAngleCommand(68).alongWith(elbow.getNewSetAngleCommand(65)).alongWith(wrist.getNewWristTurnCommand(0)).alongWith(elevator.getNewSetDistanceCommand(0));
-  }
-
   public void configureTestButtonBindings (){
     // testcontroller.leftBumper().onTrue(wrist.getNewWristTurnCommand(setWristAngle)).onFalse(wrist.getNewWristTurnCommand(0));
     // testcontroller.rightBumper().onTrue(toesies.getNewSetVoltsCommand(setToesiesVolts)).onFalse(toesies.getNewSetVoltsCommand(0));
