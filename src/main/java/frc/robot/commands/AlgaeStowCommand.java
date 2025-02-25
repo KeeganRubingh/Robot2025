@@ -21,12 +21,10 @@ import frc.robot.util.LoggedTunableNumber;
 public class AlgaeStowCommand extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("StowToAlgaeStow/shoulder/StartingDegrees", 10)),
-        // MidPoint(new LoggedTunableNumber("StowToL3Command/shoulder/MidPointDegrees", 110)),
-        // SafeToSwingElbow(new LoggedTunableNumber("StowToL3Command/shoulder/SafeToSwingElbowDegrees", 100)),
-        Final(new LoggedTunableNumber("StowToAlgaeStow/shoulder/FinalDegrees", 35)), 
-        SafeToSwingElbow(new LoggedTunableNumber("StowToAlgaeStow/shoulder/SafeToSwingElbow", 35)), 
-        MidPoint(new LoggedTunableNumber("StowToAlgaeStow/shoulder/MidPoint", 35));
+        Starting(new LoggedTunableNumber("StowToAlgaeStow/shoulder/StartingDegrees", 0.0)),
+        Final(new LoggedTunableNumber("StowToAlgaeStow/shoulder/FinalDegrees", 20.0)), 
+        SafeToSwingElbow(new LoggedTunableNumber("StowToAlgaeStow/shoulder/SafeToSwingElbow", 20.0)), 
+        MidPoint(new LoggedTunableNumber("StowToAlgaeStow/shoulder/MidPoint", 20.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -43,10 +41,9 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber("StowToAlgaeStow/elbow/StartingDegrees", 10)),
-        // ShoulderSafeSwing(new LoggedTunableNumber("StowToL3Command/elbow/ShoulderSafeSwingDegrees", 45)),
-        Final(new LoggedTunableNumber("StowToAlgaeStow/elbow/FinalDegrees", -160)), 
-        ShoulderSafeSwing(new LoggedTunableNumber("StowToAlgaeStow/elbow/lmao", -160));
+        Starting(new LoggedTunableNumber("StowToAlgaeStow/elbow/StartingDegrees", 0.0)),
+        ShoulderSafeSwing(new LoggedTunableNumber("StowToL3Command/elbow/ShoulderSafeSwingDegrees", 70.0)),
+        Final(new LoggedTunableNumber("StowToAlgaeStow/elbow/FinalDegrees", 70.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -101,18 +98,18 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     public AlgaeStowCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, AlgaeEndEffector algaeEE) {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position)
-                .raceWith(
-                    new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
-                )
-                .andThen(
-                    elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
-                        .raceWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.position))                    
-                    )
-                ),
+            shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position),
+                // TODO: IMPLEMENT SAFEZONES WITH CORRECT VALUES (NOTE: MAY COME FROM EITHER SIDE)
+                // .alongWith(
+                //     new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
+                // ),
+            elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
+                // .alongWith(
+                //     new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.position))                    
+                // ),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
                 .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.distance().in(Inches))),
-            algaeEE.getNewSetVoltsCommand(0)
+            algaeEE.getNewSetVoltsCommand(4.0)
 
             // LOGIC NEEDED FOR INTAKE TO STOW
             // .alongWith(
