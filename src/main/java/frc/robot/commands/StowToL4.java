@@ -1,14 +1,16 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.*;
-
 import java.util.function.DoubleSupplier;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDistance;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
@@ -17,11 +19,6 @@ import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
 public class StowToL4 extends SequentialCommandGroup {
-    public ArmJoint shoulder;
-    public ArmJoint elbow;
-    public Elevator elevator;
-    public Wrist wrist;
-    public CoralEndEffector fingeys;
 
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("MoveToL4Command/shoulder/StartingDegrees", 0)),
@@ -98,7 +95,7 @@ public class StowToL4 extends SequentialCommandGroup {
         }
     }
 
-    public StowToL4(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector fingeys) {
+    public StowToL4(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position)
@@ -115,4 +112,17 @@ public class StowToL4 extends SequentialCommandGroup {
         );
         addRequirements(shoulder, elbow, wrist, elevator);
     }
+
+    public static Command getNewScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
+        return(elbow.getNewSetAngleCommand(-180)
+        .alongWith(wrist.getNewApplyCoastModeCommand())
+        .alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)));
+    }
+
+    public static Command getNewStopScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
+        return(coralEndEffector.getNewSetVoltsCommand(1)
+        .alongWith(elbow.getNewSetAngleCommand(-100))
+        .alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
+    }
+
 }
