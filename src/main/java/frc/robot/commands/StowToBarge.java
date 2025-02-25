@@ -16,7 +16,7 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
-public class BargeScore extends SequentialCommandGroup {
+public class StowToBarge extends SequentialCommandGroup {
     public ArmJoint shoulder;
     public ArmJoint elbow;
     public Elevator elevator;
@@ -98,7 +98,7 @@ public class BargeScore extends SequentialCommandGroup {
         }
     }
 
-    public BargeScore(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
+    public StowToBarge(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
         super( 
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position)

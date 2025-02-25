@@ -40,21 +40,24 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.commands.BargeScore;
+import frc.robot.commands.AlgaeStowCommand;
+import frc.robot.commands.BargeScoreCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.GroundIntakeToStow;
-import frc.robot.commands.L2.StowToL2;
-import frc.robot.commands.L2.TakeAlgaeL2;
+import frc.robot.commands.StowToL2;
+import frc.robot.commands.TakeAlgaeL2;
 import frc.robot.commands.OutakeAlgae;
 import frc.robot.commands.OutakeCoral;
 import frc.robot.commands.StowCommand;
-import frc.robot.commands.StowToAlgaeStow;
+import frc.robot.commands.StowToBarge;
 import frc.robot.commands.StowToGroundIntake;
 import frc.robot.commands.StowToL1;
 import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
 import frc.robot.commands.TakeAlgaeL3;
-import frc.robot.commands.TakeCoral;
+import frc.robot.commands.StationIntakeReverseCommand;
+import frc.robot.commands.StationIntakeToStow;
+import frc.robot.commands.StationIntakeCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffectorIOSim;
@@ -245,14 +248,6 @@ public class RobotContainer {
 
         climber = new Climber(new ClimberIOTalonFX(canivoreCanBuilder.id(19).build()));
 
-        // vision =
-        //     new Vision(
-        //         demoDrive::addVisionMeasurement,
-        //         new VisionIOPhotonVision(camera0Name, robotToCamera0),
-        //         new VisionIOPhotonVision(camera1Name, robotToCamera1));
-        // arm = new ArmJoint(new ArmJointIOTalonFX(), null);
-
-
         // Real robot, instantiate hardware IO implementations
         break;
 
@@ -303,17 +298,26 @@ public class RobotContainer {
         )
     );
     
+    // Conditional DeAlgae
     controller.leftTrigger()
     .onTrue(new ConditionalCommand(
-      (new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator)), 
-      (new TakeAlgaeL3(shoulder, elbow, wrist, algaeEndEffector, elevator)), 
+      new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator), 
+      new TakeAlgaeL3(shoulder, elbow, wrist, algaeEndEffector, elevator), 
       () -> reefPositions.isSelected(DeAlgaeLevel.Low)))
-    .onFalse((new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector)));
+    .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
 
-    //Intake
+    // Coral Station Intake
     controller.leftBumper()
-      .onTrue(new TakeCoral(shoulder, elbow, elevator, wrist, coralEndEffector))
-      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+      .onTrue(new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
+      .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+
+    // Go to barge
+    controller.y()
+      .onTrue(new StowToBarge(shoulder, elbow, elevator, wrist))
+      // Left as AlgaeStow instead of Stow in case Algae is not removed from Algae End Effector
+      .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
+
+    // Hashmaps for Coral level commands
 
     HashMap<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands = new HashMap<>();
     coralLevelCommands.put(ScoreLevel.L1, new StowToL1(shoulder, elbow, wrist));
@@ -333,27 +337,55 @@ public class RobotContainer {
     stopCoralLevelCommands.put(ScoreLevel.L3, StowToL3.getNewStopScoreCommand(elbow, wrist, coralEndEffector));
     stopCoralLevelCommands.put(ScoreLevel.L4, StowToL4.getNewStopScoreCommand(elbow, wrist, coralEndEffector));
     
+    // Go to conditional coral level
     controller.rightBumper()
     .onTrue(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
     .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
+    // Conditional Confirm Coral
     controller.rightTrigger().and(controller.rightBumper())
       .onTrue(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
       .onFalse(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands));
 
+    // Confirm Barge
+    controller.rightTrigger().and(controller.y())
+      .onTrue(new BargeScoreCommand(algaeEndEffector))
+      .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
+
+    // Outtake Algae (Also processor score from stow pos)
+    controller.povLeft()
+      .onTrue(new OutakeAlgae(algaeEndEffector))
+      .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
+
+    //Outtake Coral
+    controller.povRight()
+      .onTrue(new OutakeCoral(coralEndEffector))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(0.0));
+
     //L4
-    co_controller.y().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L4));
+    co_controller.y().and(controller.rightBumper().negate())
+      .onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L4));
     //L3
-    co_controller.x().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L3));
+    co_controller.x().and(controller.rightBumper().negate())
+      .onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L3));
     //L2
-    co_controller.b().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L2));
+    co_controller.b().and(controller.rightBumper().negate())
+      .onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L2));
     //L1
-    co_controller.a().onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L1));
+    co_controller.a().and(controller.rightBumper().negate())
+      .onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L1));
 
-    co_controller.rightBumper().onTrue(reefPositions.getNewSetDeAlgaeLevelCommand(DeAlgaeLevel.Top));
-    co_controller.rightTrigger().onTrue(reefPositions.getNewSetDeAlgaeLevelCommand(DeAlgaeLevel.Low));
+    // L3/L4 DeAlgae
+    co_controller.rightBumper().and(controller.leftTrigger().negate())
+      .onTrue(reefPositions.getNewSetDeAlgaeLevelCommand(DeAlgaeLevel.Top));
+    // L2/L3 DeAlgae
+    co_controller.rightTrigger().and(controller.leftTrigger().negate())
+      .onTrue(reefPositions.getNewSetDeAlgaeLevelCommand(DeAlgaeLevel.Low));
 
-    co_controller.povLeft().onTrue(new OutakeAlgae(algaeEndEffector)).onFalse(algaeEndEffector.getNewSetVoltsCommand(0));
+    // Back Coral Station Intake
+    co_controller.povLeft()
+      .onTrue(new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
+      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
   }
 
   /**
@@ -370,7 +402,7 @@ public class RobotContainer {
     //   .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
 
     //Barge
-    co_controller.povUp().onTrue(new BargeScore(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    co_controller.povUp().onTrue(new StowToBarge(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
     // Reef DeAlgaefy scoring position sets
     // co_controller.rightBumper().onTrue(reefPositions.getNewSetDeAlgaeLevel(DeAlgaeLevel.Top)); // L3/4
@@ -496,7 +528,7 @@ public class RobotContainer {
     
     SmartDashboard.putData(new GroundIntakeToStow(shoulder, elbow, wrist, coralEndEffector));
     SmartDashboard.putData(new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector));
-    SmartDashboard.putData(new StowToAlgaeStow(shoulder, elbow, elevator, wrist, algaeEndEffector));
+    SmartDashboard.putData(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
     SmartDashboard.putData(new StowToL3(shoulder, elbow, wrist, elevator));
     SmartDashboard.putData(new StowToL4(shoulder, elbow, elevator, wrist));
     SmartDashboard.putData(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator));

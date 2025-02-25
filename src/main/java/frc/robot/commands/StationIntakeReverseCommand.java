@@ -13,15 +13,15 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
-public class TakeCoralFromFront extends SequentialCommandGroup {
+public class StationIntakeReverseCommand extends SequentialCommandGroup {
 
-    private static final String className = TakeCoralFromFront.class.getSimpleName();
+    private static final String className = StationIntakeReverseCommand.class.getSimpleName();
 
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber(className + "/shoulder/StartingDegrees", 10.0)),
+        Starting(new LoggedTunableNumber(className + "/shoulder/StartingDegrees", 10)),
         // MidPoint(new LoggedTunableNumber("StowToL3Command/shoulder/MidPointDegrees", 110)),
         // SafeToSwingElbow(new LoggedTunableNumber("StowToL3Command/shoulder/SafeToSwingElbowDegrees", 100)),
-        Final(new LoggedTunableNumber(className + "/shoulder/FinalDegrees", 180.0-55.0));
+        Final(new LoggedTunableNumber(className + "/shoulder/FinalDegrees", 55));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -38,9 +38,9 @@ public class TakeCoralFromFront extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber(className + "/elbow/StartingDegrees", 10.0)),
+        Starting(new LoggedTunableNumber(className + "/elbow/StartingDegrees", 10)),
         // ShoulderSafeSwing(new LoggedTunableNumber("StowToL3Command/elbow/ShoulderSafeSwingDegrees", 45)),
-        Final(new LoggedTunableNumber(className + "/elbow/FinalDegrees", 180.0-33.0));
+        Final(new LoggedTunableNumber(className + "/elbow/FinalDegrees", 33));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -57,8 +57,8 @@ public class TakeCoralFromFront extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Starting(new LoggedTunableNumber(className + "/wrist/StartingDegrees", 0.0)),
-        Final(new LoggedTunableNumber(className + "/wrist/FinalDegrees", -90.0));
+        Starting(new LoggedTunableNumber(className + "/wrist/StartingDegrees", 0)),
+        Final(new LoggedTunableNumber(className + "/wrist/FinalDegrees", -90));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -74,12 +74,12 @@ public class TakeCoralFromFront extends SequentialCommandGroup {
         }
     }
 
-    public TakeCoralFromFront(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEndEffector) {
+    public StationIntakeReverseCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEndEffector) {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
             .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
-            .alongWith(coralEndEffector.getNewSetVoltsCommand(6.0))
+            .alongWith(coralEndEffector.getNewSetVoltsCommand(6))
 
             // LOGIC NEEDED FOR INTAKE TO STOW
             // .alongWith(

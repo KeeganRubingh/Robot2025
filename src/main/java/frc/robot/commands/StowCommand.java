@@ -98,13 +98,14 @@ public class StowCommand extends SequentialCommandGroup {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position)
-                .raceWith(
-                    new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
-                )
+                // TODO: IMPLEMENT SAFEZONES WITH CORRECT VALUES (NOTE: MAY COME FROM EITHER SIDE)
+                // .alongWith(
+                //     new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
+                // )
                 .andThen(
                     elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
-                        .raceWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.position))                    
-                    )
+                    //     .alongWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.position))                    
+                    // )
                 ),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
                 .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.distance().in(Inches))),
