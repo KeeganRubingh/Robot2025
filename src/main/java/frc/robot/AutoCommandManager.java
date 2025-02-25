@@ -9,16 +9,27 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.OutakeCoral;
 import frc.robot.commands.StopDrivetrainCommand;
+import frc.robot.commands.StowCommand;
+import frc.robot.commands.StowToL1;
+import frc.robot.commands.StowToL4;
+import frc.robot.commands.TakeCoral;
+import frc.robot.commands.TakeCoralFromFront;
+import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
+import frc.robot.subsystems.arm.ArmJoint;
+import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.wrist.Wrist;
 
 public class AutoCommandManager {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  public AutoCommandManager(Drive drive) {
-    configureNamedCommands(drive);
+  public AutoCommandManager(Drive drive, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
+    configureNamedCommands(drive, shoulder, elbow, elevator, wrist, coralEE, algaeEE);;
     
 
     PathPlannerAuto CharacterizationTest = new PathPlannerAuto("CharacterizeAuto");
@@ -26,12 +37,6 @@ public class AutoCommandManager {
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-    PathPlannerAuto Circle = new PathPlannerAuto("Circle");
-    PathPlannerAuto Straight = new PathPlannerAuto("Straight");
-    PathPlannerAuto Diagonal = new PathPlannerAuto("Diagonal");
-    PathPlannerAuto simpleAuto = new PathPlannerAuto("simpleAuto");
-    PathPlannerAuto advancedPath = new PathPlannerAuto("advancedPath");
-    PathPlannerAuto exitZone = new PathPlannerAuto("exitZone");
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -48,12 +53,6 @@ public class AutoCommandManager {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption("Circle", Circle);
-    autoChooser.addOption("Straight", Straight);
-    autoChooser.addOption("Diagonal", Diagonal);
-    autoChooser.addOption("simpleAuto", simpleAuto);
-    autoChooser.addOption("advancedPath", advancedPath);
-    autoChooser.addOption("exitZone", exitZone);
 
 
     // Add Choreo Paths
@@ -65,13 +64,15 @@ public class AutoCommandManager {
     return autoChooser.get();
   }
 
-  private void configureNamedCommands(Drive drive) {
-      NamedCommands.registerCommand("Intake", new PrintCommand("***********Intaking sir!"));
-      NamedCommands.registerCommand("StopIntake", new PrintCommand("stop intake sir!"));
-      NamedCommands.registerCommand("StartIntake", new PrintCommand("Start intake sir!"));
-      NamedCommands.registerCommand("L4Score", new PrintCommand("Scoring L4 sir!"));
-      NamedCommands.registerCommand("L1Score", new PrintCommand("Scoring sir!"));
+  private void configureNamedCommands(Drive drive, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
+      NamedCommands.registerCommand("Stow", new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
+      NamedCommands.registerCommand("StartFrontIntake", new TakeCoralFromFront(shoulder, elbow, elevator, wrist, coralEE));
+      NamedCommands.registerCommand("StartIntake", new TakeCoral(shoulder, elbow, elevator, wrist, coralEE));
+      NamedCommands.registerCommand("L4Score", new StowToL4(shoulder, elbow, elevator, wrist));
+      NamedCommands.registerCommand("L1Score", new StowToL1(shoulder, elbow, wrist));
+      NamedCommands.registerCommand("CoralOuttake", new OutakeCoral(coralEE));
       NamedCommands.registerCommand("L2Score", new PrintCommand("***************Scoring L2 sir!"));
       NamedCommands.registerCommand("StopDrivetrain", new StopDrivetrainCommand(drive));
+    
   }
 }

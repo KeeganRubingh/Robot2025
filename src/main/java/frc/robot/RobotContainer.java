@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.BargeScore;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.GroundIntakeToStow;
 import frc.robot.commands.L2.StowToL2;
@@ -283,7 +284,7 @@ public class RobotContainer {
     }
 
 
-    autoCommandManager = new AutoCommandManager(drive);
+    autoCommandManager = new AutoCommandManager(drive, shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector);
     reefPositions = ReefPositionsUtil.getInstance();
 
     // Configure the button bindings
@@ -369,7 +370,7 @@ public class RobotContainer {
     //   .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
 
     //Barge
-    // co_controller.povUp().onTrue(new BargeScore(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    co_controller.povUp().onTrue(new BargeScore(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
     // Reef DeAlgaefy scoring position sets
     // co_controller.rightBumper().onTrue(reefPositions.getNewSetDeAlgaeLevel(DeAlgaeLevel.Top)); // L3/4
@@ -495,7 +496,7 @@ public class RobotContainer {
     
     SmartDashboard.putData(new GroundIntakeToStow(shoulder, elbow, wrist, coralEndEffector));
     SmartDashboard.putData(new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector));
-    SmartDashboard.putData(new StowToAlgaeStow(shoulder, elbow, wrist, coralEndEffector));
+    SmartDashboard.putData(new StowToAlgaeStow(shoulder, elbow, elevator, wrist, algaeEndEffector));
     SmartDashboard.putData(new StowToL3(shoulder, elbow, wrist, elevator));
     SmartDashboard.putData(new StowToL4(shoulder, elbow, elevator, wrist));
     SmartDashboard.putData(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator));
