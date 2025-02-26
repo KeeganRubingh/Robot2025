@@ -19,25 +19,7 @@
         {
           "type": "named",
           "data": {
-            "name": "StowToL1"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "ScoreL1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
           }
         },
         {
@@ -47,21 +29,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "StationIntake"
-          }
-        },
-        {
           "type": "wait",
           "data": {
             "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StationIntakeToStow"
           }
         },
         {
@@ -73,25 +43,7 @@
         {
           "type": "named",
           "data": {
-            "name": "StowToL1"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "ScoreL1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
           }
         },
         {
@@ -101,21 +53,15 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "StationIntake"
-          }
-        },
-        {
           "type": "wait",
           "data": {
             "waitTime": 2.0
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "StationIntakeToStow"
+            "pathName": "simplePathPlanner.4"
           }
         }
       ]

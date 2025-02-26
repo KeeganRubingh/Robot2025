@@ -19,25 +19,13 @@
         {
           "type": "named",
           "data": {
-            "name": "StowToL4"
+            "name": "ScoreL4"
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreL4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
           }
         },
         {
@@ -47,21 +35,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "StationIntake"
-          }
-        },
-        {
           "type": "wait",
           "data": {
             "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StationIntakeToStow"
           }
         },
         {
@@ -73,25 +49,13 @@
         {
           "type": "named",
           "data": {
-            "name": "StowToL4"
+            "name": "ScoreL4"
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreL4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
           }
         },
         {
@@ -101,21 +65,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "StationIntake"
-          }
-        },
-        {
           "type": "wait",
           "data": {
             "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StationIntakeToStow"
           }
         },
         {
@@ -127,25 +79,13 @@
         {
           "type": "named",
           "data": {
-            "name": "StowToL4"
+            "name": "ScoreL4"
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreL4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
           }
         },
         {
@@ -155,21 +95,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "StationIntake"
-          }
-        },
-        {
           "type": "wait",
           "data": {
             "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StationIntakeToStow"
           }
         },
         {
@@ -181,25 +109,13 @@
         {
           "type": "named",
           "data": {
-            "name": "StowToL4"
+            "name": "ScoreL4"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Score4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
+            "pathName": "advancedPathPlanner.7"
           }
         }
       ]

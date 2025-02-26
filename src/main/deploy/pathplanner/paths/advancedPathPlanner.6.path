@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.29675,
-        "y": 7.028
+        "x": 1.3186475409836067,
+        "y": 6.979969262295082
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8572184760843784,
-        "y": 6.76659118628146
+        "x": 1.879116017067985,
+        "y": 6.718560448576542
       },
       "isLocked": false,
       "linkedName": "advancedPathPlanner.5"
@@ -25,13 +25,36 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "advancedPathPlanner.6"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "StationIntakeToStow",
+      "waypointRelativePos": 0.17766323024054845,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StationIntakeToStow"
+        }
+      }
+    },
+    {
+      "name": "StowToL4",
+      "waypointRelativePos": 0.7549828178694067,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StowToL4"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -48,7 +71,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 122.38674480284304
+    "rotation": 122.38699999999999
   },
   "useDefaultConstraints": true
 }
