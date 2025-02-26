@@ -18,7 +18,7 @@ public class WristIOSim implements WristIO {
   private Voltage appliedVoltage = Volts.mutable(0.0);
 
   private final ProfiledPIDController controller =
-      new ProfiledPIDController(0.5, 0.0, 0.0, new Constraints(1000, 361));
+      new ProfiledPIDController(0.5, 0.0, 0.0, new Constraints(2*360.0,360.0*360.0));
 
   private final FlywheelSim sim;
 
