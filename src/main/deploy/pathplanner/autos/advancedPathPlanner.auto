@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Stow"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "advancedPathPlanner.0"
@@ -13,19 +19,13 @@
         {
           "type": "named",
           "data": {
-            "name": "L4Score"
+            "name": "ScoreL4"
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
           }
         },
         {
@@ -35,21 +35,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "StartFrontIntake"
-          }
-        },
-        {
           "type": "wait",
           "data": {
             "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
           }
         },
         {
@@ -61,19 +49,13 @@
         {
           "type": "named",
           "data": {
-            "name": "L4Score"
+            "name": "ScoreL4"
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
           }
         },
         {
@@ -83,21 +65,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "StartFrontIntake"
-          }
-        },
-        {
           "type": "wait",
           "data": {
             "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
           }
         },
         {
@@ -109,19 +79,13 @@
         {
           "type": "named",
           "data": {
-            "name": "L4Score"
+            "name": "ScoreL4"
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
           }
         },
         {
@@ -131,21 +95,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "StartFrontIntake"
-          }
-        },
-        {
           "type": "wait",
           "data": {
             "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
           }
         },
         {
@@ -157,19 +109,13 @@
         {
           "type": "named",
           "data": {
-            "name": "L4Score"
+            "name": "ScoreL4"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
+            "pathName": "advancedPathPlanner.7"
           }
         }
       ]

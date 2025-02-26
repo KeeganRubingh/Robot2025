@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.382,
-        "y": 5.136
+        "x": 5.0115,
+        "y": 5.32175
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.130737704918032,
-        "y": 6.4764856557377035
+        "x": 5.622233606557376,
+        "y": 5.625358606557377
       },
       "isLocked": false,
-      "linkedName": "advancedPathPlanner.0"
+      "linkedName": "advancedPathPlanner.6"
     },
     {
       "anchor": {
-        "x": 1.70625,
-        "y": 7.31075
+        "x": 6.005840163934426,
+        "y": 6.020952868852459
       },
       "prevControl": {
-        "x": 1.398219459015038,
-        "y": 7.463959610901497
+        "x": 5.800292116023481,
+        "y": 5.878650374144883
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "advancedPathPlanner.1"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -34,23 +34,12 @@
   "eventMarkers": [
     {
       "name": "Stow",
-      "waypointRelativePos": 0.10209923664122908,
+      "waypointRelativePos": 0.10591603053435614,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
           "name": "Stow"
-        }
-      }
-    },
-    {
-      "name": "StationIntake",
-      "waypointRelativePos": 0.4905033238366551,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "StationIntake"
         }
       }
     }
@@ -65,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 123.32281121489281
+    "rotation": 55.1561245293354
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 54.43218423396953
+    "rotation": 55.1561245293354
   },
   "useDefaultConstraints": true
 }

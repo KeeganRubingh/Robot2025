@@ -20,7 +20,7 @@ import frc.robot.util.LoggedTunableNumber;
 public class StationIntakeToStow extends SequentialCommandGroup {
 
     private enum WristPositions {
-        SafeToSwingShoulder(new LoggedTunableNumber("StationIntakeToStow/wrist/SafeToSwingShoulder", -20.0)),
+        SafeToSwingShoulder(new LoggedTunableNumber("StationIntakeToStow/wrist/SafeToSwingShoulder", -45.0)),
         Final(new LoggedTunableNumber("StationIntakeToStow/wrist/FinalDegrees", 0));
 
         DoubleSupplier position;

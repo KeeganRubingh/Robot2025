@@ -31,7 +31,19 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "StowToL1",
+      "waypointRelativePos": 0.6313176895306835,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StowToL1"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.5,
     "maxAcceleration": 2.5,

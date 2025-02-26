@@ -25,13 +25,36 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "simplePathPlanner.3"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Stow",
+      "waypointRelativePos": 0.102099236641219,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow"
+        }
+      }
+    },
+    {
+      "name": "StationIntake",
+      "waypointRelativePos": 0.5868320610687009,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StationIntake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.5,
     "maxAcceleration": 2.5,
@@ -42,7 +65,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -53.74616226255526
+    "rotation": 122.38699999999999
   },
   "reversed": false,
   "folder": null,

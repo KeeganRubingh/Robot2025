@@ -26,6 +26,7 @@ public class StowCommand extends SequentialCommandGroup {
         Final(new LoggedTunableNumber("StowCommand/shoulder/FinalDegrees", 68));
 
         DoubleSupplier position;
+        
         MutAngle distance;
 
         ShoulderPositions(DoubleSupplier position) {
