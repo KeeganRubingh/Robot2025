@@ -19,6 +19,15 @@
  */
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Pounds;
+import static frc.robot.subsystems.vision.VisionConstants.limelightBackLeftName;
+import static frc.robot.subsystems.vision.VisionConstants.limelightBackRightName;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBackLeft;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBackRight;
+
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -27,10 +36,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Kilograms;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Pounds;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -44,22 +49,23 @@ import frc.robot.commands.AlgaeStowCommand;
 import frc.robot.commands.BargeScoreCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.GroundIntakeToStow;
-import frc.robot.commands.StowToL2;
-import frc.robot.commands.TakeAlgaeL2;
 import frc.robot.commands.OutakeAlgae;
 import frc.robot.commands.OutakeCoral;
+import frc.robot.commands.StationIntakeCommand;
+import frc.robot.commands.StationIntakeReverseCommand;
+import frc.robot.commands.StationIntakeToStow;
 import frc.robot.commands.StowCommand;
 import frc.robot.commands.StowToBarge;
 import frc.robot.commands.StowToGroundIntake;
 import frc.robot.commands.StowToL1;
+import frc.robot.commands.StowToL2;
 import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
+import frc.robot.commands.TakeAlgaeL2;
 import frc.robot.commands.TakeAlgaeL3;
-import frc.robot.commands.StationIntakeReverseCommand;
-import frc.robot.commands.StationIntakeToStow;
-import frc.robot.commands.StationIntakeCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
+import frc.robot.subsystems.algaeendeffector.AlgaeEndEffectorIONova;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffectorIOSim;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffectorIOTalonFX;
 import frc.robot.subsystems.arm.ArmJoint;
@@ -71,6 +77,7 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
+import frc.robot.subsystems.coralendeffector.CoralEndEffectorIONova;
 import frc.robot.subsystems.coralendeffector.CoralEndEffectorIOSim;
 import frc.robot.subsystems.coralendeffector.CoralEndEffectorIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
@@ -88,10 +95,6 @@ import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOSim;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOTalonFX;
 import frc.robot.subsystems.vision.AprilTagVision;
-import static frc.robot.subsystems.vision.VisionConstants.limelightBackLeftName;
-import static frc.robot.subsystems.vision.VisionConstants.limelightBackRightName;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBackLeft;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBackRight;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.wrist.Wrist;
@@ -239,12 +242,14 @@ public class RobotContainer {
         elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants(), InvertedValue.CounterClockwise_Positive), Optional.of(shoulder));
 
         coralEndEffector = new CoralEndEffector(new CoralEndEffectorIOTalonFX(canivoreCanBuilder.id(12).build(), canivoreCanBuilder.id(17).build()));
+        // coralEndEffector = new CoralEndEffector(new CoralEndEffectorIONova(canivoreCanBuilder.id(12).build(), canivoreCanBuilder.id(17).build()));
         
         intake = new Intake(new IntakeIOTalonFX(canivoreCanBuilder.id(18).build()));
 
         intakeExtender = new IntakeExtender(new IntakeExtenderIOTalonFX(rioCanBuilder.id(16).build()));
 
         algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIOTalonFX(canivoreCanBuilder.id(15).build(), canivoreCanBuilder.id(24).build()));
+        // algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIONova(canivoreCanBuilder.id(15).build(), canivoreCanBuilder.id(24).build()));
 
         climber = new Climber(new ClimberIOTalonFX(canivoreCanBuilder.id(19).build()));
 
