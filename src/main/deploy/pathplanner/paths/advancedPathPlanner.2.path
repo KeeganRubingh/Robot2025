@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "StationIntakeToStow",
-      "waypointRelativePos": 0.10618556701030735,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -45,7 +45,7 @@
     },
     {
       "name": "StowToL4",
-      "waypointRelativePos": 0.797594501718211,
+      "waypointRelativePos": 0.8902671755725152,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
