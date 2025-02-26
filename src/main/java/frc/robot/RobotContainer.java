@@ -449,6 +449,29 @@ public class RobotContainer {
 
     co_controller.povRight()
       .onTrue(new InstantCommand(() ->ReefPositionsUtil.getInstance().setAutoAlignSide(ReefPositionsUtil.AutoAlignSide.Right)));
+    // Climb
+    co_controller.start()
+      .onTrue(
+        climber.getNewSetServoAngleCommand(0.0)
+        .andThen(new WaitCommand(0.1))
+        .andThen(climber.getNewSetVoltsCommand(6.0))
+      )
+      .onFalse(
+        climber.getNewSetVoltsCommand(0.0)
+        .andThen(climber.getNewSetServoAngleCommand(90.0))
+      );
+
+    // Reverse climber
+    co_controller.back()
+    .onTrue(
+      climber.getNewSetServoAngleCommand(0.0)
+      .andThen(new WaitCommand(0.1))
+      .andThen(climber.getNewSetVoltsCommand(-6.0))
+    )
+    .onFalse(
+      climber.getNewSetVoltsCommand(0.0)
+    );
+
   }
 
   /**
