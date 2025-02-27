@@ -12,6 +12,8 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.google.flatbuffers.Constants;
 
 import static edu.wpi.first.units.Units.Amp;
 import static edu.wpi.first.units.Units.Rotations;
@@ -35,17 +37,17 @@ public class ArmJointIOTalonFX implements ArmJointIO {
 
   private Angle m_setPoint = Angle.ofRelativeUnits(0, Rotations);
 
-  public ArmJointIOTalonFX(ArmJointConstants constants, InvertedValue motorInversion) {
-    m_Constants = constants;
-    if(constants.CanCoderProfile != null) {
-      this.cancoder = new CANcoder(constants.CanCoderProfile.id(),constants.CanCoderProfile.bus());
-    }
-    Motor = new TalonFX(constants.LeaderProfile.id(),constants.LeaderProfile.bus());
-    Request = new MotionMagicVoltage(constants.StartingAngle);
-    configureTalons(motorInversion);
+  public ArmJointIOTalonFX(ArmJointConstants constants, InvertedValue motorInversion, SensorDirectionValue sensorDirection) {
+      m_Constants = constants;
+      if(constants.CanCoderProfile != null) {
+        this.cancoder = new CANcoder(constants.CanCoderProfile.id(),constants.CanCoderProfile.bus());
+      }
+      Motor = new TalonFX(constants.LeaderProfile.id(),constants.LeaderProfile.bus());
+      Request = new MotionMagicVoltage(constants.StartingAngle);
+      configureTalons(motorInversion, sensorDirection);
   }
 
-  private void configureTalons(InvertedValue motorInversion) {
+  private void configureTalons(InvertedValue motorInversion, SensorDirectionValue cancoderSensorDirection) {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
     cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
@@ -61,7 +63,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
 
       CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
       cc_cfg.MagnetSensor.MagnetOffset = m_Constants.CanCoderOffset.in(Rotations);//UNIT: ROTATIONS
-      // cc_cfg.MagnetSensor.SensorDirection = SenserDirectionValue.CounterClockwise_Positive; // TODO
+      cc_cfg.MagnetSensor.SensorDirection = cancoderSensorDirection;
       PhoenixUtil.tryUntilOk(5, () -> cancoder.getConfigurator().apply(cc_cfg));
     }
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));

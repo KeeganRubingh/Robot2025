@@ -44,7 +44,7 @@ public class ElbowConstants extends ArmJointConstants {
 
         this.NumMotors = 1;
         this.SensorToMechanismGearing = 1.0;
-        this.MotorToSensorGearing = 50.0;
+        this.MotorToSensorGearing = 50.0 * 39.0 / 38.0;
         this.Length = Inches.of(15);
         this.Weight = Pounds.of(8.5);
         this.Motors = DCMotor.getKrakenX60(NumMotors);
@@ -55,7 +55,7 @@ public class ElbowConstants extends ArmJointConstants {
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);
         this.ZPosition = Meters.of(0.377);
-        this.CanCoderOffset = Degrees.of(-54.6);
+        this.CanCoderOffset = Degrees.of(-202.0);
 
         this.LoggedName = "Elbow";
 
