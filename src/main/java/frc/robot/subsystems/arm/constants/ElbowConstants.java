@@ -32,7 +32,7 @@ public class ElbowConstants extends ArmJointConstants {
                 .kP(0.1).kI(0.0).kD(0.0).build();
         
         this.LoggedName = "Elbow";
-        this.TalonFXGains = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName, 30.0, 0, 0, 0, 0, 0, 0, 5.0, 10.0, 0, 0, 0);
+        this.TalonFXGains = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName, 95.0, 0, 0, 0, 0, 0, 0, 5.0, 8.0, 0, 0, 0);
 
         this.MaxVelocity = RotationsPerSecond.of(1);
         this.MaxAcceleration = RotationsPerSecondPerSecond.of(5);
@@ -55,7 +55,7 @@ public class ElbowConstants extends ArmJointConstants {
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);
         this.ZPosition = Meters.of(0.377);
-        this.CanCoderOffset = Degrees.of(-202.0);
+        this.CanCoderOffset = Degrees.of(203.0);
 
         this.LoggedName = "Elbow";
 
