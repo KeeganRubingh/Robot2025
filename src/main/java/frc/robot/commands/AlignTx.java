@@ -57,9 +57,7 @@ public class AlignTx extends Command {
 
     @Override
     public void initialize() {
-        targetIds = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red ? targetIdsRed : targetIdsBlue ;
-
-        m_direction = -1.0; //Currently camera in back of robot (go backwards) when camera in front use 1.0
+        m_direction = 1.0; //Currently camera in back of robot (go backwards) when camera in front use 1.0
         movingAverageFilter = LinearFilter.movingAverage(3);
         // if(co_controller != null) {
         //    return;
@@ -108,9 +106,7 @@ public class AlignTx extends Command {
 
     @Override
     public boolean isFinished() {
-        return
-        (MathUtil.isNear(0, m_strafe, 0.01) && MathUtil.isNear(0, 0, 0.01))
-        ||(!Arrays.stream(targetIds).anyMatch((i)->i==targetId));
+        return false;
     }
     
 }

@@ -98,6 +98,10 @@ import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOSim;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOTalonFX;
 import frc.robot.subsystems.vision.AprilTagVision;
+import static frc.robot.subsystems.vision.VisionConstants.limelightLeftName;
+import static frc.robot.subsystems.vision.VisionConstants.limelightRightName;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraLeft;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraRight;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.wrist.Wrist;
@@ -183,10 +187,8 @@ public class RobotContainer {
             new AprilTagVision(
                 drive::setPose,
                 drive::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(
-                    limelightBackLeftName, robotToCameraBackLeft, drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    limelightBackRightName, robotToCameraBackRight, drive::getPose));
+                new VisionIOPhotonVisionSim(limelightLeftName, robotToCameraLeft, drive::getPose),
+                new VisionIOPhotonVisionSim(limelightRightName, robotToCameraRight, drive::getPose));
 
         wrist = new Wrist(new WristIOSim(3));
         elevator = new Elevator(
@@ -231,11 +233,11 @@ public class RobotContainer {
           new ModuleIOTalonFX(TunerConstants.BackRight));
 
         vision =
-        new AprilTagVision(
-          drive::setPose,
-          drive::addVisionMeasurement,
-          new VisionIOLimelight(limelightBackRightName, drive::getRotation),
-          new VisionIOLimelight(limelightBackLeftName, drive::getRotation));
+            new AprilTagVision(
+                drive::setPose,
+                drive::addVisionMeasurement,
+                new VisionIOLimelight(limelightLeftName, drive::getRotation),
+                new VisionIOLimelight(limelightRightName, drive::getRotation));
 
         wrist = new Wrist(new WristIOTalonFX(canivoreCanBuilder.id(11).build(),canivoreCanBuilder.id(15).build()));
 

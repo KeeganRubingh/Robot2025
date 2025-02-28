@@ -113,6 +113,7 @@ public class Vision extends SubsystemBase {
         if (tagPose.isPresent()) {
           tagPoses.add(tagPose.get());
         }
+        
       }
 
       // Loop over pose observations
@@ -197,6 +198,11 @@ public class Vision extends SubsystemBase {
     Logger.recordOutput(
         "Vision/Summary/RobotPosesRejected",
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
+  
+    for(int i = 0; i < inputs.length; i++){
+      Logger.recordOutput("Vision/Auto_Align/TX" + i, getTargetX(i).getDegrees());
+      Logger.recordOutput("Vision/Auto_Align/TY" + i, getTargetY(i).getDegrees());
+    }
   }
 // accepts the poses, timestamp, and vision measurements deviations.
   @FunctionalInterface
