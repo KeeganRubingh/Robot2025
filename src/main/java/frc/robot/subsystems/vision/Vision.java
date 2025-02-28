@@ -75,6 +75,14 @@ public class Vision extends SubsystemBase {
     return inputs[cameraIndex].latestTargetObservation.ty();
   }
 
+  public Double getTargetDistance(int cameraIndex) {
+    return inputs[cameraIndex].poseObservations.length > 0 ? inputs[cameraIndex].poseObservations[0].averageTagDistance() : 0;
+  }
+
+  public Integer getTargetId(int cameraIndex) {
+    return (int) inputs[cameraIndex].latestTargetObservation.tagId();
+  }
+
   @Override
   public void periodic() {
     for (int i = 0; i < io.length; i++) {
