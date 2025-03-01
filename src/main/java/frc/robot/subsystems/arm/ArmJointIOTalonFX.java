@@ -84,7 +84,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
 
       PhoenixUtil.tryUntilOk(5, ()->FollowerMotor.getConfigurator().apply(f_cfg));
 
-      FollowerMotor.setControl(new Follower(Motor.getDeviceID(), true));
+      FollowerMotor.setControl(new Follower(Motor.getDeviceID(), false));
     }
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
     setGains(Gains.getEmpty());
