@@ -20,6 +20,7 @@ import frc.robot.util.LoggedTunableGainsBuilder;
 public class ElbowConstants extends ArmJointConstants {
     public ElbowConstants() {
         this.LeaderProfile = CanDef.builder().id(10).bus(CanBus.CANivore).build();
+        this.FollowerProfile = null;
         this.CanCoderProfile = CanDef.builder().id(23).bus(CanBus.CANivore).build();
 
         this.SimGains =

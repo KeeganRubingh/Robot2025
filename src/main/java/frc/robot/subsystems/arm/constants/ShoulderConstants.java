@@ -18,6 +18,7 @@ import frc.robot.util.LoggedTunableGainsBuilder;
 public class ShoulderConstants extends ArmJointConstants {
     public ShoulderConstants() {
         this.LeaderProfile = CanDef.builder().id(9).bus(CanBus.CANivore).build();
+        this.FollowerProfile = CanDef.builder().id(25).bus(CanBus.CANivore).build(); //TODO: Set
         this.CanCoderProfile = CanDef.builder().id(22).bus(CanBus.CANivore).build();
 
         this.SimGains =

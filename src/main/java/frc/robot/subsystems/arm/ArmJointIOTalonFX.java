@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -26,8 +27,9 @@ import frc.robot.util.LoggedTunableGainsBuilder;
 import frc.robot.util.PhoenixUtil;
 
 public class ArmJointIOTalonFX implements ArmJointIO {
-  public MotionMagicVoltage Request;
-  public TalonFX Motor;
+  public MotionMagicVoltage Request = null;
+  public TalonFX Motor = null;
+  public TalonFX FollowerMotor = null;
 
   public ArmInputs inputs;
   
@@ -43,6 +45,9 @@ public class ArmJointIOTalonFX implements ArmJointIO {
         this.cancoder = new CANcoder(constants.CanCoderProfile.id(),constants.CanCoderProfile.bus());
       }
       Motor = new TalonFX(constants.LeaderProfile.id(),constants.LeaderProfile.bus());
+      if(constants.FollowerProfile != null) {
+        FollowerMotor = new TalonFX(constants.FollowerProfile.id(),constants.FollowerProfile.bus());
+      }
       Request = new MotionMagicVoltage(constants.StartingAngle);
       configureTalons(motorInversion, sensorDirection);
   }
@@ -65,6 +70,21 @@ public class ArmJointIOTalonFX implements ArmJointIO {
       cc_cfg.MagnetSensor.MagnetOffset = m_Constants.CanCoderOffset.in(Rotations);//UNIT: ROTATIONS
       cc_cfg.MagnetSensor.SensorDirection = cancoderSensorDirection;
       PhoenixUtil.tryUntilOk(5, () -> cancoder.getConfigurator().apply(cc_cfg));
+    }
+
+    if(FollowerMotor != null) {
+      TalonFXConfiguration f_cfg = new TalonFXConfiguration();
+      f_cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+      f_cfg.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+      f_cfg.CurrentLimits.SupplyCurrentLimit = m_Constants.SupplyCurrentLimit.in(Amp);
+      f_cfg.CurrentLimits.StatorCurrentLimit = m_Constants.TorqueCurrentLimit.in(Amp);
+      f_cfg.MotorOutput.Inverted = motorInversion;
+      f_cfg.Feedback.SensorToMechanismRatio = m_Constants.SensorToMechanismGearing;
+      f_cfg.Feedback.RotorToSensorRatio = m_Constants.MotorToSensorGearing;
+
+      PhoenixUtil.tryUntilOk(5, ()->FollowerMotor.getConfigurator().apply(f_cfg));
+
+      FollowerMotor.setControl(new Follower(Motor.getDeviceID(), true));
     }
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
     setGains(Gains.getEmpty());
