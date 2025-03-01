@@ -20,6 +20,7 @@ import frc.robot.util.LoggedTunableGainsBuilder;
 public class ElbowConstants extends ArmJointConstants {
     public ElbowConstants() {
         this.LeaderProfile = CanDef.builder().id(10).bus(CanBus.CANivore).build();
+        this.FollowerProfile = null;
         this.CanCoderProfile = CanDef.builder().id(23).bus(CanBus.CANivore).build();
 
         this.SimGains =
@@ -32,7 +33,7 @@ public class ElbowConstants extends ArmJointConstants {
                 .kP(0.1).kI(0.0).kD(0.0).build();
         
         this.LoggedName = "Elbow";
-        this.TalonFXGains = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName, 30.0, 0, 0, 0, 0, 0, 0, 5.0, 10.0, 0, 0, 0);
+        this.TalonFXGains = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName, 95.0, 0, 0, 0, 0, 0, 0, 5.0, 8.0, 0, 0, 0);
 
         this.MaxVelocity = RotationsPerSecond.of(1);
         this.MaxAcceleration = RotationsPerSecondPerSecond.of(5);
@@ -44,7 +45,7 @@ public class ElbowConstants extends ArmJointConstants {
 
         this.NumMotors = 1;
         this.SensorToMechanismGearing = 1.0;
-        this.MotorToSensorGearing = 50.0;
+        this.MotorToSensorGearing = 50.0 * 39.0 / 38.0;
         this.Length = Inches.of(15);
         this.Weight = Pounds.of(8.5);
         this.Motors = DCMotor.getKrakenX60(NumMotors);
@@ -55,7 +56,7 @@ public class ElbowConstants extends ArmJointConstants {
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);
         this.ZPosition = Meters.of(0.377);
-        this.CanCoderOffset = Degrees.of(-54.6);
+        this.CanCoderOffset = Degrees.of(203.0);
 
         this.LoggedName = "Elbow";
 

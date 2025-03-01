@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import frc.robot.RobotState;
@@ -17,13 +18,14 @@ import frc.robot.util.LoggedTunableGainsBuilder;
 public class ShoulderConstants extends ArmJointConstants {
     public ShoulderConstants() {
         this.LeaderProfile = CanDef.builder().id(9).bus(CanBus.CANivore).build();
+        this.FollowerProfile = CanDef.builder().id(25).bus(CanBus.CANivore).build(); //TODO: Set
         this.CanCoderProfile = CanDef.builder().id(22).bus(CanBus.CANivore).build();
 
         this.SimGains =
             Gains.builder().kS(0.0).kG(0.0).kV(0.0).kA(0.0).kP(0.1).kI(0.0).kD(0.0).build();
 
         this.LoggedName = "Shoulder";
-        this.TalonFXGains = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName, 20.0, 0, 0.0, 0, -0.70, 0, 0, 2.0, 1.25, 0, 0, 0);
+        this.TalonFXGains = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName, 70.0, 0, 0.0, 1.0, 0.0, 6.0, 3.0, 1.0, 4.0, 0, 0, 0);
 
         this.MaxVelocity = RotationsPerSecond.of(1);
         this.MaxAcceleration = RotationsPerSecondPerSecond.of(5);
@@ -35,7 +37,7 @@ public class ShoulderConstants extends ArmJointConstants {
 
         this.NumMotors = 1;
         this.SensorToMechanismGearing = 1;
-        this.MotorToSensorGearing = 50;
+        this.MotorToSensorGearing = 51.3;//Greg moved a tooth on the gear
         this.Length = Inches.of(18);
         this.Weight = Pounds.of(15);
         this.Motors = DCMotor.getKrakenX60(NumMotors);
@@ -46,8 +48,8 @@ public class ShoulderConstants extends ArmJointConstants {
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);
         this.ZPosition = Meters.of(0.377);
-        this.CanCoderOffset = Degrees.of(82);
-
+        this.CanCoderOffset = Degrees.of(-2.2);
+        
         this.mechanismSimCallback = (d) -> {
             RobotState.instance().setShoulderSource(d);
         };

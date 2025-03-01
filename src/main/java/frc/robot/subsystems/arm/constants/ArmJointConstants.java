@@ -17,6 +17,7 @@ import frc.robot.util.LoggedTunableGainsBuilder;
 
 public abstract class ArmJointConstants {
     public CanDef LeaderProfile;
+    public CanDef FollowerProfile = null;
     public CanDef CanCoderProfile;
 
     public Gains SimGains;
