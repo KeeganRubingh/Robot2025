@@ -27,7 +27,7 @@ public class ShoulderConstants extends ArmJointConstants {
         this.LoggedName = "Shoulder";
         this.TalonFXGains = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName, 70.0, 0, 0.0, 1.0, 0.0, 6.0, 3.0, 1.0, 4.0, 0, 0, 0);
 
-        this.MaxVelocity = RotationsPerSecond.of(1);
+        this.MaxVelocity = RotationsPerSecond.of(.1);
         this.MaxAcceleration = RotationsPerSecondPerSecond.of(5);
         this.MaxJerk = 0.0;
         this.TorqueCurrentLimit = Amps.of(120);
