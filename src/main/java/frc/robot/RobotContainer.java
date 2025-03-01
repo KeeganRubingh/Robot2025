@@ -23,13 +23,11 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
-import static frc.robot.subsystems.vision.VisionConstants.limelightBackLeftName;
-import static frc.robot.subsystems.vision.VisionConstants.limelightBackRightName;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBackLeft;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBackRight;
 
 import java.util.HashMap;
 import java.util.Optional;
+
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -44,6 +42,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AlgaeStowCommand;
@@ -66,7 +65,7 @@ import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
 import frc.robot.commands.TakeAlgaeL2;
 import frc.robot.commands.TakeAlgaeL3;
-import frc.robot.commands.TakeCoral;
+// import frc.robot.commands.TakeCoral;
 import frc.robot.commands.AlignTx;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
@@ -218,6 +217,7 @@ public class RobotContainer {
         intakeExtender = new IntakeExtender(new IntakeExtenderIOSim(16));
         climber = new Climber(new ClimberIOSim(19));
         
+        SmartDashboard.putData(drive);
       break;
       
       //real is default because it is safer
@@ -398,7 +398,12 @@ public class RobotContainer {
     // Back Coral Station Intake
     co_controller.povLeft()
       .onTrue(new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
-      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));    
+    
+    co_controller.povLeft().whileTrue(new AlignTx(drive, vision, 0));
+    co_controller.povRight().whileTrue(new AlignTx(drive, vision, 1));
+    
+    
   }
 
   /**
@@ -481,9 +486,6 @@ public class RobotContainer {
     //  .onFalse(algaeEndEffector.getNewSetVoltsCommand(4).alongWith(elevator.getNewSetDistanceCommand(0)).alongWith(elbow.getNewSetAngleCommand(70)).alongWith(shoulder.getNewSetAngleCommand(20)));
     //  //Eject Algae
     //co_controller.leftTrigger().onTrue(new OutakeAlgae(algaeEndEffector)).onFalse(algaeEndEffector.getNewSetVoltsCommand(0));
-
-    co_controller.povLeft().whileTrue(new AlignTx(drive, vision, 0));
-    co_controller.povRight().whileTrue(new AlignTx(drive, vision, 1));
 
     // TODO: Implement climbing controls (L Bumper climb and (maybe) L Trigger unclimb)
 

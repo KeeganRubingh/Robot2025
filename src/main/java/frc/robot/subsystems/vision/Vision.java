@@ -83,6 +83,10 @@ public class Vision extends SubsystemBase {
     return (int) inputs[cameraIndex].latestTargetObservation.tagId();
   }
 
+  public void setTargetFilter(int[] filter) {
+    
+  }
+
   @Override
   public void periodic() {
     for (int i = 0; i < io.length; i++) {
