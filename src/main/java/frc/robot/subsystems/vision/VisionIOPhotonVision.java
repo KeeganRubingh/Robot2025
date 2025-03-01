@@ -55,7 +55,7 @@ public class VisionIOPhotonVision implements VisionIO {
     Set<Short> tagIds = new HashSet<>();
     List<PoseObservation> poseObservations = new LinkedList<>();
     for (var result : camera.getAllUnreadResults()) {
-      result.targets.removeIf((e)->tagFilter.contains(Integer.toUnsignedLong(e.fiducialId)));
+      result.targets.removeIf((e)->tagFilter.contains((long) e.fiducialId));
       
       // Update latest target observation
       if (result.hasTargets()) {
@@ -149,7 +149,7 @@ public class VisionIOPhotonVision implements VisionIO {
 @Override
 public void setTagIdFilter(int[] filter) {
   tagFilter = new HashSet<Long>();
-  Arrays.stream(filter).forEach((i)->tagFilter.add(Integer.toUnsignedLong(i)));
+  Arrays.stream(filter).forEach((i)->tagFilter.add((long)i));
 }
 
 }

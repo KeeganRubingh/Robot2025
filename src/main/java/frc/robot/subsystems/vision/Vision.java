@@ -13,7 +13,19 @@
 
 package frc.robot.subsystems.vision;
 
-import static frc.robot.subsystems.vision.VisionConstants.*;
+import static frc.robot.subsystems.vision.VisionConstants.angularStdDevBaseline;
+import static frc.robot.subsystems.vision.VisionConstants.angularStdDevMegatag2Factor;
+import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
+import static frc.robot.subsystems.vision.VisionConstants.cameraStdDevFactors;
+import static frc.robot.subsystems.vision.VisionConstants.linearStdDevBaseline;
+import static frc.robot.subsystems.vision.VisionConstants.linearStdDevMegatag2Factor;
+import static frc.robot.subsystems.vision.VisionConstants.maxAmbiguity;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -25,18 +37,19 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO.PoseObservation;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
-import java.util.LinkedList;
-import java.util.List;
-import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
   private final VisionConsumer consumer;
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
+
+  private double targetDistance = 0;
 
   public Vision(VisionConsumer consumer, VisionIO... io) {
     this.consumer = consumer;
@@ -76,15 +89,14 @@ public class Vision extends SubsystemBase {
   }
 
   public Double getTargetDistance(int cameraIndex) {
-    return inputs[cameraIndex].poseObservations.length > 0 ? inputs[cameraIndex].poseObservations[0].averageTagDistance() : 0;
+    if (inputs[cameraIndex].poseObservations.length > 0) {
+      targetDistance = inputs[cameraIndex].poseObservations[0].averageTagDistance();
+    }
+    return targetDistance;
   }
 
   public Integer getTargetId(int cameraIndex) {
     return (int) inputs[cameraIndex].latestTargetObservation.tagId();
-  }
-
-  public void setTargetFilter(int[] filter) {
-    
   }
 
   @Override
@@ -224,4 +236,27 @@ public class Vision extends SubsystemBase {
   public void addVisionMeasurement(Pose2d pose, double timestamp, Vector<N3> fill) {
     consumer.accept(pose, timestamp, fill);
   }
+
+  public Command setTagFilterCommand(int[] filter) {
+    return new InstantCommand(() -> {
+      setTagFilter(filter);
+    });
+  }
+
+  public void setTagFilter(int[] filter) {
+    // Creates a stream for array then sets the TagId for each camera.
+    Arrays.stream(io).forEach((e) -> {e.setTagIdFilter(filter);});
+  }
+
+  public Command setDefaultTagFilterCommand() {
+    return new InstantCommand(() -> {
+      setDefaultTagFilter();
+    });
+  }
+
+  public void setDefaultTagFilter() {
+    Arrays.stream(io).forEach((e) -> {e.setDefaultTagFilter();});
+  }
+
+  
 }

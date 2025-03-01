@@ -24,6 +24,7 @@ public class AlignTx extends Command {
         17,18,19,20,21,22
     };
 
+    private static int[] teamTargetIds;
     private static int[] targetIds;
 
     private Drive m_drive;
@@ -36,28 +37,46 @@ public class AlignTx extends Command {
     private double m_direction;
     private double slope = 0.9; //Needs to be changed to the current slope
     private double m_distance;  
-    private PIDController pid = new PIDController(1, 0.0, 0.0);
-    private PIDController distancePID = new PIDController(0.1, 0.0, 0.0);
+    private PIDController pid = new PIDController(0.03, 0.0, 0.0);
+    private PIDController distancePID = new PIDController(0.2, 0.0, 0.0);
     private int targetId = 0;
 
-    private final double MAX_STRAFE = 0.3; 
+    private final double MAX_STRAFE = 0.3;
     private final double MAX_THROTTLE = 1.0;
     private final double MAX_SPEED = 2.0;
     private final double DISTANCE_TARGET = 0.2;
 
+    private final CORAL_SETTING m_setting;
 
-    public AlignTx(Drive drive, Vision limeLight, int cameraIndex) {
+    public enum CORAL_SETTING {
+        LEFTCORAL(-12.87,0.9),
+        RIGHTCORAL(6.49,0.9)
+        ;
+        public final double FINAL_OFFSET;
+        public final double SLOPE;
+
+        private CORAL_SETTING(double finaloffset, double slope) {
+            FINAL_OFFSET = finaloffset;
+            SLOPE = slope;
+        }
+
+    }
+
+
+    public AlignTx(Drive drive, Vision limeLight, int cameraIndex,CORAL_SETTING setting) {
         this.m_drive = drive;
         this.m_limeLight = limeLight;
         this.m_cameraIndex = cameraIndex;
         this.targetId = m_limeLight.getTargetId(m_cameraIndex);
+        teamTargetIds = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red ? targetIdsRed : targetIdsBlue;
+        m_setting = setting;
         
         addRequirements(m_drive);
     }
 
     @Override
     public void initialize() {
-        m_direction = 1.0; //Currently camera in back of robot (go backwards) when camera in front use 1.0
+        m_direction = -1.0; //Currently camera in back of robot (go backwards) when camera in front use 1.0
         movingAverageFilter = LinearFilter.movingAverage(3);
         // if(co_controller != null) {
         //    return;
@@ -66,6 +85,8 @@ public class AlignTx extends Command {
         // highPassFilter = LinearFilter.highPass(HIGH_PASS_SECONDS, 0.02);
 
         targetId = m_limeLight.getTargetId(m_cameraIndex);
+        targetIds = new int[] {targetId};
+        m_limeLight.setTagFilter(targetIds);
         
     }
 
@@ -75,14 +96,15 @@ public class AlignTx extends Command {
         Rotation2d ty = m_limeLight.getTargetY(m_cameraIndex); // degrees up and down from crosshair
         
 
-        double linearTX = movingAverageFilter.calculate((tx.getDegrees() <= -100.0 && ty.getDegrees() <= -100.0) ? 0.0 : (ty.getDegrees()/slope) - tx.getDegrees() + 2.0); //-100.0 is just a temporary value that cannot be reached
+        double linearTX = movingAverageFilter.calculate((ty.getDegrees()/m_setting.SLOPE) - tx.getDegrees() + m_setting.FINAL_OFFSET); //-100.0 is just a temporary value that cannot be reached
 
-        if (tx.getDegrees() == 0.0 || ty.getDegrees() == 0.0) {
-            linearTX = 0.0;
+        if (tx.getDegrees() == 0.0 && ty.getDegrees() == 0.0) {
+            linearTX = 0.000001;
         }
 
         m_strafe = m_direction * MathUtil.clamp(pid.calculate(-linearTX, 0.0), -MAX_STRAFE, MAX_STRAFE) * MAX_SPEED; 
-        m_throttle = distancePID.calculate(m_limeLight.getTargetDistance(m_cameraIndex),DISTANCE_TARGET);
+        Double targetDistance = m_limeLight.getTargetDistance(m_cameraIndex);
+        m_throttle = distancePID.calculate(targetDistance,DISTANCE_TARGET);
         targetId = m_limeLight.getTargetId(m_cameraIndex);
 
          /* 
@@ -98,6 +120,8 @@ public class AlignTx extends Command {
           m_drive.runVelocity(speeds);
 
         Logger.recordOutput("AlignTx/TargetTag", targetId);
+        Logger.recordOutput("AlignTx/TargetOptions", targetIds);
+        Logger.recordOutput("AlignTx/TargetDist", targetDistance);
         Logger.recordOutput("AlignTx/TX", tx);
         Logger.recordOutput("AlignTx/TY", ty);
         Logger.recordOutput("AlignTx/adjustedTX", linearTX);
@@ -107,6 +131,11 @@ public class AlignTx extends Command {
     @Override
     public boolean isFinished() {
         return false;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        m_limeLight.setDefaultTagFilter();
     }
     
 }

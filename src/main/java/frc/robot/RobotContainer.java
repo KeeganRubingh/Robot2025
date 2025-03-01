@@ -23,6 +23,10 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
+import static frc.robot.subsystems.vision.VisionConstants.limelightLeftName;
+import static frc.robot.subsystems.vision.VisionConstants.limelightRightName;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraLeft;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraRight;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -46,6 +50,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AlgaeStowCommand;
+// import frc.robot.commands.TakeCoral;
+import frc.robot.commands.AlignTx;
 import frc.robot.commands.BargeScoreCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.GroundIntakeToStow;
@@ -55,7 +61,6 @@ import frc.robot.commands.OutakeCoral;
 import frc.robot.commands.StationIntakeCommand;
 import frc.robot.commands.StationIntakeReverseCommand;
 import frc.robot.commands.StationIntakeToStow;
-import frc.robot.commands.RoughAlignToReef;
 import frc.robot.commands.StowCommand;
 import frc.robot.commands.StowToBarge;
 import frc.robot.commands.StowToGroundIntake;
@@ -97,10 +102,6 @@ import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOSim;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOTalonFX;
 import frc.robot.subsystems.vision.AprilTagVision;
-import static frc.robot.subsystems.vision.VisionConstants.limelightLeftName;
-import static frc.robot.subsystems.vision.VisionConstants.limelightRightName;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCameraLeft;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCameraRight;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.wrist.Wrist;
@@ -375,6 +376,29 @@ public class RobotContainer {
       .onTrue(new OutakeCoral(coralEndEffector))
       .onFalse(coralEndEffector.getNewSetVoltsCommand(0.0));
 
+    double povSpeed = 1.0;
+    double REVERSE = -1.0;
+    controller
+        .povUp()
+        .whileTrue(
+            DriveCommands.joystickForwardDrive(
+                drive, () -> povSpeed * REVERSE, () -> 0.0, null));
+    controller
+        .povDown()
+        .whileTrue(
+            DriveCommands.joystickForwardDrive(
+                drive, () -> -(povSpeed * REVERSE), () -> 0.0, null));
+    controller
+        .povRight()
+        .whileTrue(
+            DriveCommands.joystickForwardDrive(
+                drive, () -> 0.0, () -> -(povSpeed * REVERSE), null));
+    controller
+        .povLeft()
+        .whileTrue(
+            DriveCommands.joystickForwardDrive(
+                drive, () -> 0.0, () -> (povSpeed * REVERSE), null));
+
     //L4
     co_controller.y().and(controller.rightBumper().negate())
       .onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L4));
@@ -398,12 +422,11 @@ public class RobotContainer {
     // Back Coral Station Intake
     co_controller.povLeft()
       .onTrue(new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
-      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));    
-    
-    co_controller.povLeft().whileTrue(new AlignTx(drive, vision, 0));
-    co_controller.povRight().whileTrue(new AlignTx(drive, vision, 1));
-    
-    
+      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+
+    // AlignTx Command
+    testcontroller.povLeft().whileTrue(new AlignTx(drive, vision, 0,AlignTx.CORAL_SETTING.LEFTCORAL));
+    testcontroller.povRight().whileTrue(new AlignTx(drive, vision, 1,AlignTx.CORAL_SETTING.RIGHTCORAL));
   }
 
   /**

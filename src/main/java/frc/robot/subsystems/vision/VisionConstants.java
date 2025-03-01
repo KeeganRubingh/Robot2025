@@ -24,8 +24,8 @@ public class VisionConstants {
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   // Camera names, must match names configured on coprocessor
-  public static String limelightLeftName = "limelight-left";
-  public static String limelightRightName = "limelight-right";
+  public static String limelightLeftName = "limelight-backl";
+  public static String limelightRightName = "limelight-backr";
 
   // Robot to camera transforms
   // (Not used by Limelight, configure in web UI instead)
