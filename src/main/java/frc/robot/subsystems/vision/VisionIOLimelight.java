@@ -99,11 +99,19 @@ public class VisionIOLimelight implements VisionIO {
     // control in code
     boolean useMega1 = true;
     boolean useBoth = true;
+    int closestTag = 0;
+    double closedDist = 9999.0;
     if (useMega1 || useBoth)
       for (var rawSample : megatag1Subscriber.readQueue()) {
         if (rawSample.value.length == 0) continue;
         for (int i = 11; i < rawSample.value.length; i += 7) {
-          tagIds.add((int) rawSample.value[i]);
+          double tagDist = rawSample.value[i+5];
+          int tag = (int) rawSample.value[i];
+          tagIds.add(tag);
+          if(tagDist < closedDist) {
+              closedDist = tagDist;
+              closestTag = tag;
+          }
         }
         poseObservations.add(
             new PoseObservation(
@@ -126,13 +134,23 @@ public class VisionIOLimelight implements VisionIO {
                 rawSample.value[9],
 
                 // Observation type
-                PoseObservationType.MEGATAG_1));
+                PoseObservationType.MEGATAG_1,
+                closestTag,
+                closedDist));
       }
+      closestTag = 0;
+      closedDist = 9999.0;
     if (!useMega1 || useBoth)
       for (var rawSample : megatag2Subscriber.readQueue()) {
         if (rawSample.value.length == 0) continue;
         for (int i = 11; i < rawSample.value.length; i += 7) {
-          tagIds.add((int) rawSample.value[i]);
+          double tagDist = rawSample.value[i+5];
+          int tag = (int) rawSample.value[i];
+          tagIds.add(tag);
+          if(tagDist < closedDist) {
+              closedDist = tagDist;
+              closestTag = tag;
+          }
         }
         poseObservations.add(
             new PoseObservation(
@@ -154,7 +172,9 @@ public class VisionIOLimelight implements VisionIO {
                 rawSample.value[9],
 
                 // Observation type
-                PoseObservationType.MEGATAG_2));
+                PoseObservationType.MEGATAG_2,
+                closestTag,
+                closedDist));
       }
 
     // Save pose observations to inputs object
