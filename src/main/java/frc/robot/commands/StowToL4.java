@@ -23,7 +23,7 @@ public class StowToL4 extends SequentialCommandGroup {
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("MoveToL4Command/shoulder/StartingDegrees", 0)),
         MidPoint(new LoggedTunableNumber("MoveToL4Command/shoulder/MidPointDegrees", 0)),
-        SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", 40)),
+        SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", -20)),
         Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", -70));
 
         DoubleSupplier position;
@@ -42,7 +42,7 @@ public class StowToL4 extends SequentialCommandGroup {
 
     private enum ElbowPositions {
         Starting(new LoggedTunableNumber("MoveToL4Command/elbow/StartingDegrees", 0)),
-        ShoulderSafeSwing(new LoggedTunableNumber("MoveToL4Command/elbow/ShoulderSafeSwingDegrees", 45)),
+        MidPoint(new LoggedTunableNumber("MoveToL4Command/elbow/ShoulderSafeSwingDegrees", 45)),
         Final(new LoggedTunableNumber("MoveToL4Command/elbow/FinalDegrees", -100));
 
         DoubleSupplier position;
@@ -79,6 +79,7 @@ public class StowToL4 extends SequentialCommandGroup {
 
     private enum ElevatorPositions {
         Starting(new LoggedTunableNumber("MoveToL4Command/elevator/StartingInches", 0)),
+        SafeToSwingShoulder(new LoggedTunableNumber("MoveToL4Command/elevator/SafeToSwingShoulderInches", 5.0)),
         Final(new LoggedTunableNumber("MoveToL4Command/elevator/FinalInches", 16));
 
         DoubleSupplier position;
@@ -98,17 +99,18 @@ public class StowToL4 extends SequentialCommandGroup {
     public StowToL4(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position)
-                .raceWith(
-                    new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
+            elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position)
+                .alongWith(
+                    new WaitUntilCommand(elevator.getNewGreaterThanDistanceTrigger(ElevatorPositions.SafeToSwingShoulder.position))
+                ),
+            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
+            elbow.getNewSetAngleCommand(ElbowPositions.MidPoint.position)
+                .andThen(
+                    new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
                         .andThen(
                             elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
-                                .raceWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.position))
                         )
-                    )
-                ),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
-                .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position))  
+                )
         );
         addRequirements(shoulder, elbow, wrist, elevator);
     }

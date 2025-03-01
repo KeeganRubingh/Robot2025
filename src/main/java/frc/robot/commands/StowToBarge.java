@@ -82,6 +82,7 @@ public class StowToBarge extends SequentialCommandGroup {
 
     private enum ElevatorPositions {
         Starting(new LoggedTunableNumber("BargeScoreCommand/elevator/StartingInches", 0)),
+        SafeToSwingShoulder(new LoggedTunableNumber("BargeScoreCommand/elevator/SafeToSwingShoulderInches", 5.0)),
         Final(new LoggedTunableNumber("BargeScoreCommand/elevator/FinalInches", 26.0));
 
         DoubleSupplier position;
@@ -101,17 +102,11 @@ public class StowToBarge extends SequentialCommandGroup {
     public StowToBarge(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
         super( 
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position)
-                .raceWith(
-                    new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
-                        .andThen(
-                            elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
-                                .raceWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.position))
-                        )
-                    )
+            elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position)
+                .alongWith(
+                    new WaitUntilCommand(elevator.getNewGreaterThanDistanceTrigger(ElevatorPositions.SafeToSwingShoulder.position))
                 ),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
-                .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position))  
+            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position) 
         );
         addRequirements(shoulder, elbow, wrist, elevator);
     }

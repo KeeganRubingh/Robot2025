@@ -85,6 +85,17 @@ public class Elevator extends SubsystemBase {
     });
   }
 
+  /**
+   * Returns when this joint is greater than 'angle' away from the forward horizontal
+   * @param angle
+   * @return
+   */
+  public Trigger getNewGreaterThanDistanceTrigger(DoubleSupplier distance) {
+    return new Trigger(() -> {
+      return loggedelevator.distance.in(Inches) > distance.getAsDouble();
+    });
+  }
+
   @Override
   public void periodic() {
     tunableGains.ifGainsHaveChanged((gains) -> this.m_ElevatorIO.setGains(gains));

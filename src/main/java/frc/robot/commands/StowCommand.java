@@ -21,8 +21,8 @@ public class StowCommand extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("StowCommand/shoulder/StartingDegrees", 0)),
-        MidPoint(new LoggedTunableNumber("StowCommand/shoulder/MidPointDegrees", 110)),
-        SafeToSwingElbow(new LoggedTunableNumber("StowCommand/shoulder/SafeToSwingElbowDegrees", 100)),
+        SafeToSwingElbow(new LoggedTunableNumber("StowCommand/shoulder/SafeToSwingElbowDegrees", 90)),
+        SafeToSwingElbowHigh(new LoggedTunableNumber("StowCommand/shoulder/SafeToSwingElbowHighDegrees", 10)),
         Final(new LoggedTunableNumber("StowCommand/shoulder/FinalDegrees", 68));
 
         DoubleSupplier position;
@@ -42,7 +42,6 @@ public class StowCommand extends SequentialCommandGroup {
 
     private enum ElbowPositions {
         Starting(new LoggedTunableNumber("StowCommand/elbow/StartingDegrees", 0)),
-        ShoulderSafeSwing(new LoggedTunableNumber("StowCommand/elbow/ShoulderSafeSwingDegrees", 45)),
         Final(new LoggedTunableNumber("StowCommand/elbow/FinalDegrees", 65));
 
         DoubleSupplier position;
@@ -98,18 +97,15 @@ public class StowCommand extends SequentialCommandGroup {
     public StowCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position)
-                // TODO: IMPLEMENT SAFEZONES WITH CORRECT VALUES (NOTE: MAY COME FROM EITHER SIDE)
-                // .alongWith(
-                //     new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
-                // )
+            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
+            elevator.getNewSetDistanceCommand(ElevatorPositions.Final.distance().in(Inches))
+                .alongWith(
+                    new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position)),
+                    new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbowHigh.position))
+                )
                 .andThen(
                     elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
-                    //     .alongWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.position))                    
-                    // )
                 ),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
-                .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.distance().in(Inches))),
             coralEE.getNewSetVoltsCommand(1)
                 .alongWith(algaeEE.getNewSetVoltsCommand(0))
         );
