@@ -23,8 +23,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("StowToAlgaeStow/shoulder/StartingDegrees", 0.0)),
         Final(new LoggedTunableNumber("StowToAlgaeStow/shoulder/FinalDegrees", 20.0)), 
-        SafeToSwingElbow(new LoggedTunableNumber("StowToAlgaeStow/shoulder/SafeToSwingElbow", 20.0)), 
-        MidPoint(new LoggedTunableNumber("StowToAlgaeStow/shoulder/MidPoint", 20.0));
+        SafeToLowerElevator(new LoggedTunableNumber("StowToAlgaeStow/shoulder/SafeToLowerElevator", -45.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -98,29 +97,11 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     public AlgaeStowCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, AlgaeEndEffector algaeEE) {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position),
-                // TODO: IMPLEMENT SAFEZONES WITH CORRECT VALUES (NOTE: MAY COME FROM EITHER SIDE)
-                // .alongWith(
-                //     new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
-                // ),
             elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
-                // .alongWith(
-                //     new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.position))                    
-                // ),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
-                .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.distance().in(Inches))),
+            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
+            new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToLowerElevator.position)),
+            elevator.getNewSetDistanceCommand(ElevatorPositions.Final.distance().in(Inches)),
             algaeEE.getNewSetVoltsCommand(4.0)
-
-            // LOGIC NEEDED FOR INTAKE TO STOW
-            // .alongWith(
-            //     new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.angle().in(Degrees)))
-            //         .andThen(
-            //             elbow.getNewSetAngleCommand(ElbowPositions.Final.angle().in(Degrees))
-            //                 .alongWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.angle().in(Degrees)))
-            //         )
-            //     )
-            // ),
-            // shoulder.getNewSetAngleCommand(ShoulderPositions.Final.angle().in(Degrees))
         );
         addRequirements(shoulder, elbow,  elevator, wrist, algaeEE);
     }

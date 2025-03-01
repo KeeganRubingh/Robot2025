@@ -50,6 +50,7 @@ import frc.robot.commands.AlgaeStowCommand;
 import frc.robot.commands.BargeScoreCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.GroundIntakeToStow;
+import frc.robot.commands.L4ToStow;
 import frc.robot.commands.OutakeAlgae;
 import frc.robot.commands.OutakeCoral;
 import frc.robot.commands.StationIntakeCommand;
@@ -344,7 +345,10 @@ public class RobotContainer {
     // Go to conditional coral level
     controller.rightBumper()
     .onTrue(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
-    .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    .onFalse(new ConditionalCommand(
+      new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+      new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+      () -> reefPositions.isSelected(ScoreLevel.L4)));
 
     // Conditional Confirm Coral
     controller.rightTrigger().and(controller.rightBumper())
