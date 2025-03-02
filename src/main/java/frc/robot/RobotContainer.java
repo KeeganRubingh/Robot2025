@@ -425,10 +425,9 @@ public class RobotContainer {
       .onTrue(new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
       .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));    
     
-    testcontroller.povLeft().whileTrue(new RoughAlignToReef(drive, true,()->controller.getRightX()*ANGULAR_SPEED));
-    testcontroller.povRight().whileTrue(new RoughAlignToReef(drive, false,()->controller.getRightX()*ANGULAR_SPEED));
-    
-    
+    testcontroller.povLeft().whileTrue(new RoughAlignToReef(drive, RoughAlignToReef.ReefAlignment.LEFT));
+    testcontroller.povRight().whileTrue(new RoughAlignToReef(drive, RoughAlignToReef.ReefAlignment.RIGHT));
+    testcontroller.povUp().whileTrue(new RoughAlignToReef(drive, RoughAlignToReef.ReefAlignment.CENTER));
   }
 
   /**

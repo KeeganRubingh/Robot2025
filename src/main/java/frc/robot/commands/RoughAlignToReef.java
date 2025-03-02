@@ -7,12 +7,14 @@ import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Queue;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
+import frc.robot.util.LoggedTunableGainsBuilder;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.MathUtil;
@@ -57,18 +59,31 @@ public class RoughAlignToReef extends Command {
     private LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.2);
     private LoggedTunableNumber toleranceB = new LoggedTunableNumber("AutoAlign/toleranceB", 0.1);
     private LoggedTunableNumber toleranceR = new LoggedTunableNumber("AutoAlign/toleranceR", 0.1);
-    private boolean leftSide = false;
+
+    private LoggedTunableGainsBuilder strafeGains = new LoggedTunableGainsBuilder("AutoAlign/strafeGains/", 3.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    private LoggedTunableGainsBuilder throttleGains = new LoggedTunableGainsBuilder("AutoAlign/throttleGains/", 7.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    private LoggedTunableNumber maxStrafeTune = new LoggedTunableNumber("AutoAlign/strafeGains/maxVelMetersPerSecond",4);
+    private LoggedTunableNumber maxThrottleTune = new LoggedTunableNumber("AutoAlign/throttleGains/maxVelMetersPerSecond",8);
+    private LoggedTunableNumber maxAccelStrafeTune = new LoggedTunableNumber("AutoAlign/strafeGains/maxAccMetersPerSecond",128);
+    private LoggedTunableNumber maxAccelDistanceTune = new LoggedTunableNumber("AutoAlign/distanceGains/maxAccMetersPerSecond",128);
+    
+    public enum ReefAlignment {
+        LEFT,
+        RIGHT,
+        CENTER;
+    }
+    
+    private ReefAlignment targetAlignment = ReefAlignment.CENTER;
 
     private Drive drivetrain;
-    private AprilTagFieldLayout fieldTags;
 
     private Pose2d drivingPose = Pose2d.kZero;
     
-    private final LinearVelocity MAX_STRAFE = MetersPerSecond.of(2); 
-    private final LinearVelocity MAX_THROTTLE = MetersPerSecond.of(4);
-    private final LinearAcceleration MAX_ACCEL = MetersPerSecondPerSecond.of(8);
+    private LinearVelocity m_maxStrafe = MetersPerSecond.of(maxStrafeTune.getAsDouble()); 
+    private LinearVelocity m_maxThrottle = MetersPerSecond.of(maxThrottleTune.getAsDouble());
+    private LinearAcceleration m_maxAccelStrafe = MetersPerSecondPerSecond.of(maxAccelStrafeTune.getAsDouble());
+    private LinearAcceleration m_maxAccelDist = MetersPerSecondPerSecond.of(maxAccelStrafeTune.getAsDouble());
     private static final double MAX_SPIN = Math.toRadians(180.0);
-
 
     private double m_strafe;
     private double m_throttle;
@@ -76,9 +91,8 @@ public class RoughAlignToReef extends Command {
     private double m_tx;
     private double m_ty;
     private double m_tr;
-    private DoubleSupplier spinSupplier;
-    private ProfiledPIDController strafePID = new ProfiledPIDController(1.5, 0.0, 0.0, new Constraints(MAX_STRAFE.in(MetersPerSecond), MAX_ACCEL.in(MetersPerSecondPerSecond)));
-    private ProfiledPIDController distancePID = new ProfiledPIDController(1.5, 0.0, 0.0, new Constraints(MAX_STRAFE.in(MetersPerSecond), MAX_ACCEL.in(MetersPerSecondPerSecond)));
+    private ProfiledPIDController strafePID = new ProfiledPIDController(throttleGains.build().kP, throttleGains.build().kI ,throttleGains.build().kD, new Constraints(m_maxStrafe.in(MetersPerSecond), m_maxAccelStrafe.in(MetersPerSecondPerSecond)));
+    private ProfiledPIDController distancePID = new ProfiledPIDController(strafeGains.build().kP, strafeGains.build().kI ,strafeGains.build().kD, new Constraints(m_maxThrottle.in(MetersPerSecond), m_maxAccelDist.in(MetersPerSecondPerSecond)));
     private PIDController spinPID = new PIDController(5.0, 0.0, 0.0);
             
     /**
@@ -103,15 +117,41 @@ public class RoughAlignToReef extends Command {
         return target;
     }
 
-    public RoughAlignToReef(Drive drivetrain, boolean leftSide, DoubleSupplier controllerRotationInput) {
+    public RoughAlignToReef(Drive drivetrain, ReefAlignment reefAlignment) {
         this.drivetrain = drivetrain;
-        this.fieldTags = VisionConstants.aprilTagLayout;
-        this.leftSide = leftSide;
-        this.spinSupplier = controllerRotationInput;
+        this.targetAlignment = reefAlignment;
     }
 
+    /**
+     * Sets the gains to the current values in the LoggedTunableNumbers of this class
+     */
+    private void resetGains() {
+        m_maxStrafe = MetersPerSecond.of(maxStrafeTune.getAsDouble()); 
+        m_maxThrottle = MetersPerSecond.of(maxThrottleTune.getAsDouble());
+        m_maxAccelStrafe = MetersPerSecondPerSecond.of(maxAccelStrafeTune.getAsDouble());
+        m_maxAccelDist = MetersPerSecondPerSecond.of(maxAccelDistanceTune.getAsDouble());
+
+        strafePID = new ProfiledPIDController(throttleGains.build().kP, throttleGains.build().kI ,throttleGains.build().kD, new Constraints(m_maxStrafe.in(MetersPerSecond), m_maxAccelStrafe.in(MetersPerSecondPerSecond)));
+        distancePID = new ProfiledPIDController(strafeGains.build().kP, strafeGains.build().kI ,strafeGains.build().kD, new Constraints(m_maxThrottle.in(MetersPerSecond), m_maxAccelDist.in(MetersPerSecondPerSecond)));
+    }
+
+    /**
+     * Sets the target pose based on the odometry
+     */
     private void resetTargetPose() {
-        double localoffsetR = leftSide ? offsetR.getAsDouble() * -1 : offsetR.getAsDouble();
+        double localoffsetR = 0;
+        switch (targetAlignment) {
+            default:
+            case RIGHT:
+                localoffsetR = offsetR.getAsDouble();
+                break;
+            case LEFT:
+                localoffsetR = offsetR.getAsDouble() * -1;
+                break;
+            case CENTER:
+                localoffsetR = 0;
+                break;
+        }
         Transform2d offset = new Transform2d(offsetB.getAsDouble(), localoffsetR, Rotation2d.kZero);
         Pose2d closestPose = findClosestPose(drivetrain.getPose(), targetIds);
 
@@ -128,6 +168,7 @@ public class RoughAlignToReef extends Command {
     public void initialize() {
         targetIds = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red ? targetIdsRed : targetIdsBlue ;
 
+        resetGains();
         resetTargetPose();
 
         Pose2d RobotRelativeTargetPose = drivingPose.relativeTo(getCurrentPose());
@@ -152,8 +193,8 @@ public class RoughAlignToReef extends Command {
         m_ty = -RobotRelativeTargetPose.getX();
         m_tr = RobotRelativeTargetPose.getRotation().unaryMinus().getRadians();
 
-        m_strafe = MathUtil.clamp(strafePID.calculate(m_tx, 0.0), -MAX_STRAFE.in(MetersPerSecond), MAX_STRAFE.in(MetersPerSecond)); 
-        m_throttle = MathUtil.clamp(distancePID.calculate(m_ty, 0.0),-MAX_THROTTLE.in(MetersPerSecond),MAX_THROTTLE.in(MetersPerSecond));
+        m_strafe = MathUtil.clamp(strafePID.calculate(m_tx, 0.0), -m_maxStrafe.in(MetersPerSecond), m_maxStrafe.in(MetersPerSecond)); 
+        m_throttle = MathUtil.clamp(distancePID.calculate(m_ty, 0.0),-m_maxThrottle.in(MetersPerSecond),m_maxThrottle.in(MetersPerSecond));
         m_spin = MathUtil.clamp(spinPID.calculate(m_tr, 0.0),-MAX_SPIN,MAX_SPIN);
         // m_spin = spinSupplier.getAsDouble();
 
