@@ -64,11 +64,11 @@ public class RoughAlignToReef extends Command {
     private DoubleSupplier spinSupplier;
     private PIDController strafePID = new PIDController(1.5, 0.0, 0.0);
     private PIDController distancePID = new PIDController(1.5, 0.0, 0.0);
-    private PIDController spinPID = new PIDController(0.0, 0.0, 0.0);
+    private PIDController spinPID = new PIDController(5.0, 0.0, 0.0);
 
     private final double MAX_STRAFE = 2; 
     private final double MAX_THROTTLE = 4;
-    private static final int MAX_SPIN = 2;
+    private static final double MAX_SPIN = Math.toRadians(180.0);
             
     /**
      * Returns the pose of the closest april tag in "targets" to "pos"
@@ -93,7 +93,6 @@ public class RoughAlignToReef extends Command {
     }
 
     public RoughAlignToReef(Drive drivetrain, boolean leftSide, DoubleSupplier controllerRotationInput) {
-        targetIds = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red ? targetIdsRed : targetIdsBlue ;
         this.drivetrain = drivetrain;
         this.fieldTags = VisionConstants.aprilTagLayout;
         this.leftSide = leftSide;
@@ -116,7 +115,12 @@ public class RoughAlignToReef extends Command {
 
     @Override
     public void initialize() {
+        targetIds = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red ? targetIdsRed : targetIdsBlue ;
+
         resetTargetPose();
+        strafePID.reset();
+        distancePID.reset();
+        spinPID.reset();
     }
     /* 
     * This command utilitzes the swerve drive while it isn't field relative. 
@@ -128,12 +132,12 @@ public class RoughAlignToReef extends Command {
 
         m_tx = -RobotRelativeTargetPose.getY();
         m_ty = -RobotRelativeTargetPose.getX();
-        m_tr = -RobotRelativeTargetPose.getRotation().getDegrees();
+        m_tr = RobotRelativeTargetPose.getRotation().unaryMinus().getRadians();
 
         m_strafe = MathUtil.clamp(strafePID.calculate(m_tx, 0.0), -MAX_STRAFE, MAX_STRAFE); 
         m_throttle = MathUtil.clamp(distancePID.calculate(m_ty, 0.0),-MAX_THROTTLE,MAX_THROTTLE);
-        // m_spin = MathUtil.clamp(spinPID.calculate(tr, 0.0),-MAX_SPIN,MAX_SPIN);
-        m_spin = spinSupplier.getAsDouble();
+        m_spin = MathUtil.clamp(spinPID.calculate(m_tr, 0.0),-MAX_SPIN,MAX_SPIN);
+        // m_spin = spinSupplier.getAsDouble();
 
 
         ChassisSpeeds speeds =
