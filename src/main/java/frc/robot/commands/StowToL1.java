@@ -8,6 +8,7 @@ import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.wrist.Wrist;
@@ -17,6 +18,7 @@ public class StowToL1 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("StowToL1/shoulder/StartingDegrees", 10)),
+        SafeToTurnWrist(new LoggedTunableNumber("StowToL1/shoulder/SafeToTurnWristDegrees", 90)),
         Final(new LoggedTunableNumber("StowToL1/shoulder/FinalDegrees", 75));
 
         DoubleSupplier position;
@@ -35,6 +37,7 @@ public class StowToL1 extends SequentialCommandGroup {
 
     private enum ElbowPositions {
         Starting(new LoggedTunableNumber("StowToL1/elbow/StartingDegrees", 10)),
+        SafeToTurnWrist(new LoggedTunableNumber("StowToL1/elbow/SafeToTurnWristDegrees", 90)),
         Final(new LoggedTunableNumber("StowToL1/elbow/FinalDegrees", -5));
 
         DoubleSupplier position;
@@ -71,20 +74,11 @@ public class StowToL1 extends SequentialCommandGroup {
 
     public StowToL1(ArmJoint shoulder, ArmJoint elbow, Wrist wrist) {
         super(
-            wrist.getNewWristTurnCommand(WristPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
-            .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
-
-            // LOGIC NEEDED FOR INTAKE TO STOW
-            // .alongWith(
-            //     new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.angle().in(Degrees)))
-            //         .andThen(
-            //             elbow.getNewSetAngleCommand(ElbowPositions.Final.angle().in(Degrees))
-            //                 .alongWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.angle().in(Degrees)))
-            //         )
-            //     )
-            // ),
-            // shoulder.getNewSetAngleCommand(ShoulderPositions.Final.angle().in(Degrees))
+            .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position)),  
+            new WaitUntilCommand(elbow.getNewLessThanAngleTrigger(ElbowPositions.SafeToTurnWrist.position)
+                .and(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.SafeToTurnWrist.position))),
+            wrist.getNewWristTurnCommand(WristPositions.Final.position)
         );
     }
     public static Command getNewScoreCommand(CoralEndEffector coralEndEffector) {
