@@ -40,7 +40,7 @@ public class StowToL3 extends SequentialCommandGroup {
         Starting(new LoggedTunableNumber("StowToL3/elbow/StartingDegrees", 10)),
         // ShoulderSafeSwing(new LoggedTunableNumber("StowToL3Command/elbow/ShoulderSafeSwingDegrees", 45)),
         Final(new LoggedTunableNumber("StowToL3/elbow/FinalDegrees", 50)),
-        Confirm(new LoggedTunableNumber("StowToL3/elbow/ConfirmDegrees", 10));
+        Confirm(new LoggedTunableNumber("StowToL3/elbow/ConfirmDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;

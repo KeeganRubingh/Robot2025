@@ -26,7 +26,7 @@ public class WristIOTalonFX implements WristIO {
   public CoastOut coastRequest;
   public TalonFX Motor;
   public CANcoder canCoder;
-  public Angle canCoderOffset = Degrees.of(-145.0 + 3.47);
+  public Angle canCoderOffset = Degrees.of(-145.0 + 3.47 + 15.8);
   private Angle m_setPoint = Angle.ofRelativeUnits(0, Rotations);
 
   public WristIOTalonFX(CanDef canbus,CanDef canCoderDef) {
@@ -51,7 +51,6 @@ public class WristIOTalonFX implements WristIO {
     cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     cfg.Feedback.SensorToMechanismRatio = 1.0;
     cfg.Feedback.RotorToSensorRatio = 9.0;
-    cfg.ClosedLoopGeneral.ContinuousWrap = true;
 
     cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
