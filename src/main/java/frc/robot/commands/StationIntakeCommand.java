@@ -21,7 +21,7 @@ public class StationIntakeCommand extends SequentialCommandGroup {
         Starting(new LoggedTunableNumber(className + "/shoulder/StartingDegrees", 10.0)),
         // MidPoint(new LoggedTunableNumber("StowToL3Command/shoulder/MidPointDegrees", 110)),
         // SafeToSwingElbow(new LoggedTunableNumber("StowToL3Command/shoulder/SafeToSwingElbowDegrees", 100)),
-        Final(new LoggedTunableNumber(className + "/shoulder/FinalDegrees", 180.0-55.0));
+        Final(new LoggedTunableNumber(className + "/shoulder/FinalDegrees", 180.0-57.5));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -40,7 +40,7 @@ public class StationIntakeCommand extends SequentialCommandGroup {
     private enum ElbowPositions {
         Starting(new LoggedTunableNumber(className + "/elbow/StartingDegrees", 10.0)),
         // ShoulderSafeSwing(new LoggedTunableNumber("StowToL3Command/elbow/ShoulderSafeSwingDegrees", 45)),
-        Final(new LoggedTunableNumber(className + "/elbow/FinalDegrees", 180.0-33.0));
+        Final(new LoggedTunableNumber(className + "/elbow/FinalDegrees", 180.0-35.5));
 
         DoubleSupplier position;
         MutAngle distance;
