@@ -23,13 +23,15 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
-import static frc.robot.subsystems.vision.VisionConstants.limelightBackLeftName;
-import static frc.robot.subsystems.vision.VisionConstants.limelightBackRightName;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBackLeft;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCameraBackRight;
+import static frc.robot.subsystems.vision.VisionConstants.limelightLeftName;
+import static frc.robot.subsystems.vision.VisionConstants.limelightRightName;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraLeft;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraRight;
 
 import java.util.HashMap;
 import java.util.Optional;
+
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -44,15 +46,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AlgaeStowCommand;
+// import frc.robot.commands.TakeCoral;
+import frc.robot.commands.AlignTx;
 import frc.robot.commands.BargeScoreCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.GroundIntakeToStow;
 import frc.robot.commands.L4ToStow;
 import frc.robot.commands.OutakeAlgae;
 import frc.robot.commands.OutakeCoral;
+import frc.robot.commands.RoughAlignToReef;
 import frc.robot.commands.StationIntakeCommand;
 import frc.robot.commands.StationIntakeReverseCommand;
 import frc.robot.commands.StationIntakeToStow;
@@ -65,6 +71,8 @@ import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
 import frc.robot.commands.TakeAlgaeL2;
 import frc.robot.commands.TakeAlgaeL3;
+// import frc.robot.commands.TakeCoral;
+import frc.robot.commands.AlignTx;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffectorIOSim;
@@ -180,10 +188,8 @@ public class RobotContainer {
             new AprilTagVision(
                 drive::setPose,
                 drive::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(
-                    limelightBackLeftName, robotToCameraBackLeft, drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    limelightBackRightName, robotToCameraBackRight, drive::getPose));
+                new VisionIOPhotonVisionSim(limelightLeftName, robotToCameraLeft, drive::getPose),
+                new VisionIOPhotonVisionSim(limelightRightName, robotToCameraRight, drive::getPose));
 
         wrist = new Wrist(new WristIOSim(3));
         elevator = new Elevator(
@@ -213,6 +219,7 @@ public class RobotContainer {
         intakeExtender = new IntakeExtender(new IntakeExtenderIOSim(16));
         climber = new Climber(new ClimberIOSim(19));
         
+        SmartDashboard.putData(drive);
       break;
       
       //real is default because it is safer
@@ -228,11 +235,11 @@ public class RobotContainer {
           new ModuleIOTalonFX(TunerConstants.BackRight));
 
         vision =
-        new AprilTagVision(
-          drive::setPose,
-          drive::addVisionMeasurement,
-          new VisionIOLimelight(limelightBackRightName, drive::getRotation),
-          new VisionIOLimelight(limelightBackLeftName, drive::getRotation));
+            new AprilTagVision(
+                drive::setPose,
+                drive::addVisionMeasurement,
+                new VisionIOLimelight(limelightLeftName, drive::getRotation),
+                new VisionIOLimelight(limelightRightName, drive::getRotation));
 
         wrist = new Wrist(new WristIOTalonFX(canivoreCanBuilder.id(11).build(),canivoreCanBuilder.id(15).build()));
 
@@ -370,6 +377,29 @@ public class RobotContainer {
       .onTrue(new OutakeCoral(coralEndEffector))
       .onFalse(coralEndEffector.getNewSetVoltsCommand(0.0));
 
+    // double povSpeed = 1.0;
+    // double REVERSE = -1.0;
+    // controller
+    //     .povUp()
+    //     .whileTrue(
+    //         DriveCommands.joystickForwardDrive(
+    //             drive, () -> povSpeed * REVERSE, () -> 0.0, null));
+    // controller
+    //     .povDown()
+    //     .whileTrue(
+    //         DriveCommands.joystickForwardDrive(
+    //             drive, () -> -(povSpeed * REVERSE), () -> 0.0, null));
+    // controller
+    //     .povRight()
+    //     .whileTrue(
+    //         DriveCommands.joystickForwardDrive(
+    //             drive, () -> 0.0, () -> -(povSpeed * REVERSE), null));
+    // controller
+    //     .povLeft()
+    //     .whileTrue(
+    //         DriveCommands.joystickForwardDrive(
+    //             drive, () -> 0.0, () -> (povSpeed * REVERSE), null));
+
     //L4
     co_controller.y().and(controller.rightBumper().negate())
       .onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L4));
@@ -393,7 +423,12 @@ public class RobotContainer {
     // Back Coral Station Intake
     co_controller.povLeft()
       .onTrue(new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
-      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));    
+    
+    testcontroller.povLeft().whileTrue(new RoughAlignToReef(drive, true,()->controller.getRightX()*ANGULAR_SPEED));
+    testcontroller.povRight().whileTrue(new RoughAlignToReef(drive, false,()->controller.getRightX()*ANGULAR_SPEED));
+    
+    
   }
 
   /**
@@ -404,6 +439,55 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
+          double povSpeed = 1.0;
+          double REVERSE = -1.0;
+          controller
+              .povUp()
+              .whileTrue(
+                  DriveCommands.joystickForwardDrive(
+                      drive, () -> povSpeed * REVERSE, () -> 0.0, null));
+          controller
+              .povDown()
+              .whileTrue(
+                  DriveCommands.joystickForwardDrive(
+                      drive, () -> -(povSpeed * REVERSE), () -> 0.0, null));
+          controller
+              .povRight()
+              .whileTrue(
+                  DriveCommands.joystickForwardDrive(
+                      drive, () -> 0.0, () -> -(povSpeed * REVERSE), null));
+          controller
+              .povLeft()
+              .whileTrue(
+                  DriveCommands.joystickForwardDrive(
+                      drive, () -> 0.0, () -> (povSpeed * REVERSE), null));
+      
+      
+    //Auto Align
+    // controller.leftStick().onTrue(new RoughAlignToReef(drive,false));
+
+    //Scoring
+      //Constants
+    final double L4_READY_POS = -100;
+    final double L3_READY_POS = 50;
+    final double L2_READY_POS = 50;
+
+      //L4
+    controller.rightTrigger().and(co_controller.y())
+      .onTrue(elbow.getNewSetAngleCommand(L4_READY_POS-80).alongWith(wrist.getNewApplyCoastModeCommand()).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(1).alongWith(elbow.getNewSetAngleCommand(L4_READY_POS)).alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
+      //L3
+    controller.rightTrigger().and(co_controller.x())
+      .onTrue(elbow.getNewSetAngleCommand(L3_READY_POS-80).alongWith(wrist.getNewApplyCoastModeCommand()).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(1).alongWith(elbow.getNewSetAngleCommand(L3_READY_POS)).alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
+      //L2
+    controller.rightTrigger().and(co_controller.b())
+      .onTrue(elbow.getNewSetAngleCommand(L2_READY_POS-80).alongWith(wrist.getNewApplyCoastModeCommand()).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(1).alongWith(elbow.getNewSetAngleCommand(L2_READY_POS)).alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
+      //L1
+    controller.rightTrigger().and(co_controller.a())
+      .onTrue(coralEndEffector.getNewSetVoltsCommand(-4))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(1));
       //Barge
     // controller.rightTrigger().and(co_controller.povUp())
     //   .onTrue(algaeEndEffector.getNewSetVoltsCommand(-6.0))

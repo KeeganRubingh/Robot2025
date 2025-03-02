@@ -18,6 +18,9 @@ import static frc.robot.subsystems.vision.VisionConstants.*;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import frc.robot.util.LimelightHelpers;
+
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +32,8 @@ public class VisionIOPhotonVision implements VisionIO {
   protected final PhotonCamera camera;
   protected final Transform3d robotToCamera;
   private String cameraName;
+
+  private Set<Long> tagFilter = new HashSet<>();
 
   /**
    * Creates a new VisionIOPhotonVision.
@@ -50,14 +55,17 @@ public class VisionIOPhotonVision implements VisionIO {
     Set<Short> tagIds = new HashSet<>();
     List<PoseObservation> poseObservations = new LinkedList<>();
     for (var result : camera.getAllUnreadResults()) {
+      // result.targets.removeIf((e)->tagFilter.contains((long) e.fiducialId));
+      
       // Update latest target observation
       if (result.hasTargets()) {
         inputs.latestTargetObservation =
             new TargetObservation(
                 Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
-                Rotation2d.fromDegrees(result.getBestTarget().getPitch()));
+                Rotation2d.fromDegrees(result.getBestTarget().getPitch()),
+                result.getBestTarget().fiducialId);
       } else {
-        inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d());
+        inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d(), 0);
       }
 
       // Add pose observation
@@ -87,7 +95,10 @@ public class VisionIOPhotonVision implements VisionIO {
                 multitagResult.estimatedPose.ambiguity, // Ambiguity
                 multitagResult.fiducialIDsUsed.size(), // Tag count
                 totalTagDistance / result.targets.size(), // Average tag distance
-                PoseObservationType.PHOTONVISION)); // Observation type
+                PoseObservationType.PHOTONVISION, // Observation type
+                0,
+                0.0));
+
 
       } else if (!result.targets.isEmpty()) { // Single tag result
         var target = result.targets.get(0);
@@ -114,7 +125,9 @@ public class VisionIOPhotonVision implements VisionIO {
                   target.poseAmbiguity, // Ambiguity
                   1, // Tag count
                   cameraToTarget.getTranslation().getNorm(), // Average tag distance
-                  PoseObservationType.PHOTONVISION)); // Observation type
+                  PoseObservationType.PHOTONVISION, // Observation type
+                  0,
+                  0.0));
         }
       }
     }
@@ -132,4 +145,11 @@ public class VisionIOPhotonVision implements VisionIO {
       inputs.tagIds[i++] = id;
     }
   }
+
+@Override
+public void setTagIdFilter(int[] filter) {
+  tagFilter = new HashSet<Long>();
+  Arrays.stream(filter).forEach((i)->tagFilter.add((long)i));
+}
+
 }

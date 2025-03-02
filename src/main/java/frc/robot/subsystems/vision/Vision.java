@@ -13,7 +13,19 @@
 
 package frc.robot.subsystems.vision;
 
-import static frc.robot.subsystems.vision.VisionConstants.*;
+import static frc.robot.subsystems.vision.VisionConstants.angularStdDevBaseline;
+import static frc.robot.subsystems.vision.VisionConstants.angularStdDevMegatag2Factor;
+import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
+import static frc.robot.subsystems.vision.VisionConstants.cameraStdDevFactors;
+import static frc.robot.subsystems.vision.VisionConstants.linearStdDevBaseline;
+import static frc.robot.subsystems.vision.VisionConstants.linearStdDevMegatag2Factor;
+import static frc.robot.subsystems.vision.VisionConstants.maxAmbiguity;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -25,18 +37,19 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO.PoseObservation;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
-import java.util.LinkedList;
-import java.util.List;
-import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
   private final VisionConsumer consumer;
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
+
+  private double targetDistance = 0;
 
   public Vision(VisionConsumer consumer, VisionIO... io) {
     this.consumer = consumer;
@@ -64,6 +77,26 @@ public class Vision extends SubsystemBase {
    */
   public Rotation2d getTargetX(int cameraIndex) {
     return inputs[cameraIndex].latestTargetObservation.tx();
+  }
+
+  /**
+   * Returns the Y angle to the best target, which can be used for simple servoing with vision.
+   *
+   * @param cameraIndex The index of the camera to use.
+   */
+  public Rotation2d getTargetY(int cameraIndex) {
+    return inputs[cameraIndex].latestTargetObservation.ty();
+  }
+
+  public Double getTargetDistance(int cameraIndex) {
+    if (inputs[cameraIndex].poseObservations.length > 0) {
+      targetDistance = inputs[cameraIndex].poseObservations[0].averageTagDistance();
+    }
+    return targetDistance;
+  }
+
+  public Integer getTargetId(int cameraIndex) {
+    return (int) inputs[cameraIndex].latestTargetObservation.tagId();
   }
 
   @Override
@@ -96,6 +129,7 @@ public class Vision extends SubsystemBase {
         if (tagPose.isPresent()) {
           tagPoses.add(tagPose.get());
         }
+        
       }
 
       // Loop over pose observations
@@ -180,6 +214,11 @@ public class Vision extends SubsystemBase {
     Logger.recordOutput(
         "Vision/Summary/RobotPosesRejected",
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
+  
+    for(int i = 0; i < inputs.length; i++){
+      Logger.recordOutput("Vision/Auto_Align/TX" + i, getTargetX(i).getDegrees());
+      Logger.recordOutput("Vision/Auto_Align/TY" + i, getTargetY(i).getDegrees());
+    }
   }
 // accepts the poses, timestamp, and vision measurements deviations.
   @FunctionalInterface
@@ -197,4 +236,27 @@ public class Vision extends SubsystemBase {
   public void addVisionMeasurement(Pose2d pose, double timestamp, Vector<N3> fill) {
     consumer.accept(pose, timestamp, fill);
   }
+
+  public Command setTagFilterCommand(int[] filter) {
+    return new InstantCommand(() -> {
+      setTagFilter(filter);
+    });
+  }
+
+  public void setTagFilter(int[] filter) {
+    // Creates a stream for array then sets the TagId for each camera.
+    Arrays.stream(io).forEach((e) -> {e.setTagIdFilter(filter);});
+  }
+
+  public Command setDefaultTagFilterCommand() {
+    return new InstantCommand(() -> {
+      setDefaultTagFilter();
+    });
+  }
+
+  public void setDefaultTagFilter() {
+    Arrays.stream(io).forEach((e) -> {e.setDefaultTagFilter();});
+  }
+
+  
 }

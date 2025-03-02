@@ -24,26 +24,25 @@ public class VisionConstants {
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   // Camera names, must match names configured on coprocessor
-  // gives the cameras variable names.
-  public static String limelightBackLeftName = "limelight-backl";
-  public static String limelightBackRightName = "limelight-backr";
+  public static String limelightLeftName = "limelight-backl";
+  public static String limelightRightName = "limelight-backr";
 
   // Robot to camera transforms
   // (Not used by Limelight, configure in web UI instead)
-  public static Transform3d robotToCameraBackLeft =
-      new Transform3d(
-        //back Left values on robot, LL Forward -0.315, LL Right -0.236, LL up 0.21, LL Roll 0, LL Pitch 25, LL Yaw -165.
-          -0.315,
-          0.236,
-          0.21,
-          new Rotation3d(0.0, Math.toRadians(-25), Math.toRadians(195.0)));
-  public static Transform3d robotToCameraBackRight =
-      new Transform3d(
-        //back right values on robot, LL Forward -0.315, LL Right 0.236, LL up 0.21, LL Roll 0, LL Pitch 25, LL Yaw 165.
-          -0.315,
-          -0.236,
-          0.21,
-          new Rotation3d(0.0, Math.toRadians(-25), Math.toRadians(165.0)));
+  public static Transform3d robotToCameraLeft =
+  new Transform3d(
+    //back Left values on robot, LL Forward -0.315, LL Right -0.236, LL up 0.21, LL Roll 0, LL Pitch 25, LL Yaw -165.
+      -0.315,
+      0.236,
+      0.21,
+      new Rotation3d(0.0, Math.toRadians(-25), Math.toRadians(195.0)));
+public static Transform3d robotToCameraRight =
+  new Transform3d(
+    //back right values on robot, LL Forward -0.315, LL Right 0.236, LL up 0.21, LL Roll 0, LL Pitch 25, LL Yaw 165.
+      -0.315,
+      -0.236,
+      0.21,
+      new Rotation3d(0.0, Math.toRadians(-25), Math.toRadians(165.0)));
 
   // Basic filtering thresholds
   public static double maxAmbiguity = 0.3;
@@ -52,7 +51,7 @@ public class VisionConstants {
   // Standard deviation baselines(0.01), for 1 meter distance and 1 tag
   // (Adjusted automatically based on distance and # of tags)
   public static double linearStdDevBaseline = 1.0; // Meters, 0.01 was original value was hyper sensitive.
-  public static double angularStdDevBaseline = 0.06; // Radians
+  public static double angularStdDevBaseline = Double.POSITIVE_INFINITY;
 
   // Standard deviation multipliers for each camera
   // (Adjust to trust some cameras more than others)
