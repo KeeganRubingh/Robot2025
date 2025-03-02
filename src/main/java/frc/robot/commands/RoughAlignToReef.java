@@ -1,5 +1,8 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Meter;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 
 import java.nio.file.Path;
@@ -14,6 +17,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,6 +27,11 @@ import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator.ControlVectorList;
 import frc.robot.subsystems.vision.VisionConstants;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -45,7 +54,7 @@ public class RoughAlignToReef extends Command {
     private static int[] targetIds;
 
     private LoggedTunableNumber offsetB = new LoggedTunableNumber("AutoAlign/offsetB", 0.5);
-    private LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0);
+    private LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.2);
     private LoggedTunableNumber toleranceB = new LoggedTunableNumber("AutoAlign/toleranceB", 0.1);
     private LoggedTunableNumber toleranceR = new LoggedTunableNumber("AutoAlign/toleranceR", 0.1);
     private boolean leftSide = false;
@@ -54,6 +63,12 @@ public class RoughAlignToReef extends Command {
     private AprilTagFieldLayout fieldTags;
 
     private Pose2d drivingPose = Pose2d.kZero;
+    
+    private final LinearVelocity MAX_STRAFE = MetersPerSecond.of(2); 
+    private final LinearVelocity MAX_THROTTLE = MetersPerSecond.of(4);
+    private final LinearAcceleration MAX_ACCEL = MetersPerSecondPerSecond.of(8);
+    private static final double MAX_SPIN = Math.toRadians(180.0);
+
 
     private double m_strafe;
     private double m_throttle;
@@ -62,13 +77,9 @@ public class RoughAlignToReef extends Command {
     private double m_ty;
     private double m_tr;
     private DoubleSupplier spinSupplier;
-    private PIDController strafePID = new PIDController(1.5, 0.0, 0.0);
-    private PIDController distancePID = new PIDController(1.5, 0.0, 0.0);
+    private ProfiledPIDController strafePID = new ProfiledPIDController(1.5, 0.0, 0.0, new Constraints(MAX_STRAFE.in(MetersPerSecond), MAX_ACCEL.in(MetersPerSecondPerSecond)));
+    private ProfiledPIDController distancePID = new ProfiledPIDController(1.5, 0.0, 0.0, new Constraints(MAX_STRAFE.in(MetersPerSecond), MAX_ACCEL.in(MetersPerSecondPerSecond)));
     private PIDController spinPID = new PIDController(5.0, 0.0, 0.0);
-
-    private final double MAX_STRAFE = 2; 
-    private final double MAX_THROTTLE = 4;
-    private static final double MAX_SPIN = Math.toRadians(180.0);
             
     /**
      * Returns the pose of the closest april tag in "targets" to "pos"
@@ -118,8 +129,15 @@ public class RoughAlignToReef extends Command {
         targetIds = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red ? targetIdsRed : targetIdsBlue ;
 
         resetTargetPose();
-        strafePID.reset();
-        distancePID.reset();
+
+        Pose2d RobotRelativeTargetPose = drivingPose.relativeTo(getCurrentPose());
+
+        m_tx = -RobotRelativeTargetPose.getY();
+        m_ty = -RobotRelativeTargetPose.getX();
+        m_tr = RobotRelativeTargetPose.getRotation().unaryMinus().getRadians();
+
+        strafePID.reset(m_tx);
+        distancePID.reset(m_ty);
         spinPID.reset();
     }
     /* 
@@ -134,8 +152,8 @@ public class RoughAlignToReef extends Command {
         m_ty = -RobotRelativeTargetPose.getX();
         m_tr = RobotRelativeTargetPose.getRotation().unaryMinus().getRadians();
 
-        m_strafe = MathUtil.clamp(strafePID.calculate(m_tx, 0.0), -MAX_STRAFE, MAX_STRAFE); 
-        m_throttle = MathUtil.clamp(distancePID.calculate(m_ty, 0.0),-MAX_THROTTLE,MAX_THROTTLE);
+        m_strafe = MathUtil.clamp(strafePID.calculate(m_tx, 0.0), -MAX_STRAFE.in(MetersPerSecond), MAX_STRAFE.in(MetersPerSecond)); 
+        m_throttle = MathUtil.clamp(distancePID.calculate(m_ty, 0.0),-MAX_THROTTLE.in(MetersPerSecond),MAX_THROTTLE.in(MetersPerSecond));
         m_spin = MathUtil.clamp(spinPID.calculate(m_tr, 0.0),-MAX_SPIN,MAX_SPIN);
         // m_spin = spinSupplier.getAsDouble();
 
