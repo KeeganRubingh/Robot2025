@@ -55,7 +55,7 @@ public class VisionIOPhotonVision implements VisionIO {
     Set<Short> tagIds = new HashSet<>();
     List<PoseObservation> poseObservations = new LinkedList<>();
     for (var result : camera.getAllUnreadResults()) {
-      result.targets.removeIf((e)->tagFilter.contains((long) e.fiducialId));
+      // result.targets.removeIf((e)->tagFilter.contains((long) e.fiducialId));
       
       // Update latest target observation
       if (result.hasTargets()) {

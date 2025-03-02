@@ -58,6 +58,7 @@ import frc.robot.commands.GroundIntakeToStow;
 import frc.robot.commands.L4ToStow;
 import frc.robot.commands.OutakeAlgae;
 import frc.robot.commands.OutakeCoral;
+import frc.robot.commands.RoughAlignToReef;
 import frc.robot.commands.StationIntakeCommand;
 import frc.robot.commands.StationIntakeReverseCommand;
 import frc.robot.commands.StationIntakeToStow;
@@ -422,11 +423,12 @@ public class RobotContainer {
     // Back Coral Station Intake
     co_controller.povLeft()
       .onTrue(new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
-      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-
-    // AlignTx Command
-    testcontroller.povLeft().whileTrue(new AlignTx(drive, vision, 0,AlignTx.CORAL_SETTING.LEFTCORAL));
-    testcontroller.povRight().whileTrue(new AlignTx(drive, vision, 1,AlignTx.CORAL_SETTING.RIGHTCORAL));
+      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));    
+    
+    testcontroller.povLeft().whileTrue(new RoughAlignToReef(drive, true,()->controller.getRightX()*ANGULAR_SPEED));
+    testcontroller.povRight().whileTrue(new RoughAlignToReef(drive, false,()->controller.getRightX()*ANGULAR_SPEED));
+    
+    
   }
 
   /**

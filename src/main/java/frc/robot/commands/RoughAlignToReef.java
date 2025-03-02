@@ -4,6 +4,7 @@ import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -11,10 +12,14 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -28,6 +33,7 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.util.LoggedTunableNumber;
 
 public class RoughAlignToReef extends Command {
+
     private static int[] targetIdsRed = {
         6,7,8,9,10,11
     };
@@ -38,19 +44,32 @@ public class RoughAlignToReef extends Command {
 
     private static int[] targetIds;
 
-    private LoggedTunableNumber offsetB = new LoggedTunableNumber("AutoAlign/offsetB", 0.4);
+    private LoggedTunableNumber offsetB = new LoggedTunableNumber("AutoAlign/offsetB", 0.5);
     private LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0);
+    private LoggedTunableNumber toleranceB = new LoggedTunableNumber("AutoAlign/toleranceB", 0.1);
+    private LoggedTunableNumber toleranceR = new LoggedTunableNumber("AutoAlign/toleranceR", 0.1);
     private boolean leftSide = false;
 
     private Drive drivetrain;
     private AprilTagFieldLayout fieldTags;
-    private Trajectory trajectory;
 
     private Pose2d drivingPose = Pose2d.kZero;
 
-    //The lerp. 0 at start, 1 at end
-    private double i;
+    private double m_strafe;
+    private double m_throttle;
+    private double m_spin;
+    private double m_tx;
+    private double m_ty;
+    private double m_tr;
+    private DoubleSupplier spinSupplier;
+    private PIDController strafePID = new PIDController(1.5, 0.0, 0.0);
+    private PIDController distancePID = new PIDController(1.5, 0.0, 0.0);
+    private PIDController spinPID = new PIDController(0.0, 0.0, 0.0);
 
+    private final double MAX_STRAFE = 2; 
+    private final double MAX_THROTTLE = 4;
+    private static final int MAX_SPIN = 2;
+            
     /**
      * Returns the pose of the closest april tag in "targets" to "pos"
      * 
@@ -73,11 +92,12 @@ public class RoughAlignToReef extends Command {
         return target;
     }
 
-    public RoughAlignToReef(Drive drivetrain, boolean leftSide) {
+    public RoughAlignToReef(Drive drivetrain, boolean leftSide, DoubleSupplier controllerRotationInput) {
         targetIds = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red ? targetIdsRed : targetIdsBlue ;
         this.drivetrain = drivetrain;
         this.fieldTags = VisionConstants.aprilTagLayout;
         this.leftSide = leftSide;
+        this.spinSupplier = controllerRotationInput;
     }
 
     private void resetTargetPose() {
@@ -90,26 +110,51 @@ public class RoughAlignToReef extends Command {
         Logger.recordOutput("ClosestPose",targetPose);
     }
 
-    @Override
-    public void initialize() {
-        resetTargetPose();
-        ArrayList<Pose2d> pointlist = new ArrayList<>();
-        pointlist.add(drivetrain.getPose());
-        pointlist.add(drivingPose.transformBy(new Transform2d(0.3, 0, Rotation2d.kZero)));
-        pointlist.add(drivingPose);
-        TrajectoryConfig configs = new TrajectoryConfig(2, 4);
-
-        trajectory = TrajectoryGenerator.generateTrajectory(pointlist, configs);
+    private Pose2d getCurrentPose() {
+        return drivetrain.getPose();
     }
 
     @Override
+    public void initialize() {
+        resetTargetPose();
+    }
+    /* 
+    * This command utilitzes the swerve drive while it isn't field relative. 
+    * The swerve drive returns back to field relative after the command is used.
+    */
+    @Override
     public void execute() {
-        
+        Pose2d RobotRelativeTargetPose = drivingPose.relativeTo(getCurrentPose());
+
+        m_tx = -RobotRelativeTargetPose.getY();
+        m_ty = -RobotRelativeTargetPose.getX();
+        m_tr = -RobotRelativeTargetPose.getRotation().getDegrees();
+
+        m_strafe = MathUtil.clamp(strafePID.calculate(m_tx, 0.0), -MAX_STRAFE, MAX_STRAFE); 
+        m_throttle = MathUtil.clamp(distancePID.calculate(m_ty, 0.0),-MAX_THROTTLE,MAX_THROTTLE);
+        // m_spin = MathUtil.clamp(spinPID.calculate(tr, 0.0),-MAX_SPIN,MAX_SPIN);
+        m_spin = spinSupplier.getAsDouble();
+
+
+        ChassisSpeeds speeds =
+        new ChassisSpeeds(
+            m_throttle,
+            m_strafe,
+            m_spin);
+        drivetrain.runVelocity(speeds);
+
+        Logger.recordOutput("AlignTx/TX", m_tx);
+        Logger.recordOutput("AlignTx/TZ", m_ty);
+        Logger.recordOutput("AlignTx/TR", m_tr);
+        Logger.recordOutput("AlignTx/strafe", m_strafe);
+        Logger.recordOutput("AlignTx/throttle", m_throttle);
+        Logger.recordOutput("AlignTx/spin", m_spin);
+        Logger.recordOutput("AlignTx/TargetPose",drivingPose);
     }
 
     @Override
     public boolean isFinished() {
-        return true;
+        return MathUtil.isNear(m_tx, 0.0,toleranceR.getAsDouble()) && MathUtil.isNear(m_ty, 0.0,toleranceB.getAsDouble());
     }
     
 }
