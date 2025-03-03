@@ -36,7 +36,7 @@ public class CoralEndEffectorIOTalonFX implements CoralEndEffectorIO {
     cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.CurrentLimits.StatorCurrentLimit = 80.0;
     cfg.CurrentLimits.StatorCurrentLimitEnable = true;
-    cfg.CurrentLimits.SupplyCurrentLimit = 30.0;
+    cfg.CurrentLimits.SupplyCurrentLimit = 10.0;
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
     cfg.Voltage.PeakForwardVoltage = 16.0;
     cfg.Voltage.PeakReverseVoltage = 16.0;

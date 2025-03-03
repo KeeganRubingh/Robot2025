@@ -39,7 +39,8 @@ public class StowToL3 extends SequentialCommandGroup {
     private enum ElbowPositions {
         Starting(new LoggedTunableNumber("StowToL3/elbow/StartingDegrees", 10)),
         // ShoulderSafeSwing(new LoggedTunableNumber("StowToL3Command/elbow/ShoulderSafeSwingDegrees", 45)),
-        Final(new LoggedTunableNumber("StowToL3/elbow/FinalDegrees", 50));
+        Final(new LoggedTunableNumber("StowToL3/elbow/FinalDegrees", 50)),
+        Confirm(new LoggedTunableNumber("StowToL3/elbow/ConfirmDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -95,14 +96,14 @@ public class StowToL3 extends SequentialCommandGroup {
     }
 
     public static Command getNewScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
-        return(elbow.getNewSetAngleCommand(-30)
+        return(elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
         .alongWith(wrist.getNewApplyCoastModeCommand())
         .alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)));
     }
 
     public static Command getNewStopScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
         return(coralEndEffector.getNewSetVoltsCommand(1)
-        .alongWith(elbow.getNewSetAngleCommand(50))
+        .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
         .alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
     }
 
