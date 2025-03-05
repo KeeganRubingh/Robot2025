@@ -39,7 +39,7 @@ public class AnodeManager {
             ArrayList<Anode> returnedAnodes = new ArrayList<>();
 
             for (Field f : lParent.getClass().getFields()) {
-                if(f.getAnnotation(LoggedTunableParameter.class) != null && (f.getType().isInstance(Double.class) || f.getType().isInstance(Double.TYPE))) {
+                if(f.getAnnotation(AnodeTunableParameter.class) != null && (f.getType().isInstance(Double.class) || f.getType().isInstance(Double.TYPE))) {
                     f.trySetAccessible();
                     params.add(f);
                 }
@@ -53,7 +53,7 @@ public class AnodeManager {
                 return null;
             }
 
-            AnodeSubsystem pathsource = target.getClass().getAnnotation(AnodeSubsystem.class);
+            AnodeObject pathsource = target.getClass().getAnnotation(AnodeObject.class);
             if(pathsource != null) {
                 try{
                     lName = pathsource.Key() + instanceNameParam.get(lParent);
@@ -64,7 +64,7 @@ public class AnodeManager {
             }
 
             for(Field f : params) {
-                String finalName = lName + f.getAnnotation(LoggedTunableParameter.class).Key();
+                String finalName = lName + f.getAnnotation(AnodeTunableParameter.class).Key();
                 Double value = 0.0;
                 try{
                     value = f.getDouble(lParent);

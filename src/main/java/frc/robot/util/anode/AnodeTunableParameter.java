@@ -5,8 +5,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface AnodeSubsystem {
+@Target(ElementType.FIELD)
+public @interface AnodeTunableParameter {
     public String Key() default "";
+
 }
