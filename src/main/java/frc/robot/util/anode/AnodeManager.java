@@ -38,12 +38,13 @@ public class AnodeManager {
             Field instanceNameParam = null;
             ArrayList<Anode> returnedAnodes = new ArrayList<>();
 
-            for (Field f : lParent.getClass().getFields()) {
-                if(f.getAnnotation(AnodeTunableParameter.class) != null && (f.getType().isInstance(Double.class) || f.getType().isInstance(Double.TYPE))) {
+            
+            for (Field f : lParent.getClass().getDeclaredFields()) {
+                if(f.getAnnotation(AnodeTunableParameter.class) != null && (f.getType().equals(Double.TYPE) || f.getType().equals(double.class))) {
                     f.trySetAccessible();
                     params.add(f);
                 }
-                if(f.getAnnotation(AnodeInstanceName.class) != null && f.getType().isInstance(String.class) ) {
+                if(f.getAnnotation(AnodeInstanceName.class) != null && f.getType().equals(String.class) ) {
                     f.trySetAccessible();
                     instanceNameParam = f;
                 }
@@ -56,7 +57,7 @@ public class AnodeManager {
             AnodeObject pathsource = target.getClass().getAnnotation(AnodeObject.class);
             if(pathsource != null) {
                 try{
-                    lName = pathsource.Key() + instanceNameParam.get(lParent);
+                    lName = pathsource.Key()  + "/" + instanceNameParam.get(lParent);
                 } catch (Exception e) {
                     System.err.println(e);
                     return null;
@@ -64,7 +65,7 @@ public class AnodeManager {
             }
 
             for(Field f : params) {
-                String finalName = lName + f.getAnnotation(AnodeTunableParameter.class).Key();
+                String finalName = lName + "/"+ f.getAnnotation(AnodeTunableParameter.class).Key();
                 Double value = 0.0;
                 try{
                     value = f.getDouble(lParent);
