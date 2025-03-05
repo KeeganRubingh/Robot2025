@@ -114,6 +114,8 @@ import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
 import frc.robot.util.ReefPositionsUtil.DeAlgaeLevel;
 import frc.robot.util.ReefPositionsUtil.ScoreLevel;
+import frc.robot.util.anode.AnodeManager;
+import frc.robot.util.anode.CustomAnodeDef;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -290,6 +292,8 @@ public class RobotContainer {
       //   throw new Exception("The robot is in neither sim nor real. Something has gone seriously wrong");
     }
 
+    // AnodeManager.getInstance().addCustomDefs(CustomAnodeDef.getDefaultCustomDefs());
+    AnodeManager.getInstance().addObjects(shoulder,elbow);
 
     autoCommandManager = new AutoCommandManager(drive, shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector);
     reefPositions = ReefPositionsUtil.getInstance();

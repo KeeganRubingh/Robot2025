@@ -1,12 +1,15 @@
 package frc.robot.util.anode;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.anode.CustomAnodeDef;
 
 public class AnodeManager {
     private static AnodeManager instance;
@@ -15,12 +18,13 @@ public class AnodeManager {
     /**
      * Represents a Logged Tunable value
      */
-    private static class Anode {
+    protected static class Anode {
         public Object parent;
         public LoggedTunableNumber ltn;
         public Field target;
+        public static Map<Type,CustomAnodeDef> customTypes = new HashMap<>();
 
-        public Anode(Object parent,String key, LoggedTunableNumber ltn, Field target) {
+        public Anode(Object parent, Field target, LoggedTunableNumber ltn) {
             this.parent = parent;
             this.ltn = ltn;
             this.target = target;
@@ -34,73 +38,107 @@ public class AnodeManager {
         public static Anode[] makeAnodesForObject(Object target) {
             Object lParent = target;
             String lName = "";
-            ArrayList<Field> params = new ArrayList<>();
-            Field instanceNameParam = null;
+            ArrayList<Field> usableFields = new ArrayList<>();
+            ArrayList<CustomAnodeDef> fieldCustomTypes = new ArrayList<>();
+            Field instanceNameField = null;
+            String instanceName = null;
             ArrayList<Anode> returnedAnodes = new ArrayList<>();
 
-            
+            //Iterate over all the fields of the object
             for (Field f : lParent.getClass().getDeclaredFields()) {
-                if(f.getAnnotation(AnodeTunableParameter.class) != null && (f.getType().equals(Double.TYPE) || f.getType().equals(double.class))) {
-                    f.trySetAccessible();
-                    params.add(f);
+                //Is this field a tunable param?
+                if(f.getAnnotation(AnodeTunableParameter.class) != null) {
+                    //Is it a double?
+                    if((f.getType().equals(Double.TYPE) || f.getType().equals(double.class))) {
+                        // If so, try to make it accessible, add the field to usableFields, and give it no custom type (defaults to double)
+                        f.trySetAccessible();
+                        usableFields.add(f);
+                        fieldCustomTypes.add(null);
+                    //Do we have a custom type to handle it?
+                    } else if(customTypes.containsKey(f.getType())) {
+                        // // If so, try to make it accessible, add the field to usableFields, and store the custom type of this field
+                        // f.trySetAccessible();
+                        // usableFields.add(f);
+                        // fieldCustomTypes.add(null);
+                    }
                 }
+                //Is this field our instance name, and a string?
                 if(f.getAnnotation(AnodeInstanceName.class) != null && f.getType().equals(String.class) ) {
+                    //If so, try to make it accessible and store it as our instance name field
                     f.trySetAccessible();
-                    instanceNameParam = f;
+                    instanceNameField = f;
                 }
             }
-            if(instanceNameParam == null) {
-                DriverStation.reportError("Class " + target.getClass().getSimpleName() + " has no InstanceName!", true);
-                return null;
+            //If we got an instance name set it, otherwise use a default.
+            if(instanceNameField != null) {
+                try {
+                    instanceName = instanceNameField.get(lParent).toString();
+                } catch (Exception e) {
+                    System.err.println(e);
+                    return null;
+                }
+            } else {
+                instanceName = lParent.getClass().getSimpleName() + lParent.hashCode();
             }
 
             AnodeObject pathsource = target.getClass().getAnnotation(AnodeObject.class);
             if(pathsource != null) {
                 try{
-                    lName = pathsource.Key()  + "/" + instanceNameParam.get(lParent);
+                    lName = pathsource.Key()  + "/" + instanceName;
                 } catch (Exception e) {
                     System.err.println(e);
                     return null;
                 }
+            } else {
+                lName = "UNNAMED/" + instanceName;
             }
 
-            for(Field f : params) {
+            for(int i = 0; i < usableFields.size(); i++) {
+                Field f = usableFields.get(i);
+
                 String finalName = lName + "/"+ f.getAnnotation(AnodeTunableParameter.class).Key();
-                Double value = 0.0;
-                try{
-                    value = f.getDouble(lParent);
-                } catch (Exception e) {
-                    System.err.println(e);
+
+                //If the custom field is null default to double
+                if (fieldCustomTypes.get(i) == null) {
+                    Double value = 0.0;
+                    try{
+                        value = f.getDouble(lParent);
+                    } catch (Exception e) {
+                        System.err.println(e);
+                    }
+                    returnedAnodes.add(
+                        new Anode(lParent, f, new LoggedTunableNumber(finalName,value))
+                    );
+                //Otherwise let it finish up the initialization
+                } else {
+                    // returnedAnodes.addAll(fieldCustomTypes.get(i).getAnodes(lParent, f, instanceName));
                 }
-                returnedAnodes.add(
-                    new Anode(lParent, finalName, new LoggedTunableNumber(finalName,value), f)
-                );
             }
 
             return returnedAnodes.toArray(new Anode[returnedAnodes.size()]);
         }
     }
 
-    private AnodeManager(Object... objects) {
-        for (Object target : objects) {
-            Anode[] anodes = Anode.makeAnodesForObject(target);
+    private AnodeManager() {};
+
+    public void addObjects(Object object) {
+        Anode[] anodes = Anode.makeAnodesForObject(object);
             if(anodes == null) {
-                continue;
+                DriverStation.reportError("Something went wrong with Anode!", true);
+                return;
             }
-            m_anodes.put(target, anodes);
-        }
+        m_anodes.put(object, anodes);
     }
 
-    public static void Startup(Object... objects) {
-        if(instance != null) {
-            DriverStation.reportError("AnodeManager started several times!!!", true);
+    public void addObjects(Object... objects) {
+        for (Object target : objects) {
+            addObjects(target);
         }
-        instance = new AnodeManager(objects);
     }
 
     public static AnodeManager getInstance() {
         if(instance == null) {
-            DriverStation.reportError("AnodeManager not started up before usage!!!", true);
+            instance = new AnodeManager();
         }
         return instance;
     }
@@ -125,5 +163,15 @@ public class AnodeManager {
         for(Object o : m_anodes.keySet()) {
             updateObject(o);
         }
+    }
+
+    public void addCustomDefs(CustomAnodeDef handler) {
+        // Anode.customTypes.put(handler.getTargetType(), handler);
+    }
+
+    public void addCustomDefs(CustomAnodeDef... handlers) {
+        // for (CustomAnodeDef customAnodeDef : handlers) {
+        //     addCustomDefs(handlers);
+        // }
     }
 }

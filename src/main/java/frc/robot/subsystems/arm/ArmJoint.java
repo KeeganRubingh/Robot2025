@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -20,7 +21,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.arm.constants.ArmJointConstants;
 import frc.robot.util.LoggedTunableGainsBuilder;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.anode.AnodeInstanceName;
+import frc.robot.util.anode.AnodeManager;
+import frc.robot.util.anode.AnodeObject;
+import frc.robot.util.anode.AnodeTunableParameter;
 
+@AnodeObject(Key = "ArmJoint")
 public class ArmJoint extends SubsystemBase {
 
   private ArmJointIO m_armJointIO;
@@ -31,6 +37,14 @@ public class ArmJoint extends SubsystemBase {
 
   public LoggedTunableGainsBuilder tunableGains;
   private Supplier<Angle> previousJointAngleSupplier;
+
+  //Anode
+  @AnodeInstanceName
+  public String anodeName;
+  @AnodeTunableParameter(Key = "Controller")
+  public PIDController testPID = new PIDController(0, 0, 0);
+  @AnodeTunableParameter(Key = "TestDouble")
+  public double testDouble = 0;
 
   public ArmJoint(ArmJointIO armJointIO, Optional<ArmJoint> previousJoint) {
     m_armJointIO = armJointIO;
@@ -53,6 +67,7 @@ public class ArmJoint extends SubsystemBase {
     m_constants.mechanismSimCallback.accept(m_loggedArm.angle);
     tunableGains = m_constants.TalonFXGains;
     m_loggedArm.angle.mut_replace(m_constants.StartingAngle);
+    anodeName = m_constants.LoggedName;
   }
 
   public Supplier<Angle> getAngleSupplier() {
@@ -141,5 +156,10 @@ public class ArmJoint extends SubsystemBase {
     tunableGains.ifGainsHaveChanged((gains) -> this.m_armJointIO.setGains(gains));
     m_armJointIO.updateInputs(m_loggedArm);
     Logger.processInputs("RobotState/" + m_constants.LoggedName, m_loggedArm);
+    AnodeManager.getInstance().updateObject(this);
+    Logger.recordOutput(anodeName + "/TestingDouble", testDouble);
+    Logger.recordOutput(anodeName + "/TestingP", testPID.getP());
+    Logger.recordOutput(anodeName + "/TestingI", testPID.getI());
+    Logger.recordOutput(anodeName + "/TestingD", testPID.getD());
   }
 }
