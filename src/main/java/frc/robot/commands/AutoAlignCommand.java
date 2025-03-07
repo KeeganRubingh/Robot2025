@@ -34,8 +34,8 @@ public class AutoAlignCommand extends Command {
     private LoggedTunableNumber maxThrottleTune = new LoggedTunableNumber("AutoAlign/throttleGains/maxVelMetersPerSecond",8);
     private LoggedTunableNumber maxAccelStrafeTune = new LoggedTunableNumber("AutoAlign/strafeGains/maxAccMetersPerSecond",128);
     private LoggedTunableNumber maxAccelDistanceTune = new LoggedTunableNumber("AutoAlign/distanceGains/maxAccMetersPerSecond",128);
-    private LoggedTunableNumber toleranceB = new LoggedTunableNumber("AutoAlign/toleranceB", 0.1);
-    private LoggedTunableNumber toleranceR = new LoggedTunableNumber("AutoAlign/toleranceR", 0.1);
+    private LoggedTunableNumber toleranceB = new LoggedTunableNumber("AutoAlign/toleranceB", 0.02);
+    private LoggedTunableNumber toleranceR = new LoggedTunableNumber("AutoAlign/toleranceR", 0.02);
     //#endregion
 
     private LinearVelocity m_maxStrafe = MetersPerSecond.of(maxStrafeTune.getAsDouble()); 

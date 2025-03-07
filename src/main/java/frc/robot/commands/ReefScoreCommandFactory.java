@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.littletonrobotics.junction.Logger;
@@ -39,8 +40,10 @@ public class ReefScoreCommandFactory {
 
     //#region TODO Find Accurate Values
     private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlign/offsetBBackingUp", 2);
-    private static LoggedTunableNumber offsetBFinal = new LoggedTunableNumber("AutoAlign/offsetBFinal", 0.5);
-    private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.2);
+    private static LoggedTunableNumber rightOffsetBFinal = new LoggedTunableNumber("AutoAlign/rightOffsetBFinal", 0.55);
+    private static LoggedTunableNumber leftOffsetBFinal = new LoggedTunableNumber("AutoAlign/leftOffsetBFinal", 0.45);
+    private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlign/offsetL", 0.3); //(papa smurf)
+    private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.14);
     //#endregion
 
     private static Drive drivetrain;
@@ -71,17 +74,23 @@ public class ReefScoreCommandFactory {
     public static Function<Pose2d, Pose2d> getGetTargetPositionFunction(ReefPosition pos, boolean isBackingUp) {
         refreshAlliance();
         return (Pose2d pose) -> {
-            double appliedOffsetR = 0;
+            double backOffset = leftOffsetBFinal.get();
+            double appliedOffset = 0;
             switch (pos) {
                 case Right:
-                    appliedOffsetR = (offsetR.getAsDouble());
+                    appliedOffset = offsetR.getAsDouble();
+                    backOffset = rightOffsetBFinal.get();
                     break;
                 case Left:
-                    appliedOffsetR = -(offsetR.getAsDouble());
+                    appliedOffset = -offsetL.getAsDouble();
+                    backOffset = leftOffsetBFinal.get();
+                    break;
+                case Center:
                 default:
+                    appliedOffset = 0;
                     break;
             }
-            Transform2d offset = new Transform2d(isBackingUp ? offsetBBackingUp.getAsDouble() : offsetBFinal.getAsDouble(), appliedOffsetR, Rotation2d.kZero);
+            Transform2d offset = new Transform2d(isBackingUp ? offsetBBackingUp.getAsDouble() : backOffset, appliedOffset, Rotation2d.kZero);
             Pose2d closestTarget = findClosestPose(pose);
 
             Pose2d target = closestTarget.transformBy(offset);
@@ -107,7 +116,7 @@ public class ReefScoreCommandFactory {
         return new AutoAlignCommand(getGetTargetPositionFunction(position, isBackingUp), drivetrain);
     }
 
-    public static Command getNewReefCoralScoreSequence(ReefPosition position, HashMap<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, HashMap<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands) {
+    public static Command getNewReefCoralScoreSequence(ReefPosition position, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands) {
         return getNewAlignToReefCommand(position, true)
             .andThen(getNewAlignToReefCommand(position, false)
                 .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))

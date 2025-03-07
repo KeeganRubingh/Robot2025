@@ -20,6 +20,7 @@
 package frc.robot;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -109,6 +110,7 @@ import frc.robot.util.CanDef;
 import frc.robot.util.CanDef.CanBus;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
+import frc.robot.util.SelectorCommandFactory;
 import frc.robot.util.ReefPositionsUtil.DeAlgaeLevel;
 import frc.robot.util.ReefPositionsUtil.ScoreLevel;
 
@@ -330,23 +332,11 @@ public class RobotContainer {
 
     // Hashmaps for Coral level commands
 
-    HashMap<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands = new HashMap<>();
-    coralLevelCommands.put(ScoreLevel.L1, new StowToL1(shoulder, elbow, wrist));
-    coralLevelCommands.put(ScoreLevel.L2, new StowToL2(shoulder, elbow, elevator, wrist));
-    coralLevelCommands.put(ScoreLevel.L3, new StowToL3(shoulder, elbow, wrist, elevator));
-    coralLevelCommands.put(ScoreLevel.L4, new StowToL4(shoulder, elbow, elevator, wrist));
+    Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands = SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist);
 
-    HashMap<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands = new HashMap<>();
-    scoreCoralLevelCommands.put(ScoreLevel.L1, StowToL1.getNewScoreCommand(coralEndEffector));
-    scoreCoralLevelCommands.put(ScoreLevel.L2, StowToL2.getNewScoreCommand(elbow, wrist, coralEndEffector));
-    scoreCoralLevelCommands.put(ScoreLevel.L3, StowToL3.getNewScoreCommand(elbow, wrist, coralEndEffector));
-    scoreCoralLevelCommands.put(ScoreLevel.L4, StowToL4.getNewScoreCommand(elbow, wrist, coralEndEffector));
+    Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands = SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector);
     
-    HashMap<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands = new HashMap<>();
-    stopCoralLevelCommands.put(ScoreLevel.L1, StowToL1.getNewStopScoreCommand(coralEndEffector));
-    stopCoralLevelCommands.put(ScoreLevel.L2, StowToL2.getNewStopScoreCommand(elbow, wrist, coralEndEffector));
-    stopCoralLevelCommands.put(ScoreLevel.L3, StowToL3.getNewStopScoreCommand(elbow, wrist, coralEndEffector));
-    stopCoralLevelCommands.put(ScoreLevel.L4, StowToL4.getNewStopScoreCommand(elbow, wrist, coralEndEffector));
+    Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands = SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector);
     
     // Go to conditional coral level
     controller.rightBumper()
@@ -366,15 +356,28 @@ public class RobotContainer {
       .onTrue(new BargeScoreCommand(algaeEndEffector))
       .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
 
-    // Outtake Algae (Also processor score from stow pos)
-    controller.povLeft()
-      .onTrue(new OutakeAlgae(algaeEndEffector))
-      .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
+    // // Outtake Algae (Also processor score from stow pos)
+    // controller.povLeft()
+    //   .onTrue(new OutakeAlgae(algaeEndEffector))
+    //   .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
 
-    //Outtake Coral
-    controller.povRight()
-      .onTrue(new OutakeCoral(coralEndEffector))
-      .onFalse(coralEndEffector.getNewSetVoltsCommand(0.0));
+    // //Outtake Coral
+    // controller.povRight()
+    //   .onTrue(new OutakeCoral(coralEndEffector))
+    //   .onFalse(coralEndEffector.getNewSetVoltsCommand(0.0));
+
+    controller.povLeft().whileTrue(ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Left, SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector)))
+      .onFalse(new ConditionalCommand(
+        new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        () -> reefPositions.isSelected(ScoreLevel.L4)
+      ));
+    controller.povRight().whileTrue(ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Right, SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector)))
+      .onFalse(new ConditionalCommand(
+        new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        () -> reefPositions.isSelected(ScoreLevel.L4)
+      ));
 
     // double povSpeed = 1.0;
     // double REVERSE = -1.0;
@@ -580,18 +583,7 @@ public class RobotContainer {
     // testcontroller.y().onTrue(new TakeCoral(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
     // testcontroller.povDown().onTrue(new BargeScore(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
-    testcontroller.b().whileTrue(ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Left, coralLevelCommands, scoreCoralLevelCommands))
-      .onFalse(new ConditionalCommand(
-        new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-        () -> reefPositions.isSelected(ScoreLevel.L4)
-      ));
-    testcontroller.x().whileTrue(ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Right, coralLevelCommands, scoreCoralLevelCommands))
-      .onFalse(new ConditionalCommand(
-        new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-        () -> reefPositions.isSelected(ScoreLevel.L4)
-      ));
+    
     
     SmartDashboard.putData(new GroundIntakeToStow(shoulder, elbow, wrist, coralEndEffector));
     SmartDashboard.putData(new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector));
