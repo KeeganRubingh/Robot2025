@@ -357,14 +357,14 @@ public class RobotContainer {
       .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
 
     // // Outtake Algae (Also processor score from stow pos)
-    // controller.povLeft()
-    //   .onTrue(new OutakeAlgae(algaeEndEffector))
-    //   .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
+    controller.povDown()
+      .onTrue(new OutakeAlgae(algaeEndEffector))
+      .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
 
-    // //Outtake Coral
-    // controller.povRight()
-    //   .onTrue(new OutakeCoral(coralEndEffector))
-    //   .onFalse(coralEndEffector.getNewSetVoltsCommand(0.0));
+    //Outtake Coral
+    controller.povUp()
+      .onTrue(new OutakeCoral(coralEndEffector))
+      .onFalse(coralEndEffector.getNewSetVoltsCommand(0.0));
 
     controller.povLeft().whileTrue(ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Left, SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector)))
       .onFalse(new ConditionalCommand(
