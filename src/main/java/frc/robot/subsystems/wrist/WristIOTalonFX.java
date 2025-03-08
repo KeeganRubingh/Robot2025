@@ -26,7 +26,7 @@ public class WristIOTalonFX implements WristIO {
   public CoastOut coastRequest;
   public TalonFX Motor;
   public CANcoder canCoder;
-  public Angle canCoderOffset = Degrees.of(-145.0 + 3.47 + 15.8 + 12.0 - 36.0);
+  public Angle canCoderOffset = Degrees.of(-144.13);
   private Angle m_setPoint = Angle.ofRelativeUnits(0, Rotations);
 
   public WristIOTalonFX(CanDef canbus,CanDef canCoderDef) {

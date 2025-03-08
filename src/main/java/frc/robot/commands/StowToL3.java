@@ -98,13 +98,16 @@ public class StowToL3 extends SequentialCommandGroup {
     public static Command getNewScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
         return(elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
         .alongWith(wrist.getNewApplyCoastModeCommand())
-        .alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)));
+        .alongWith(new WaitCommand(0.2)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)));
     }
 
     public static Command getNewStopScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
-        return(coralEndEffector.getNewSetVoltsCommand(1)
-        .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
-        .alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
+        return(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
+        .alongWith(
+            new WaitCommand(0.2)
+            .andThen(wrist.getNewWristTurnCommand(0))
+        )
+        .andThen(coralEndEffector.getNewSetVoltsCommand(1));
     }
 
 }
