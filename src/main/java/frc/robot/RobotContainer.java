@@ -288,7 +288,7 @@ public class RobotContainer {
 
     autoCommandManager = new AutoCommandManager(drive, shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector);
     reefPositions = ReefPositionsUtil.getInstance();
-    ReefScoreCommandFactory.initialize(drive);
+    ReefScoreCommandFactory.initialize();
 
     // Configure the button bindings
     configureDriverBindings();
@@ -371,6 +371,19 @@ public class RobotContainer {
     controller.povRight()
       .onTrue(new OutakeCoral(coralEndEffector))
       .onFalse(coralEndEffector.getNewSetVoltsCommand(0.0));
+
+    controller.povLeft().whileTrue(ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Left, SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector),drive))
+      .onFalse(new ConditionalCommand(
+        new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        () -> reefPositions.isSelected(ScoreLevel.L4)
+      ));
+    controller.povRight().whileTrue(ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Right, SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector),drive))
+      .onFalse(new ConditionalCommand(
+        new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        () -> reefPositions.isSelected(ScoreLevel.L4)
+      ));
 
     // double povSpeed = 1.0;
     // double REVERSE = -1.0;

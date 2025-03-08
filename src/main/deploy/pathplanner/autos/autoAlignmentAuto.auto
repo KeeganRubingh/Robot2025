@@ -1,0 +1,55 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "autoAlignmentAuto.0"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetL2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoAlignScoreLeft"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AutoAlignmentAuto.1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AutoAlignmentAuto.2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetL3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoAlignScoreLeft"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

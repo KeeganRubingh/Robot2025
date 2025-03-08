@@ -14,7 +14,15 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
+import frc.robot.subsystems.arm.ArmJoint;
+import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.wrist.Wrist;
+
+import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
 
@@ -45,8 +53,6 @@ public class ReefScoreCommandFactory {
     private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlign/offsetL", 0.3); //(papa smurf)
     private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.14);
     //#endregion
-
-    private static Drive drivetrain;
 
     /**
      * Finds the closest april tag to a position.
@@ -99,27 +105,40 @@ public class ReefScoreCommandFactory {
         };
     }
 
-    public static void initialize(Drive d) {
+    public static void initialize() {
         refreshAlliance();
-        setDrivetrain(d);
     }
 
     public static void refreshAlliance() {
         targetIds = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue ? targetIdsBlue : targetIdsRed;
     }
-
-    public static void setDrivetrain(Drive d) {
-        drivetrain = d;
+    public static Command getNewAlignToReefCommand(ReefPosition position, boolean isBackingUp, Drive drive) {
+        return new AutoAlignCommand(getGetTargetPositionFunction(position, isBackingUp), drive);
     }
 
-    public static Command getNewAlignToReefCommand(ReefPosition position, boolean isBackingUp) {
-        return new AutoAlignCommand(getGetTargetPositionFunction(position, isBackingUp), drivetrain);
-    }
-
-    public static Command getNewReefCoralScoreSequence(ReefPosition position, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands) {
-        return getNewAlignToReefCommand(position, true)
-            .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
-            .andThen(getNewAlignToReefCommand(position, false))
+    public static Command getNewReefCoralScoreSequence(ReefPosition position, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands, Drive drive) {
+        return getNewAlignToReefCommand(position, true, drive)
+            .andThen(getNewAlignToReefCommand(position, false, drive)
+                .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
+            )
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands));
+    }
+    public static Command getNewAutoReefCoralScoreSequenceCommand(
+        ReefPosition position, 
+        Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, 
+        Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands,
+        Drive drive,
+        ArmJoint shoulder, 
+        ArmJoint elbow, 
+        Elevator elevator, 
+        Wrist wrist, 
+        CoralEndEffector coralEE, 
+        AlgaeEndEffector algaeEE
+    ) {
+        return getNewAlignToReefCommand(position, false, drive)
+                .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
+            .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
+            .andThen(new WaitCommand(0.2))
+            .andThen(new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
     }
 }
