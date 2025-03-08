@@ -26,7 +26,7 @@ public class WristIOTalonFX implements WristIO {
   public CoastOut coastRequest;
   public TalonFX Motor;
   public CANcoder canCoder;
-  public Angle canCoderOffset = Degrees.of(-145.0 + 3.47 + 15.8);
+  public Angle canCoderOffset = Degrees.of(-145.0 + 3.47 + 15.8 + 12.0 - 36.0);
   private Angle m_setPoint = Angle.ofRelativeUnits(0, Rotations);
 
   public WristIOTalonFX(CanDef canbus,CanDef canCoderDef) {
@@ -44,7 +44,7 @@ public class WristIOTalonFX implements WristIO {
     cfg.Voltage.PeakReverseVoltage = 7;
     cfg.CurrentLimits.StatorCurrentLimit = 80;
     cfg.CurrentLimits.StatorCurrentLimitEnable = true;
-    cfg.CurrentLimits.SupplyCurrentLimit = 40;
+    cfg.CurrentLimits.SupplyCurrentLimit = 20;
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     cfg.Feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();

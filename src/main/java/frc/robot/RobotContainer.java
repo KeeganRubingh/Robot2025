@@ -19,26 +19,22 @@
  */
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Kilograms;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Pounds;
-import static frc.robot.subsystems.vision.VisionConstants.limelightLeftName;
-import static frc.robot.subsystems.vision.VisionConstants.limelightRightName;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCameraLeft;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCameraRight;
-
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
-
-import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Pounds;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -50,15 +46,15 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AlgaeStowCommand;
-// import frc.robot.commands.TakeCoral;
-import frc.robot.commands.AlignTx;
+import frc.robot.commands.AutoAlignCommand;
 import frc.robot.commands.BargeScoreCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.GroundIntakeToStow;
 import frc.robot.commands.L4ToStow;
 import frc.robot.commands.OutakeAlgae;
 import frc.robot.commands.OutakeCoral;
-import frc.robot.commands.RoughAlignToReef;
+import frc.robot.commands.ReefScoreCommandFactory;
+import frc.robot.commands.ReefScoreCommandFactory.ReefPosition;
 import frc.robot.commands.StationIntakeCommand;
 import frc.robot.commands.StationIntakeReverseCommand;
 import frc.robot.commands.StationIntakeToStow;
@@ -71,8 +67,6 @@ import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
 import frc.robot.commands.TakeAlgaeL2;
 import frc.robot.commands.TakeAlgaeL3;
-// import frc.robot.commands.TakeCoral;
-import frc.robot.commands.AlignTx;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffectorIOSim;
@@ -103,6 +97,10 @@ import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOSim;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOTalonFX;
 import frc.robot.subsystems.vision.AprilTagVision;
+import static frc.robot.subsystems.vision.VisionConstants.limelightLeftName;
+import static frc.robot.subsystems.vision.VisionConstants.limelightRightName;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraLeft;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraRight;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.wrist.Wrist;
@@ -112,6 +110,7 @@ import frc.robot.util.CanDef;
 import frc.robot.util.CanDef.CanBus;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
+import frc.robot.util.SelectorCommandFactory;
 import frc.robot.util.ReefPositionsUtil.DeAlgaeLevel;
 import frc.robot.util.ReefPositionsUtil.ScoreLevel;
 
@@ -258,7 +257,7 @@ public class RobotContainer {
         algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIOTalonFX(canivoreCanBuilder.id(15).build(), canivoreCanBuilder.id(24).build()));
         // algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIONova(canivoreCanBuilder.id(15).build(), canivoreCanBuilder.id(24).build()));
 
-        climber = new Climber(new ClimberIOTalonFX(canivoreCanBuilder.id(19).build()));
+        climber = new Climber(new ClimberIOTalonFX(rioCanBuilder.id(19).build()));
 
         // Real robot, instantiate hardware IO implementations
         break;
@@ -293,10 +292,12 @@ public class RobotContainer {
 
     autoCommandManager = new AutoCommandManager(drive, shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector);
     reefPositions = ReefPositionsUtil.getInstance();
+    ReefScoreCommandFactory.initialize(drive);
 
     // Configure the button bindings
     configureDriverBindings();
     configureTestButtonBindings();
+    configureCharacterizationButtonBindings();
   }
 
   public void configureDriverBindings() {
@@ -331,23 +332,11 @@ public class RobotContainer {
 
     // Hashmaps for Coral level commands
 
-    HashMap<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands = new HashMap<>();
-    coralLevelCommands.put(ScoreLevel.L1, new StowToL1(shoulder, elbow, wrist));
-    coralLevelCommands.put(ScoreLevel.L2, new StowToL2(shoulder, elbow, elevator, wrist));
-    coralLevelCommands.put(ScoreLevel.L3, new StowToL3(shoulder, elbow, wrist, elevator));
-    coralLevelCommands.put(ScoreLevel.L4, new StowToL4(shoulder, elbow, elevator, wrist));
+    Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands = SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist);
 
-    HashMap<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands = new HashMap<>();
-    scoreCoralLevelCommands.put(ScoreLevel.L1, StowToL1.getNewScoreCommand(coralEndEffector));
-    scoreCoralLevelCommands.put(ScoreLevel.L2, StowToL2.getNewScoreCommand(elbow, wrist, coralEndEffector));
-    scoreCoralLevelCommands.put(ScoreLevel.L3, StowToL3.getNewScoreCommand(elbow, wrist, coralEndEffector));
-    scoreCoralLevelCommands.put(ScoreLevel.L4, StowToL4.getNewScoreCommand(elbow, wrist, coralEndEffector));
+    Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands = SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector);
     
-    HashMap<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands = new HashMap<>();
-    stopCoralLevelCommands.put(ScoreLevel.L1, StowToL1.getNewStopScoreCommand(coralEndEffector));
-    stopCoralLevelCommands.put(ScoreLevel.L2, StowToL2.getNewStopScoreCommand(elbow, wrist, coralEndEffector));
-    stopCoralLevelCommands.put(ScoreLevel.L3, StowToL3.getNewStopScoreCommand(elbow, wrist, coralEndEffector));
-    stopCoralLevelCommands.put(ScoreLevel.L4, StowToL4.getNewStopScoreCommand(elbow, wrist, coralEndEffector));
+    Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands = SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector);
     
     // Go to conditional coral level
     controller.rightBumper()
@@ -367,15 +356,28 @@ public class RobotContainer {
       .onTrue(new BargeScoreCommand(algaeEndEffector))
       .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
 
-    // Outtake Algae (Also processor score from stow pos)
-    controller.povLeft()
+    // // Outtake Algae (Also processor score from stow pos)
+    controller.povDown()
       .onTrue(new OutakeAlgae(algaeEndEffector))
       .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
 
     //Outtake Coral
-    controller.povRight()
+    controller.povUp()
       .onTrue(new OutakeCoral(coralEndEffector))
       .onFalse(coralEndEffector.getNewSetVoltsCommand(0.0));
+
+    controller.povLeft().whileTrue(ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Left, SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector)))
+      .onFalse(new ConditionalCommand(
+        new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        () -> reefPositions.isSelected(ScoreLevel.L4)
+      ));
+    controller.povRight().whileTrue(ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Right, SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector)))
+      .onFalse(new ConditionalCommand(
+        new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        () -> reefPositions.isSelected(ScoreLevel.L4)
+      ));
 
     // double povSpeed = 1.0;
     // double REVERSE = -1.0;
@@ -423,11 +425,11 @@ public class RobotContainer {
     // Back Coral Station Intake
     co_controller.povLeft()
       .onTrue(new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
-      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));    
-    
-    testcontroller.povLeft().whileTrue(new RoughAlignToReef(drive, RoughAlignToReef.ReefAlignment.LEFT));
-    testcontroller.povRight().whileTrue(new RoughAlignToReef(drive, RoughAlignToReef.ReefAlignment.RIGHT));
-    testcontroller.povUp().whileTrue(new RoughAlignToReef(drive, RoughAlignToReef.ReefAlignment.CENTER));
+      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    testcontroller.povLeft().whileTrue(new AutoAlignCommand((thisOneVariableWhichIDontReallyNeedSoIWillUseAnExtremelyConciseNameFor) -> {return new Pose2d(-1, 0, Rotation2d.kCCW_90deg);}, drive));
+    testcontroller.povRight().whileTrue(new AutoAlignCommand((thisOneVariableWhichIDontReallyNeedSoIWillUseAnExtremelyConciseNameFor) -> {return new Pose2d(-1, 0, Rotation2d.kCW_90deg);}, drive));
+    testcontroller.povUp().whileTrue(new AutoAlignCommand((thisOneVariableWhichIDontReallyNeedSoIWillUseAnExtremelyConciseNameFor) -> {return new Pose2d(0, 0, Rotation2d.kZero);}, drive));
+    testcontroller.povDown().whileTrue(new AutoAlignCommand((p)->Drive.getBargeScorePose(p), drive));
   }
 
   /**
@@ -533,41 +535,6 @@ public class RobotContainer {
     //                 drive)
     //             .ignoringDisable(true));
 
-    characterizeController
-        .back()
-        .and(characterizeController.y())
-        .whileTrue(drive.sysIdDynamic(Direction.kForward));
-    characterizeController
-        .back()
-        .and(characterizeController.x())
-        .whileTrue(drive.sysIdDynamic(Direction.kReverse));
-    characterizeController
-        .start()
-        .and(characterizeController.y())
-        .whileTrue(drive.sysIdQuasistatic(Direction.kForward));
-    characterizeController
-        .start()
-        .and(characterizeController.x())
-        .whileTrue(drive.sysIdQuasistatic(Direction.kReverse));
-    characterizeController
-        .a()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  SignalLogger.setPath("/media/sda1/logs");
-                  // SignalLogger.enableAutoLogging(true);
-                  SignalLogger.start();
-                  System.out.println("Started Logger");
-                }));
-    characterizeController
-        .b()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  SignalLogger.stop();
-                  System.out.println("Stopped Logger");
-                }));
-    
     // // controller.rightBumper()
     // // .onTrue(
     // //   elbow.getNewSetAngleCommand(-30).alongWith(shoulder.getNewSetAngleCommand(75))
@@ -617,6 +584,7 @@ public class RobotContainer {
     // testcontroller.povDown().onTrue(new BargeScore(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
     
+    
     SmartDashboard.putData(new GroundIntakeToStow(shoulder, elbow, wrist, coralEndEffector));
     SmartDashboard.putData(new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector));
     SmartDashboard.putData(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
@@ -624,6 +592,49 @@ public class RobotContainer {
     SmartDashboard.putData(new StowToL4(shoulder, elbow, elevator, wrist));
     SmartDashboard.putData(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator));
     SmartDashboard.putData(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+  }
+
+  public void configureCharacterizationButtonBindings() {
+    characterizeController
+        .back()
+        .and(characterizeController.y())
+        .whileTrue(drive.sysIdDynamic(Direction.kForward));
+    characterizeController
+        .back()
+        .and(characterizeController.x())
+        .whileTrue(drive.sysIdDynamic(Direction.kReverse));
+    characterizeController
+        .start()
+        .and(characterizeController.y())
+        .whileTrue(drive.sysIdQuasistatic(Direction.kForward));
+    characterizeController
+        .start()
+        .and(characterizeController.x())
+        .whileTrue(drive.sysIdQuasistatic(Direction.kReverse));
+
+    characterizeController.povUp()
+      .whileTrue(DriveCommands.wheelRadiusCharacterization(drive))
+      .onFalse(DriveCommands.brakeDrive(drive));
+
+    characterizeController
+        .a()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  SignalLogger.setPath("/media/sda1/logs");
+                  // SignalLogger.enableAutoLogging(true);
+                  SignalLogger.start();
+                  System.out.println("Started Logger");
+                }));
+    characterizeController
+        .b()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  SignalLogger.stop();
+                  System.out.println("Stopped Logger");
+                }));
+    
   }
   
   /**

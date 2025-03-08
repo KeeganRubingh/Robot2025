@@ -72,7 +72,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     cfg2.Voltage.PeakReverseVoltage = 12;
     cfg2.CurrentLimits.StatorCurrentLimit = 80;
     cfg2.CurrentLimits.StatorCurrentLimitEnable = true;
-    cfg2.CurrentLimits.SupplyCurrentLimit = 40;
+    cfg2.CurrentLimits.SupplyCurrentLimit = 20;
     cfg2.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     cfg2.Feedback.SensorToMechanismRatio = Elevator.REDUCTION;

@@ -39,7 +39,7 @@ public class ElbowConstants extends ArmJointConstants {
         this.MaxAcceleration = RotationsPerSecondPerSecond.of(5);
         this.MaxJerk = 0.0;
         this.TorqueCurrentLimit = Amps.of(120);
-        this.SupplyCurrentLimit = Amps.of(40);
+        this.SupplyCurrentLimit = Amps.of(30);
         this.ForwardTorqueLimit = Amps.of(80);
         this.ReverseTorqueLimit = Amps.of(-80);
 
