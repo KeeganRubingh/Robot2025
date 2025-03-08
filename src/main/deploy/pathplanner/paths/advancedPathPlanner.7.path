@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.0115,
-        "y": 5.32175
+        "x": 5.058811475409836,
+        "y": 5.2897028688524586
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.622233606557376,
-        "y": 5.625358606557377
+        "x": 5.669545081967213,
+        "y": 5.593311475409836
       },
       "isLocked": false,
       "linkedName": "advancedPathPlanner.6"
@@ -60,7 +60,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 55.1561245293354
+    "rotation": 59.79356850211163
   },
   "useDefaultConstraints": true
 }
