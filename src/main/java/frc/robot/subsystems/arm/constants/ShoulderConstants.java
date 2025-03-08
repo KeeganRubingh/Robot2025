@@ -37,7 +37,7 @@ public class ShoulderConstants extends ArmJointConstants {
 
         this.NumMotors = 1;
         this.SensorToMechanismGearing = 1;
-        this.MotorToSensorGearing = 51.3;//Greg moved a tooth on the gear
+        this.MotorToSensorGearing = 100/38*34;//Greg moved a tooth on the gear
         this.Length = Inches.of(18);
         this.Weight = Pounds.of(15);
         this.Motors = DCMotor.getKrakenX60(NumMotors);
