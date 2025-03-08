@@ -135,36 +135,36 @@ public class ReefPositionsUtil {
     }
 
     /**
-     * Sets selected level variable to given AutoAlignLevel value. 
+     * Sets selected level variable to given AutoAlignSide value. 
      * For a command that runs this method use getNewSetAutoAlignLevelCommand(AutoAlignLevel)
      * 
      */
-    public void setAutoAlignLevel(AutoAlignSide level) {
+    public void setAutoAlignSide(AutoAlignSide level) {
         selectedAutoAlignSide = level;
     }
 
     /**
-     * Creates a new command that sets the selected level variable. 
-     * For the runnable itself use setAutoAlignLevel(AutoAlignLevel)
+     * Creates a new command that sets the selected side variable. 
+     * For the runnable itself use setAutoAlignSide(AutoAlignSide)
      * 
      * @return an instant command that runs the set method
      */
-    public InstantCommand getNewSetAutoAlignCommand(AutoAlignSide level) {
-        return new InstantCommand(() -> setAutoAlignLevel(level));
+    public InstantCommand getNewSetAutoAlignCommand(AutoAlignSide side) {
+        return new InstantCommand(() -> setAutoAlignSide(side));
     }
 
     /**
-     * Use to determine which auto align level is currently selected. Useful for logging.
+     * Use to determine which auto align side is currently selected. Useful for logging.
      * For a boolean output, use isSelected(AutoAlignLevel level)
      * 
-     * @return the currently selected auto align level
+     * @return the currently selected auto align side
      */
-    public AutoAlignSide getAutoAlignLevel() {
+    public AutoAlignSide getAutoAlignSide() {
         return selectedAutoAlignSide;
     }
 
-    public boolean isSelected(AutoAlignSide level) {
-        return (level.equals(selectedAutoAlignSide));
+    public boolean isSelected(AutoAlignSide side) {
+        return (side.equals(selectedAutoAlignSide));
     }
 
     public void setIsAutoAligning(boolean isAutoAligning) {
@@ -179,7 +179,7 @@ public class ReefPositionsUtil {
      * Use to determine whether selected position is the given level. Useful for conditional commands. 
      * For simply determining which is selected, use getAutoAlignLevel()
      * 
-     * Input a AutoAlignLevel to check the auto align level.
+     * Input a AutoAlignSide to check the auto align level.
      * 
      * @param level the auto align level to check
      * @return whether the selected auto align level is the same as the <b>level</b> parameter

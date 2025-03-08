@@ -35,8 +35,6 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -50,7 +48,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AlgaeStowCommand;
-import frc.robot.commands.AutoAlignCommand;
 import frc.robot.commands.BargeScoreCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.GroundIntakeToStow;
@@ -108,6 +105,7 @@ import frc.robot.util.CanDef;
 import frc.robot.util.CanDef.CanBus;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
+import frc.robot.util.ReefPositionsUtil.AutoAlignSide;
 import frc.robot.util.ReefPositionsUtil.DeAlgaeLevel;
 import frc.robot.util.ReefPositionsUtil.ScoreLevel;
 import frc.robot.util.SelectorCommandFactory;
@@ -418,25 +416,49 @@ public class RobotContainer {
       .onTrue(reefPositions.getNewSetDeAlgaeLevelCommand(DeAlgaeLevel.Low));
 
     // Back Coral Station Intake
-    co_controller.povLeft()
+    co_controller.povUp()
       .onTrue(new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
       .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
+    co_controller.povLeft()
+      .onTrue(new InstantCommand(() ->ReefPositionsUtil.getInstance().setAutoAlignSide(ReefPositionsUtil.AutoAlignSide.Left)));
+
+    co_controller.povRight()
+      .onTrue(new InstantCommand(() ->ReefPositionsUtil.getInstance().setAutoAlignSide(ReefPositionsUtil.AutoAlignSide.Right)));
+    
     /*  1. PovLeft is pressed
           - 
     */
-    controller.povLeft().whileTrue(ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Left, SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector)))
-      .onFalse(new ConditionalCommand(
+    controller.rightBumper()
+    .and(
+      ()->reefPositions.getIsAutoAligning()
+    ).and(
+      () -> {return reefPositions.getAutoAlignSide() == AutoAlignSide.Left;}
+    ).whileTrue(
+      ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Left, SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector))
+    )
+    .onFalse(new ConditionalCommand(
         new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
         new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
         () -> reefPositions.isSelected(ScoreLevel.L4)
       ));
-    controller.povRight().whileTrue(ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Right, SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector)))
+
+      controller.rightBumper()
+      .and(
+        ()->reefPositions.getIsAutoAligning()
+      ).and(
+        () -> {return reefPositions.getAutoAlignSide() == AutoAlignSide.Right;}
+      ).whileTrue(
+        ReefScoreCommandFactory.getNewReefCoralScoreSequence(
+          ReefPosition.Right, 
+          SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
+          SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector))
+      )
       .onFalse(new ConditionalCommand(
-        new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-        () -> reefPositions.isSelected(ScoreLevel.L4)
-      ));
+          new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+          new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+          () -> reefPositions.isSelected(ScoreLevel.L4)
+        ));
   }
 
   /**
