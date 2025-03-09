@@ -20,9 +20,16 @@ public class ReefPositionsUtil {
         Low
     }
 
+    public static enum AutoAlignSide {
+        Left,
+        Right
+    }
+    
     // Defaults
     private ScoreLevel selectedScoreLevel = ScoreLevel.L1;
     private DeAlgaeLevel selectedDeAlgaeLevel = DeAlgaeLevel.Low;
+    private AutoAlignSide selectedAutoAlignSide = AutoAlignSide.Left;
+    private boolean isAutoAligning = true;
 
     private static ReefPositionsUtil instance;
 
@@ -36,6 +43,7 @@ public class ReefPositionsUtil {
     private ReefPositionsUtil() {
         selectedScoreLevel = ScoreLevel.L1;
         selectedDeAlgaeLevel = DeAlgaeLevel.Low;
+        selectedAutoAlignSide = AutoAlignSide.Left;
     }
 
     /**
@@ -126,6 +134,56 @@ public class ReefPositionsUtil {
         return (level.equals(selectedDeAlgaeLevel));
     }
 
+    /**
+     * Sets selected level variable to given AutoAlignSide value. 
+     * For a command that runs this method use getNewSetAutoAlignLevelCommand(AutoAlignLevel)
+     * 
+     */
+    public void setAutoAlignSide(AutoAlignSide level) {
+        selectedAutoAlignSide = level;
+    }
+
+    /**
+     * Creates a new command that sets the selected side variable. 
+     * For the runnable itself use setAutoAlignSide(AutoAlignSide)
+     * 
+     * @return an instant command that runs the set method
+     */
+    public InstantCommand getNewSetAutoAlignCommand(AutoAlignSide side) {
+        return new InstantCommand(() -> setAutoAlignSide(side));
+    }
+
+    /**
+     * Use to determine which auto align side is currently selected. Useful for logging.
+     * For a boolean output, use isSelected(AutoAlignLevel level)
+     * 
+     * @return the currently selected auto align side
+     */
+    public AutoAlignSide getAutoAlignSide() {
+        return selectedAutoAlignSide;
+    }
+
+    public boolean isSelected(AutoAlignSide side) {
+        return (side.equals(selectedAutoAlignSide));
+    }
+
+    public void setIsAutoAligning(boolean isAutoAligning) {
+        this.isAutoAligning = isAutoAligning;
+    }
+
+    public boolean getIsAutoAligning() {
+        return isAutoAligning;
+    }
+
+    /**
+     * Use to determine whether selected position is the given level. Useful for conditional commands. 
+     * For simply determining which is selected, use getAutoAlignLevel()
+     * 
+     * Input a AutoAlignSide to check the auto align level.
+     * 
+     * @param level the auto align level to check
+     * @return whether the selected auto align level is the same as the <b>level</b> parameter
+     */
     public Command getCoralLevelSelector(Map<ScoreLevel,Command> bindings) {
         return new SelectCommand<>(bindings, this::getScoreLevel);
     }

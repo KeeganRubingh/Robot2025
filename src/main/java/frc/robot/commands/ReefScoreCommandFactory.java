@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
-import java.util.HashMap;
+import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
+
 import java.util.Map;
 import java.util.function.Function;
 
@@ -14,7 +15,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.Drive;
-import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
 
@@ -118,9 +118,8 @@ public class ReefScoreCommandFactory {
 
     public static Command getNewReefCoralScoreSequence(ReefPosition position, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands) {
         return getNewAlignToReefCommand(position, true)
-            .andThen(getNewAlignToReefCommand(position, false)
-                .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
-            )
+            .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
+            .andThen(getNewAlignToReefCommand(position, false))
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands));
     }
 }
