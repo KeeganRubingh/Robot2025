@@ -45,14 +45,16 @@ import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 
 public class Vision extends SubsystemBase {
   private final VisionConsumer consumer;
+  private final VisionConsumer consumerAA;
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
 
   private double targetDistance = 0;
 
-  public Vision(VisionConsumer consumer, VisionIO... io) {
+  public Vision(VisionConsumer consumer, VisionConsumer consumerAA, VisionIO... io) {
     this.consumer = consumer;
+    this.consumerAA = consumerAA;
     this.io = io;
 
     // Initialize inputs
@@ -178,7 +180,7 @@ public class Vision extends SubsystemBase {
         }
 
         // Send vision observation
-        addVisionMeasurement(
+        addVisionMeasurementAA(
             observation.pose().toPose2d(),
             observation.timestamp(),
             VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
@@ -235,6 +237,10 @@ public class Vision extends SubsystemBase {
   // accepts the vision measurements
   public void addVisionMeasurement(Pose2d pose, double timestamp, Vector<N3> fill) {
     consumer.accept(pose, timestamp, fill);
+  }
+
+  public void addVisionMeasurementAA(Pose2d pose, double timestamp, Vector<N3> fill){
+    consumerAA.accept(pose, timestamp, fill);
   }
 
   public Command setTagFilterCommand(int[] filter) {

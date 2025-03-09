@@ -106,7 +106,7 @@ public class AutoAlignCommand extends Command {
     }
 
     private Pose2d getCurrentPose() {
-        return drivetrain.getPose();
+        return drivetrain.getAutoAlignPose();
     }
 
     @Override

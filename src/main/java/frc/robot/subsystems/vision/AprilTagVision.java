@@ -30,8 +30,8 @@ public class AprilTagVision extends Vision {
 
   private boolean m_isFirstTime = true;
 // resets the aprilTag vision to nothing
-  public AprilTagVision(Consumer<Pose2d> resetPose, VisionConsumer consumer, VisionIO... io) {
-    super(consumer, io);
+  public AprilTagVision(Consumer<Pose2d> resetPose, VisionConsumer consumer, VisionConsumer consumerAA, VisionIO... io) {
+    super(consumer, consumerAA, io);
     m_ResetPose = resetPose;
 
     // try {

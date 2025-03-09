@@ -183,6 +183,7 @@ public class RobotContainer {
             new AprilTagVision(
                 drive::setPose,
                 drive::addVisionMeasurement,
+                drive::addVisionMeasurementAutoAlign,
                 new VisionIOPhotonVisionSim(limelightLeftName, robotToCameraLeft, drive::getPose),
                 new VisionIOPhotonVisionSim(limelightRightName, robotToCameraRight, drive::getPose));
 
@@ -233,6 +234,7 @@ public class RobotContainer {
             new AprilTagVision(
                 drive::setPose,
                 drive::addVisionMeasurement,
+                drive::addVisionMeasurementAutoAlign,
                 new VisionIOLimelight(limelightLeftName, drive::getRotation),
                 new VisionIOLimelight(limelightRightName, drive::getRotation));
 
@@ -691,7 +693,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command autoCommand = autoCommandManager.getAutonomousCommand();
     // Turn off updating odometry based on Apriltags
-    vision.disableUpdateOdometryBasedOnApriltags();
+    vision.enableUpdateOdometryBasedOnApriltags();
     if (autoCommand != null) {
       // Tell vision autonomous path was executed, so pose was set
       vision.updateAutonomous();
