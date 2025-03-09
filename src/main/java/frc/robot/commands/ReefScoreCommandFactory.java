@@ -141,4 +141,19 @@ public class ReefScoreCommandFactory {
             .andThen(new WaitCommand(0.2))
             .andThen(new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
     }
+
+    public static Command getNewAutoReefAlgaeScoreSequenceCommand( 
+        Drive drive,
+        ArmJoint shoulder, 
+        ArmJoint elbow, 
+        Elevator elevator, 
+        Wrist wrist, 
+        CoralEndEffector coralEE, 
+        AlgaeEndEffector algaeEE
+    ) {
+        return getNewAlignToReefCommand(ReefPosition.Center, false, drive)
+            .alongWith(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator))
+            .andThen(new WaitCommand(0.2))
+            .andThen(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE));
+    }
 }
