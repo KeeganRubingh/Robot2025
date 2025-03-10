@@ -152,8 +152,6 @@ public class ReefScoreCommandFactory {
         AlgaeEndEffector algaeEE
     ) {
         return getNewAlignToReefCommand(ReefPosition.Center, false, drive)
-            .alongWith(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator))
-            .andThen(new WaitCommand(0.2))
-            .andThen(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE));
+            .alongWith(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator));
     }
 }
