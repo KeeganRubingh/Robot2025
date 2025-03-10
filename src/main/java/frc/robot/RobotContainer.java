@@ -183,6 +183,7 @@ public class RobotContainer {
             new AprilTagVision(
                 drive::setPose,
                 drive::addVisionMeasurement,
+                drive::addVisionMeasurementAutoAlign,
                 new VisionIOPhotonVisionSim(limelightLeftName, robotToCameraLeft, drive::getPose),
                 new VisionIOPhotonVisionSim(limelightRightName, robotToCameraRight, drive::getPose));
 
@@ -233,6 +234,7 @@ public class RobotContainer {
             new AprilTagVision(
                 drive::setPose,
                 drive::addVisionMeasurement,
+                drive::addVisionMeasurementAutoAlign,
                 new VisionIOLimelight(limelightLeftName, drive::getRotation),
                 new VisionIOLimelight(limelightRightName, drive::getRotation));
 
@@ -288,7 +290,7 @@ public class RobotContainer {
 
     autoCommandManager = new AutoCommandManager(drive, shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector);
     reefPositions = ReefPositionsUtil.getInstance();
-    ReefScoreCommandFactory.initialize(drive);
+    ReefScoreCommandFactory.initialize();
 
     // Configure the button bindings
     configureDriverBindings();
@@ -372,28 +374,45 @@ public class RobotContainer {
       .onTrue(new OutakeCoral(coralEndEffector))
       .onFalse(coralEndEffector.getNewSetVoltsCommand(0.0));
 
-    // double povSpeed = 1.0;
-    // double REVERSE = -1.0;
-    // controller
-    //     .povUp()
-    //     .whileTrue(
-    //         DriveCommands.joystickForwardDrive(
-    //             drive, () -> povSpeed * REVERSE, () -> 0.0, null));
-    // controller
-    //     .povDown()
-    //     .whileTrue(
-    //         DriveCommands.joystickForwardDrive(
-    //             drive, () -> -(povSpeed * REVERSE), () -> 0.0, null));
-    // controller
-    //     .povRight()
-    //     .whileTrue(
-    //         DriveCommands.joystickForwardDrive(
-    //             drive, () -> 0.0, () -> -(povSpeed * REVERSE), null));
-    // controller
-    //     .povLeft()
-    //     .whileTrue(
-    //         DriveCommands.joystickForwardDrive(
-    //             drive, () -> 0.0, () -> (povSpeed * REVERSE), null));
+    /*  1. PovLeft is pressed
+          - 
+    */
+    controller.rightBumper()
+    .and(
+      ()->reefPositions.getIsAutoAligning()
+    ).and(
+      () -> {return reefPositions.getAutoAlignSide() == AutoAlignSide.Left;}
+    ).whileTrue(
+      ReefScoreCommandFactory.getNewReefCoralScoreSequence(
+        ReefPosition.Left, 
+        SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
+        SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector), 
+        drive
+      )
+    )
+    .onFalse(new ConditionalCommand(
+        new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        () -> reefPositions.isSelected(ScoreLevel.L4)
+      ));
+
+      controller.rightBumper()
+      .and(
+        ()->reefPositions.getIsAutoAligning()
+      ).and(
+        () -> {return reefPositions.getAutoAlignSide() == AutoAlignSide.Right;}
+      ).whileTrue(
+        ReefScoreCommandFactory.getNewReefCoralScoreSequence(
+          ReefPosition.Right, 
+          SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
+          SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector),
+          drive)
+      )
+      .onFalse(new ConditionalCommand(
+          new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+          new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+          () -> reefPositions.isSelected(ScoreLevel.L4)
+        ));
 
     //L4
     co_controller.y().and(controller.rightBumper().negate())
@@ -425,40 +444,6 @@ public class RobotContainer {
 
     co_controller.povRight()
       .onTrue(new InstantCommand(() ->ReefPositionsUtil.getInstance().setAutoAlignSide(ReefPositionsUtil.AutoAlignSide.Right)));
-    
-    /*  1. PovLeft is pressed
-          - 
-    */
-    controller.rightBumper()
-    .and(
-      ()->reefPositions.getIsAutoAligning()
-    ).and(
-      () -> {return reefPositions.getAutoAlignSide() == AutoAlignSide.Left;}
-    ).whileTrue(
-      ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Left, SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector))
-    )
-    .onFalse(new ConditionalCommand(
-        new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-        () -> reefPositions.isSelected(ScoreLevel.L4)
-      ));
-
-      controller.rightBumper()
-      .and(
-        ()->reefPositions.getIsAutoAligning()
-      ).and(
-        () -> {return reefPositions.getAutoAlignSide() == AutoAlignSide.Right;}
-      ).whileTrue(
-        ReefScoreCommandFactory.getNewReefCoralScoreSequence(
-          ReefPosition.Right, 
-          SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
-          SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector))
-      )
-      .onFalse(new ConditionalCommand(
-          new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-          new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-          () -> reefPositions.isSelected(ScoreLevel.L4)
-        ));
   }
 
   /**
@@ -615,6 +600,11 @@ public class RobotContainer {
     // testcontroller.povRight().whileTrue(new AutoAlignCommand((thisOneVariableWhichIDontReallyNeedSoIWillUseAnExtremelyConciseNameFor) -> {return new Pose2d(-1, 0, Rotation2d.kCW_90deg);}, drive));
     // testcontroller.povUp().whileTrue(new AutoAlignCommand((thisOneVariableWhichIDontReallyNeedSoIWillUseAnExtremelyConciseNameFor) -> {return new Pose2d(0, 0, Rotation2d.kZero);}, drive));
     // testcontroller.povDown().whileTrue(new AutoAlignCommand((p)->Drive.getBargeScorePose(p), drive));
+    testcontroller.b().whileTrue(
+        ReefScoreCommandFactory.getNewAutoReefAlgaeScoreSequenceCommand(drive, shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector))
+      .onFalse(
+        new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector)  
+      );
 
     
     
@@ -678,7 +668,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command autoCommand = autoCommandManager.getAutonomousCommand();
     // Turn off updating odometry based on Apriltags
-    vision.disableUpdateOdometryBasedOnApriltags();
+    vision.enableUpdateOdometryBasedOnApriltags();
     if (autoCommand != null) {
       // Tell vision autonomous path was executed, so pose was set
       vision.updateAutonomous();

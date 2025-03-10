@@ -7,6 +7,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.OutakeCoral;
+import frc.robot.commands.ReefScoreCommandFactory;
 import frc.robot.commands.StopDrivetrainCommand;
 import frc.robot.commands.StowCommand;
 import frc.robot.commands.StowToL1;
@@ -22,6 +23,9 @@ import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
+import frc.robot.util.ReefPositionsUtil;
+import frc.robot.util.SelectorCommandFactory;
+import frc.robot.util.ReefPositionsUtil.ScoreLevel;
 
 
 public class AutoCommandManager {
@@ -72,6 +76,36 @@ public class AutoCommandManager {
   
       NamedCommands.registerCommand("CoralOuttake", new OutakeCoral(coralEE));
       NamedCommands.registerCommand("StopDrivetrain", new StopDrivetrainCommand(drive));
+
+      NamedCommands.registerCommand("SetL1", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L1));
+      NamedCommands.registerCommand("SetL2", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L2));
+      NamedCommands.registerCommand("SetL3", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L3));
+      NamedCommands.registerCommand("SetL4", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L4));
+
+      NamedCommands.registerCommand("AutoAlignScoreLeft", ReefScoreCommandFactory.getNewAutoReefCoralScoreSequenceCommand(
+        ReefScoreCommandFactory.ReefPosition.Left, 
+        SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
+        SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEE), 
+        drive,
+        shoulder, 
+        elbow, 
+        elevator, 
+        wrist, 
+        coralEE, 
+        algaeEE
+      ));
+      NamedCommands.registerCommand("AutoAlignScoreRight", ReefScoreCommandFactory.getNewAutoReefCoralScoreSequenceCommand(
+        ReefScoreCommandFactory.ReefPosition.Right, 
+        SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
+        SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEE), 
+        drive,
+        shoulder, 
+        elbow, 
+        elevator, 
+        wrist, 
+        coralEE, 
+        algaeEE
+      ));
     
   }
 }
