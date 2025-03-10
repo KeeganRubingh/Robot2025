@@ -77,6 +77,12 @@ public class ReefScoreCommandFactory {
         return target;
     }
 
+    /**
+     * Returns A function which takes the current position on the robot and returns where we want to score.
+     * @param pos
+     * @param isBackingUp
+     * @return
+     */
     public static Function<Pose2d, Pose2d> getGetTargetPositionFunction(ReefPosition pos, boolean isBackingUp) {
         refreshAlliance();
         return (Pose2d pose) -> {

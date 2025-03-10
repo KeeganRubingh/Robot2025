@@ -23,6 +23,9 @@ import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 import frc.robot.util.LoggedTunableGainsBuilder;
 import frc.robot.util.LoggedTunableNumber;
 
+/**
+ * @deprecated Use "AutoAlignCommand" instead
+ */
 public class RoughAlignToReef extends Command {
 
     private static int[] targetIdsRed = {
