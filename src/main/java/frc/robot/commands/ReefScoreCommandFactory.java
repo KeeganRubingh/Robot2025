@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 
 import java.util.Map;
@@ -48,8 +50,8 @@ public class ReefScoreCommandFactory {
 
     //#region TODO Find Accurate Values
     private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlign/offsetBBackingUp", 2);
-    private static LoggedTunableNumber rightOffsetBFinal = new LoggedTunableNumber("AutoAlign/rightOffsetBFinal", 0.55 + 0.1143 /*1 coral width*/);
-    private static LoggedTunableNumber leftOffsetBFinal = new LoggedTunableNumber("AutoAlign/leftOffsetBFinal", 0.45 + 0.1143 /*1 coral width*/);
+    private static LoggedTunableNumber rightOffsetBFinal = new LoggedTunableNumber("AutoAlign/rightOffsetBFinal", 0.55 + Inches.of(4.5).in(Meters) /*1 coral width*/);
+    private static LoggedTunableNumber leftOffsetBFinal = new LoggedTunableNumber("AutoAlign/leftOffsetBFinal", 0.45 + Inches.of(4.5).in(Meters) /*1 coral width*/);
     private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlign/offsetL", 0.3); //(papa smurf)
     private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.14);
     //#endregion
