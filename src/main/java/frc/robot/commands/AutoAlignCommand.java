@@ -133,8 +133,8 @@ public class AutoAlignCommand extends Command {
     public void execute() {
         Pose2d targetPose_r = getRelativeTarget();
 
-        m_tx = -targetPose_r.getY();
-        m_ty = -targetPose_r.getX();
+        m_tx = 0.0 - targetPose_r.getY();
+        m_ty = 0.0 - targetPose_r.getX();
         m_tr = targetPose_r.getRotation().unaryMinus().getRadians();
 
         m_strafe = MathUtil.clamp(strafePID.calculate(m_tx, 0.0), -m_maxStrafe.in(MetersPerSecond), m_maxStrafe.in(MetersPerSecond)); 
