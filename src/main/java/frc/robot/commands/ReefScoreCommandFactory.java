@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
@@ -129,9 +130,13 @@ public class ReefScoreCommandFactory {
      */
     public static Command getNewAlignToReefCommand(ReefPosition position, boolean isBackingUp, Drive drive) {
         Function<Pose2d, Pose2d> positionFunction = getGetTargetPositionFunction(position, isBackingUp);
-        return new AutoAlignCommand(getGetTargetPositionFunction(position, isBackingUp), drive).until(
-            () -> (isBackingUp && drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) < offsetBBackingUp.getAsDouble())
-        );
+        //Base command
+        Command returnedCommand = new AutoAlignCommand(getGetTargetPositionFunction(position, isBackingUp), drive);
+        //If we're backing up, add a condition to kill when we're farther away than the backup distance
+        if(isBackingUp) {
+            returnedCommand = returnedCommand.until(() -> (drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) < offsetBBackingUp.getAsDouble()));
+        }
+        return returnedCommand;
     }
 
     /**
