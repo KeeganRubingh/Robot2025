@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -163,5 +164,10 @@ public class AutoAlignCommand extends Command {
     @Override
     public boolean isFinished() {
         return MathUtil.isNear(m_tx, 0.0,toleranceR.getAsDouble()) && MathUtil.isNear(m_ty, 0.0,toleranceB.getAsDouble()) && MathUtil.isNear(m_tr, 0.0,(toleranceB.getAsDouble()+toleranceR.getAsDouble())/2.0);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        drivetrain.runVelocity(new ChassisSpeeds());
     }
 }
