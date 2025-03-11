@@ -16,7 +16,9 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
@@ -120,10 +122,27 @@ public class ReefScoreCommandFactory {
     public static void refreshAlliance() {
         targetIds = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue ? targetIdsBlue : targetIdsRed;
     }
+
+    /**
+     * Gets a command which aligns the robot to the nearest reef position
+     * @param position Left or right
+     * @param isBackingUp Whether or not we should back up if we're too close to the reef
+     */
     public static Command getNewAlignToReefCommand(ReefPosition position, boolean isBackingUp, Drive drive) {
-        return new AutoAlignCommand(getGetTargetPositionFunction(position, isBackingUp), drive);
+        Function<Pose2d, Pose2d> positionFunction = getGetTargetPositionFunction(position, isBackingUp);
+        return new AutoAlignCommand(getGetTargetPositionFunction(position, isBackingUp), drive).until(
+            () -> (isBackingUp && drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) < offsetBBackingUp.getAsDouble())
+        );
     }
 
+    /**
+     * Gets a command which aligns the robotto the nearest reef position and prepares to score the coal, backing up if it's too close
+     * @param position
+     * @param coralLevelCommands
+     * @param scoreCoralLevelCommands
+     * @param drive
+     * @return
+     */
     public static Command getNewReefCoralScoreSequence(ReefPosition position, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands, Drive drive) {
         return getNewAlignToReefCommand(position, true, drive)
                 .alongWith(new WaitCommand(0.1).andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands)))
@@ -132,6 +151,21 @@ public class ReefScoreCommandFactory {
             .andThen(new WaitCommand(0.2))
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands));
     }
+
+    /**
+     * Gets a command which aligns the robot to the nearest reef position and scores the coal
+     * @param position
+     * @param coralLevelCommands
+     * @param scoreCoralLevelCommands
+     * @param drive
+     * @param shoulder
+     * @param elbow
+     * @param elevator
+     * @param wrist
+     * @param coralEE
+     * @param algaeEE
+     * @return
+     */
     public static Command getNewAutoReefCoralScoreSequenceCommand(
         ReefPosition position, 
         Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, 
@@ -151,6 +185,17 @@ public class ReefScoreCommandFactory {
             .andThen(new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
     }
 
+    /**
+     * Gets a command that scores an algae in auto
+     * @param drive
+     * @param shoulder
+     * @param elbow
+     * @param elevator
+     * @param wrist
+     * @param coralEE
+     * @param algaeEE
+     * @return
+     */
     public static Command getNewAutoReefAlgaeScoreSequenceCommand( 
         Drive drive,
         ArmJoint shoulder, 
