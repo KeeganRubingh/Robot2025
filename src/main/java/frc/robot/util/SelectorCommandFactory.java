@@ -10,6 +10,7 @@ import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.ReefPositionsUtil.ScoreLevel;
@@ -24,21 +25,21 @@ public class SelectorCommandFactory {
         return commandMap;
     }
 
-    public static Map<ScoreLevel,Command> getCoralLevelScoreCommandSelector(ArmJoint elbow, Elevator elevator, Wrist wrist,CoralEndEffector coralEndEffector) {
+    public static Map<ScoreLevel,Command> getCoralLevelScoreCommandSelector(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist,CoralEndEffector coralEndEffector) {
         Map<ScoreLevel,Command> commandMap = new HashMap<>();
         commandMap.put(ScoreLevel.L1, StowToL1.getNewScoreCommand(coralEndEffector));
-        commandMap.put(ScoreLevel.L2, StowToL2.getNewScoreCommand(elbow, wrist, coralEndEffector));
-        commandMap.put(ScoreLevel.L3, StowToL3.getNewScoreCommand(elbow, wrist, coralEndEffector));
+        commandMap.put(ScoreLevel.L2, StowToL2.getNewScoreCommand(shoulder, elbow, wrist, coralEndEffector));
+        commandMap.put(ScoreLevel.L3, StowToL3.getNewScoreCommand(shoulder, elbow, wrist, coralEndEffector));
         commandMap.put(ScoreLevel.L4, StowToL4.getNewScoreCommand(elbow, wrist, coralEndEffector));
         return commandMap;
     }
 
-    public static Map<ScoreLevel,Command> getCoralLevelStopScoreCommandSelector(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
+    public static Map<ScoreLevel,Command> getCoralLevelStopScoreCommandSelector(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector, Drive drive) {
         Map<ScoreLevel,Command> commandMap = new HashMap<>();
         commandMap.put(ScoreLevel.L1, StowToL1.getNewStopScoreCommand(coralEndEffector));
         commandMap.put(ScoreLevel.L2, StowToL2.getNewStopScoreCommand(elbow, wrist, coralEndEffector));
         commandMap.put(ScoreLevel.L3, StowToL3.getNewStopScoreCommand(elbow, wrist, coralEndEffector));
-        commandMap.put(ScoreLevel.L4, StowToL4.getNewStopScoreCommand(elbow, wrist, coralEndEffector));
+        commandMap.put(ScoreLevel.L4, StowToL4.getNewStopScoreCommand(elbow, wrist, coralEndEffector, drive));
         return commandMap;
     }
 }

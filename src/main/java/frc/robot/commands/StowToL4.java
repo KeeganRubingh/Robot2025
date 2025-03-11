@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
@@ -24,7 +25,7 @@ public class StowToL4 extends SequentialCommandGroup {
         Starting(new LoggedTunableNumber("MoveToL4Command/shoulder/StartingDegrees", 0)),
         MidPoint(new LoggedTunableNumber("MoveToL4Command/shoulder/MidPointDegrees", 0)),
         SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", -20)),
-        Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", -70));
+        Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", -55));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -41,8 +42,8 @@ public class StowToL4 extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber("MoveToL4Command/elbow/StartingDegrees", 0)),
-        MidPoint(new LoggedTunableNumber("MoveToL4Command/elbow/ShoulderSafeSwingDegrees", 45)),
+        Starting(new LoggedTunableNumber("MoveToL4Command/elbow/StartingDegrees", 65)),
+        MidPoint(new LoggedTunableNumber("MoveToL4Command/elbow/ShoulderSafeSwingDegrees", 0)),
         Final(new LoggedTunableNumber("MoveToL4Command/elbow/FinalDegrees", -100)),
         Confirm(new LoggedTunableNumber("MoveToL4Command/elbow/ConfirmDegrees", -140));
 
@@ -122,10 +123,12 @@ public class StowToL4 extends SequentialCommandGroup {
         .alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)));
     }
 
-    public static Command getNewStopScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
+    public static Command getNewStopScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector, Drive drive) {
         return(coralEndEffector.getNewSetVoltsCommand(1)
         .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
-        .alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
+        .alongWith(new WaitCommand(0.2))
+            .andThen(DriveCommands.joystickForwardDrive(drive, () -> 0.35, () -> 0.0, null).withTimeout(0.3))
+            .andThen(wrist.getNewWristTurnCommand(0)));
     }
 
 }
