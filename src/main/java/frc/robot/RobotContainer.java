@@ -414,6 +414,9 @@ public class RobotContainer {
           () -> reefPositions.isSelected(ScoreLevel.L4)
         ));
 
+    controller.start()
+      .onTrue(new InstantCommand(() -> {reefPositions.setIsAutoAligning(!reefPositions.getIsAutoAligning());}));
+
     //L4
     co_controller.y().and(controller.rightBumper().negate())
       .onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L4));
