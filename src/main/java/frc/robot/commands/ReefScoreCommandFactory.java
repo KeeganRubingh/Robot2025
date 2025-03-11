@@ -49,7 +49,7 @@ public class ReefScoreCommandFactory {
     private static int[] targetIds;
 
     //#region TODO Find Accurate Values
-    private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlign/offsetBBackingUp", 2);
+    private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlign/offsetBBackingUp", 0.75);
     private static LoggedTunableNumber rightOffsetBFinal = new LoggedTunableNumber("AutoAlign/rightOffsetBFinal", 0.55 + Inches.of(4.5).in(Meters) /*1 coral width*/);
     private static LoggedTunableNumber leftOffsetBFinal = new LoggedTunableNumber("AutoAlign/leftOffsetBFinal", 0.45 + Inches.of(4.5).in(Meters) /*1 coral width*/);
     private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlign/offsetL", 0.3); //(papa smurf)
@@ -124,12 +124,13 @@ public class ReefScoreCommandFactory {
         return new AutoAlignCommand(getGetTargetPositionFunction(position, isBackingUp), drive);
     }
 
-    public static Command getNewReefCoralScoreSequence(ReefPosition position, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands, Drive drive) {
+    public static Command getNewReefCoralScoreSequence(ReefPosition position, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands, Drive drive) {
         return getNewAlignToReefCommand(position, true, drive)
-            .andThen(getNewAlignToReefCommand(position, false, drive)
-                .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
-            )
-            .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands));
+                .alongWith(new WaitCommand(0.1).andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands)))
+            .andThen(getNewAlignToReefCommand(position, false, drive))
+            .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
+            .andThen(new WaitCommand(0.2))
+            .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands));
     }
     public static Command getNewAutoReefCoralScoreSequenceCommand(
         ReefPosition position, 

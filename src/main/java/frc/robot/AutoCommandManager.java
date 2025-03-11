@@ -58,13 +58,13 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("ScoreL1",StowToL1.getNewScoreCommand(coralEE)
         .andThen(new WaitCommand(0.2))
         .andThen(StowToL1.getNewStopScoreCommand(coralEE)));
-      NamedCommands.registerCommand("ScoreL2",StowToL2.getNewScoreCommand(elbow, wrist, coralEE)
+      NamedCommands.registerCommand("ScoreL2",StowToL2.getNewScoreCommand(shoulder, elbow, wrist, coralEE)
         .andThen(new WaitCommand(0.2))
         .andThen(StowToL2.getNewStopScoreCommand(elbow, wrist, coralEE)));
-      NamedCommands.registerCommand("ScoreL3",StowToL3.getNewScoreCommand(elbow, wrist, coralEE)
+      NamedCommands.registerCommand("ScoreL3",StowToL3.getNewScoreCommand(shoulder, elbow, wrist, coralEE)
         .andThen(new WaitCommand(0.2))
         .andThen(StowToL3.getNewStopScoreCommand(elbow, wrist, coralEE)));
-      NamedCommands.registerCommand("ScoreL4",StowToL3.getNewScoreCommand(elbow, wrist, coralEE)
+      NamedCommands.registerCommand("ScoreL4",StowToL3.getNewScoreCommand(shoulder, elbow, wrist, coralEE)
         .andThen(new WaitCommand(0.2))
         .andThen(StowToL3.getNewStopScoreCommand(elbow, wrist, coralEE)));
 
@@ -85,7 +85,7 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("AutoAlignScoreLeft", ReefScoreCommandFactory.getNewAutoReefCoralScoreSequenceCommand(
         ReefScoreCommandFactory.ReefPosition.Left, 
         SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
-        SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEE), 
+        SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEE), 
         drive,
         shoulder, 
         elbow, 
@@ -97,7 +97,7 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("AutoAlignScoreRight", ReefScoreCommandFactory.getNewAutoReefCoralScoreSequenceCommand(
         ReefScoreCommandFactory.ReefPosition.Right, 
         SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
-        SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEE), 
+        SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEE), 
         drive,
         shoulder, 
         elbow, 
