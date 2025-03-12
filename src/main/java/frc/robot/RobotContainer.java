@@ -175,9 +175,9 @@ public class RobotContainer {
   public RobotContainer(){
 
     // Intake Options
-    intakePosChooser.addDefaultOption("Left", IntakePosition.Inside);
+    intakePosChooser.addDefaultOption("Inside", IntakePosition.Inside);
     intakePosChooser.addOption("Center", IntakePosition.Center);
-    intakePosChooser.addOption("Right", IntakePosition.Outside);
+    intakePosChooser.addOption("Outside", IntakePosition.Outside);
 
     CanDef.Builder canivoreCanBuilder = CanDef.builder().bus(CanBus.CANivore);
     CanDef.Builder rioCanBuilder = CanDef.builder().bus(CanBus.Rio);
