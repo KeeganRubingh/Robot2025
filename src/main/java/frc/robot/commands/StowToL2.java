@@ -18,7 +18,8 @@ public class StowToL2 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("StowToL2/shoulder/StartingDegrees", 10)),
-        Final(new LoggedTunableNumber("StowToL2/shoulder/FinalDegrees", 55));
+        Final(new LoggedTunableNumber("StowToL2/shoulder/FinalDegrees", 42.5)),
+        Confirm(new LoggedTunableNumber("StowToL2/shoulder/Confirm", 70));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -36,8 +37,8 @@ public class StowToL2 extends SequentialCommandGroup {
 
     private enum ElbowPositions {
         Starting(new LoggedTunableNumber("StowToL2/elbow/StartingDegrees", 10)),
-        Final(new LoggedTunableNumber("StowToL2/elbow/FinalDegrees", 50)), 
-        Confirm(new LoggedTunableNumber("StowToL2/elbow/ConfirmDegrees", 0));
+        Final(new LoggedTunableNumber("StowToL2/elbow/FinalDegrees", 20)), 
+        Confirm(new LoggedTunableNumber("StowToL2/elbow/ConfirmDegrees", -20));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -96,15 +97,24 @@ public class StowToL2 extends SequentialCommandGroup {
         //TODO Auto-generated constructor stub
     }
 
-    public static Command getNewScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
+    public static Command getNewScoreCommand(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
         return(elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
         .alongWith(wrist.getNewApplyCoastModeCommand())
-        .alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)));
+        .alongWith(
+            new WaitCommand(0.25))
+            .andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
+        // .andThen(new WaitCommand(0.25))
+        .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.Confirm.position))
+        .andThen(new WaitCommand(0.25));
     }
+
     public static Command getNewStopScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
-        return(coralEndEffector.getNewSetVoltsCommand(1)
-        .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
-        .alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
+        return(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
+        .alongWith(
+            new WaitCommand(0.2)
+            .andThen(wrist.getNewWristTurnCommand(0))
+        )
+        .andThen(coralEndEffector.getNewSetVoltsCommand(1));
     }
 
 }

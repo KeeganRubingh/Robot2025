@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.Drive;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * @deprecated Use "AutoAlignCommand" instead
+ */
 public class AlignTx extends Command {
     private static int[] targetIdsRed = {
         6,7,8,9,10,11

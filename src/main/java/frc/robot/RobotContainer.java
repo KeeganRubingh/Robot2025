@@ -355,9 +355,9 @@ public class RobotContainer {
 
     Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands = SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist);
 
-    Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands = SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector);
+    Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands = SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEndEffector);
     
-    Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands = SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector);
+    Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands = SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector, drive);
     
     // Go to conditional coral level no auto align
     /*  1. Right bumper pressed and AutoAligning is disabled
@@ -409,7 +409,8 @@ public class RobotContainer {
       ReefScoreCommandFactory.getNewReefCoralScoreSequence(
         ReefPosition.Left, 
         SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
-        SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector), 
+        SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEndEffector),
+        SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector, drive),
         drive
       )
     )
@@ -428,7 +429,8 @@ public class RobotContainer {
         ReefScoreCommandFactory.getNewReefCoralScoreSequence(
           ReefPosition.Right, 
           SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
-          SelectorCommandFactory.getCoralLevelScoreCommandSelector(elbow, elevator, wrist, coralEndEffector),
+          SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEndEffector),
+          SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector, drive),
           drive)
       )
       .onFalse(new ConditionalCommand(
@@ -436,6 +438,9 @@ public class RobotContainer {
           new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
           () -> reefPositions.isSelected(ScoreLevel.L4)
         ));
+
+    controller.start()
+      .onTrue(new InstantCommand(() -> {reefPositions.setIsAutoAligning(!reefPositions.getIsAutoAligning());}));
 
     //L4
     co_controller.y().and(controller.rightBumper().negate())
@@ -623,7 +628,7 @@ public class RobotContainer {
     // testcontroller.povRight().whileTrue(new AutoAlignCommand((thisOneVariableWhichIDontReallyNeedSoIWillUseAnExtremelyConciseNameFor) -> {return new Pose2d(-1, 0, Rotation2d.kCW_90deg);}, drive));
     // testcontroller.povUp().whileTrue(new AutoAlignCommand((thisOneVariableWhichIDontReallyNeedSoIWillUseAnExtremelyConciseNameFor) -> {return new Pose2d(0, 0, Rotation2d.kZero);}, drive));
     // testcontroller.povDown().whileTrue(new AutoAlignCommand((p)->Drive.getBargeScorePose(p), drive));
-    testcontroller.b().whileTrue(
+    testcontroller.b().onTrue(
         ReefScoreCommandFactory.getNewAutoReefAlgaeScoreSequenceCommand(drive, shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector))
       .onFalse(
         new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector)  
