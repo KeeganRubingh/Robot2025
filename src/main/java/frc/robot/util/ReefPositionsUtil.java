@@ -24,11 +24,19 @@ public class ReefPositionsUtil {
         Left,
         Right
     }
+
+    public static enum IntakeAutoAlignPos {
+        Left,
+        Center,
+        Right
+    }
     
     // Defaults
     private ScoreLevel selectedScoreLevel = ScoreLevel.L1;
     private DeAlgaeLevel selectedDeAlgaeLevel = DeAlgaeLevel.Low;
     private AutoAlignSide selectedAutoAlignSide = AutoAlignSide.Left;
+    private IntakeAutoAlignPos selectedIntakeAutoAlignPos = IntakeAutoAlignPos.Left;
+
     private boolean isAutoAligning = true;
 
     private static ReefPositionsUtil instance;
@@ -165,6 +173,39 @@ public class ReefPositionsUtil {
 
     public boolean isSelected(AutoAlignSide side) {
         return (side.equals(selectedAutoAlignSide));
+    }
+
+    /**
+     * Sets selected level variable to given IntakeAutoAlignPos value. 
+     * For a command that runs this method use getNewSetIntakeAutoAlignPosCommand(IntakeAutoAlignPos)
+     * 
+     */
+    public void setIntakeAutoAlignPos(IntakeAutoAlignPos pos) {
+        selectedIntakeAutoAlignPos = pos;
+    }
+
+    /**
+     * Creates a new command that sets the selected pos variable. 
+     * For the runnable itself use setIntakeAutoAlignPos(IntakeAutoAlignPos)
+     * 
+     * @return an instant command that runs the set method
+     */
+    public InstantCommand getNewSetIntakeAutoAlignCommand(IntakeAutoAlignPos pos) {
+        return new InstantCommand(() -> setIntakeAutoAlignPos(pos));
+    }
+
+    /**
+     * Use to determine which intake auto align pos is currently selected. Useful for logging.
+     * For a boolean output, use isSelected(IntakeAutoAlignPos)
+     * 
+     * @return the currently selected intake auto align pos
+     */
+    public IntakeAutoAlignPos getIntakeAutoAlignPos() {
+        return selectedIntakeAutoAlignPos;
+    }
+
+    public boolean isSelected(IntakeAutoAlignPos pos) {
+        return (pos.equals(selectedIntakeAutoAlignPos));
     }
 
     public void setIsAutoAligning(boolean isAutoAligning) {
