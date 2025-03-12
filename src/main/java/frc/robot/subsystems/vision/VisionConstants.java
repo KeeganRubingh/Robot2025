@@ -36,13 +36,13 @@ public class VisionConstants {
   new Transform3d(
     //IP 10.9.30.16
     //back Left (on endgame) values on robot, 
-    // LL Forward -0.2794(11in), LL Right -0.277(-10.933in ???kept the same as before), LL up 0.333(13.625in - 0.5in ), LL Roll 0, LL Pitch 25, LL Yaw -165.
+    // LL Forward -0.2599(10.25in), LL Right -0.2757(-10.854in), LL up 0.3161(12.96in - 0.5in), LL Roll 0, LL Pitch -10, LL Yaw -172.5
     //LL RIGHT IS +, IN CODE(y value) IT'S -
-      -0.2794,
-      0.269, /* for sure not .197 */
-      0.346 - 0.013, /*  .333 * 0.5 in */  
+      -0.2599,
+      0.2757, 
+      .3161, /*  .3291 - 0.13(0.5 in) */  
       //LL PITCH IS +, IN CODE IT'S -
-      new Rotation3d(0.0, Math.toRadians(10.0), Math.toRadians(195.0)));
+      new Rotation3d(0.0, Math.toRadians(10.0), Math.toRadians(172.5)));
 public static Transform3d robotToCameraRight =
   new Transform3d(
     // 10.9.30.15
