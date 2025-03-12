@@ -103,7 +103,7 @@ public class StationIntakeCommandFactory {
             switch (pos.get()) {
                 case Outside:
                     if (closestTargetId == 2 || closestTargetId == 12) {
-                        appliedOffset = outsideLeftOffset.getAsDouble();
+                        appliedOffset = -outsideLeftOffset.getAsDouble();
                         backOffset = outsideLeftOffsetBFinal.get();
                         break;
                     } else {
@@ -113,7 +113,7 @@ public class StationIntakeCommandFactory {
                     }
                 case Inside:
                     if (closestTargetId == 2 || closestTargetId == 12) {
-                        appliedOffset = -insideRightOffset.getAsDouble();
+                        appliedOffset = insideRightOffset.getAsDouble();
                         backOffset = insideRightOffsetBFinal.get();
                         break;
                     } else {
