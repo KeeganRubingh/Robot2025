@@ -48,19 +48,19 @@ public class StationIntakeCommandFactory {
 
     // for tags 1 and 13
 
-    private static LoggedTunableNumber outsideRightOffsetBFinal = new LoggedTunableNumber("StationAutoAlign/outsideOffsetBFinal", 0.5);
-    private static LoggedTunableNumber outsideRightOffset = new LoggedTunableNumber("StationAutoAlign/outsideOffset", 0.5);
+    private static LoggedTunableNumber outsideRightOffsetBFinal = new LoggedTunableNumber("StationAutoAlign/outsideRightOffsetBFinal", 0.5);
+    private static LoggedTunableNumber outsideRightOffset = new LoggedTunableNumber("StationAutoAlign/outsideRightOffset", 0.5);
 
-    private static LoggedTunableNumber insideLeftOffsetBFinal = new LoggedTunableNumber("StationAutoAlign/insideOffsetBFinal", 0.5);
-    private static LoggedTunableNumber insideLeftOffset = new LoggedTunableNumber("StationAutoAlign/insideOffset", 0.5);
+    private static LoggedTunableNumber insideLeftOffsetBFinal = new LoggedTunableNumber("StationAutoAlign/insideLeftOffsetBFinal", 0.5);
+    private static LoggedTunableNumber insideLeftOffset = new LoggedTunableNumber("StationAutoAlign/insideLeftOffset", 0.5);
 
     // for tags 2 and 12
 
-    private static LoggedTunableNumber insideRightOffsetBFinal = new LoggedTunableNumber("StationAutoAlign/altOutsideOffsetBFinal", 0.5);
-    private static LoggedTunableNumber insideRightOffset = new LoggedTunableNumber("StationAutoAlign/altOutsideOffset", 0.5);
+    private static LoggedTunableNumber insideRightOffsetBFinal = new LoggedTunableNumber("StationAutoAlign/insideRightOffsetBFinal", 0.5);
+    private static LoggedTunableNumber insideRightOffset = new LoggedTunableNumber("StationAutoAlign/insideRightOffset", 0.5);
 
-    private static LoggedTunableNumber outsideLeftOffsetBFinal = new LoggedTunableNumber("StationAutoAlign/altInsideOffsetBFinal", 0.5);
-    private static LoggedTunableNumber outsideLeftOffset = new LoggedTunableNumber("StationAutoAlign/altInsideOffset", 0.5);
+    private static LoggedTunableNumber outsideLeftOffsetBFinal = new LoggedTunableNumber("StationAutoAlign/outsideLeftOffsetBFinal", 0.5);
+    private static LoggedTunableNumber outsideLeftOffset = new LoggedTunableNumber("StationAutoAlign/outsideLeftOffset", 0.5);
     //#endregion
 
     /**
