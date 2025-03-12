@@ -13,6 +13,9 @@
 
 package frc.robot.subsystems.vision;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -32,17 +35,19 @@ public class VisionConstants {
   public static Transform3d robotToCameraLeft =
   new Transform3d(
     //IP 10.9.30.16
-    //back Left values on robot, LL Forward -0.301(-11.844in), LL Right -0.269(-10.6in), LL up 0.216(8.497in), LL Roll 0, LL Pitch 25, LL Yaw -165.
+    //back Left (on endgame) values on robot, 
+    // LL Forward -0.2794(11in), LL Right -0.277(-10.933in ???kept the same as before), LL up 0.333(13.625in - 0.5in ), LL Roll 0, LL Pitch 25, LL Yaw -165.
     //LL RIGHT IS +, IN CODE(y value) IT'S -
-      -0.301,
-      0.269,
-      0.216,
+      -0.2794,
+      0.269, /* for sure not .197 */
+      0.346 - 0.013, /*  .333 * 0.5 in */  
       //LL PITCH IS +, IN CODE IT'S -
-      new Rotation3d(0.0, Math.toRadians(-25), Math.toRadians(195.0)));
+      new Rotation3d(0.0, Math.toRadians(10.0), Math.toRadians(195.0)));
 public static Transform3d robotToCameraRight =
   new Transform3d(
     // 10.9.30.15
-    //back right values on robot, LL Forward -0.301(-11.844in), LL Right 0.269(10.6in), LL up 0.228(8.982in), LL Roll 0, LL Pitch 25, LL Yaw 165.
+    //back right values on robot, 
+    // LL Forward -0.301(-11.844in), LL Right 0.269(10.6in), LL up 0.228(8.982in), LL Roll 0, LL Pitch 25, LL Yaw 165.
     //LL RIGHT IS -, IN CODE(y value) IT'S +
       -0.301,
       -0.269,
