@@ -152,9 +152,9 @@ public class ReefScoreCommandFactory {
         return getNewAlignToReefCommand(position, true, drive)
                 .alongWith(new WaitCommand(0.1).andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands)))
             .andThen(getNewAlignToReefCommand(position, false, drive))
-            .andThen(new WaitCommand(0.2))
+            // .andThen(new WaitCommand(0.2))
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
-            .andThen(new WaitCommand(0.2))
+            // .andThen(new WaitCommand(0.2))
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands));
     }
 
