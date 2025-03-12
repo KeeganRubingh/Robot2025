@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -133,8 +134,10 @@ public class AutoAlignCommand extends Command {
     public void execute() {
         Pose2d targetPose_r = getRelativeTarget();
 
-        m_tx = -targetPose_r.getY();
-        m_ty = -targetPose_r.getX();
+        double distance = getCurrentPose().getTranslation().getDistance(targetPose.getTranslation());
+
+        m_tx = 0.0 - targetPose_r.getY();
+        m_ty = 0.0 - targetPose_r.getX();
         m_tr = targetPose_r.getRotation().unaryMinus().getRadians();
 
         m_strafe = MathUtil.clamp(strafePID.calculate(m_tx, 0.0), -m_maxStrafe.in(MetersPerSecond), m_maxStrafe.in(MetersPerSecond)); 
@@ -155,6 +158,7 @@ public class AutoAlignCommand extends Command {
         Logger.recordOutput("AlignTx/throttle", m_throttle);
         Logger.recordOutput("AlignTx/spin", m_spin);
         Logger.recordOutput("AlignTx/TargetPose",targetPose);
+        Logger.recordOutput("AlignTx/distance", distance);
     }
 
     /**
@@ -163,5 +167,10 @@ public class AutoAlignCommand extends Command {
     @Override
     public boolean isFinished() {
         return MathUtil.isNear(m_tx, 0.0,toleranceR.getAsDouble()) && MathUtil.isNear(m_ty, 0.0,toleranceB.getAsDouble()) && MathUtil.isNear(m_tr, 0.0,(toleranceB.getAsDouble()+toleranceR.getAsDouble())/2.0);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        drivetrain.runVelocity(new ChassisSpeeds());
     }
 }
