@@ -134,6 +134,8 @@ public class AutoAlignCommand extends Command {
     public void execute() {
         Pose2d targetPose_r = getRelativeTarget();
 
+        double distance = getCurrentPose().getTranslation().getDistance(targetPose.getTranslation());
+
         m_tx = 0.0 - targetPose_r.getY();
         m_ty = 0.0 - targetPose_r.getX();
         m_tr = targetPose_r.getRotation().unaryMinus().getRadians();
@@ -156,6 +158,7 @@ public class AutoAlignCommand extends Command {
         Logger.recordOutput("AlignTx/throttle", m_throttle);
         Logger.recordOutput("AlignTx/spin", m_spin);
         Logger.recordOutput("AlignTx/TargetPose",targetPose);
+        Logger.recordOutput("AlignTx/distance", distance);
     }
 
     /**
