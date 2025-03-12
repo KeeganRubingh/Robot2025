@@ -37,8 +37,28 @@ public class StationIntakeToStow extends SequentialCommandGroup {
         }
     }
 
+    private enum ShoulderPositions {
+        SafeToTwistWrist(new LoggedTunableNumber("StationIntakeToStow/shoulder/SafeToTwistWrist", 105)),
+        MidPoint(new LoggedTunableNumber("StationIntakeToStow/shoulder/MidPoint", 100));
+
+        DoubleSupplier position;
+        MutAngle distance;
+
+        ShoulderPositions(DoubleSupplier position) {
+            this.position = position;
+            this.distance = Degrees.mutable(0.0);
+        }
+
+        public Angle angle() {
+            this.distance.mut_replace(this.position.getAsDouble(), Degrees);
+            return this.distance;
+        }
+    }
+
     public StationIntakeToStow(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
         super(
+            shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position),
+            new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.SafeToTwistWrist.position)),
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             // Needed so coral doesn't hit bar on way back
             new WaitUntilCommand(wrist.getNewGreaterThanAngleTrigger(WristPositions.SafeToSwingShoulder.position)),
