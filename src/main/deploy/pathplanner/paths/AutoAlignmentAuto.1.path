@@ -3,29 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.358504098360656,
-        "y": 5.133862704918033
+        "x": 5.226639344262295,
+        "y": 5.493493852459016
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.220240802255152,
-        "y": 5.3421491925979625
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 4.3035860655737705,
-        "y": 5.8171618852459
-      },
-      "prevControl": {
-        "x": 5.274590163934427,
-        "y": 5.6013831967213115
-      },
-      "nextControl": {
-        "x": 4.059539300527782,
-        "y": 5.871394499700564
+        "x": 4.423463114754099,
+        "y": 5.817161885245902
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +20,8 @@
         "y": 6.332633196721311
       },
       "prevControl": {
-        "x": 4.860812103730002,
-        "y": 5.5988291020947685
+        "x": 3.2606557377049183,
+        "y": 6.188780737704917
       },
       "nextControl": null,
       "isLocked": false,
@@ -50,9 +34,14 @@
   "eventMarkers": [
     {
       "name": "L4ToStow",
-      "waypointRelativePos": 0.1,
+      "waypointRelativePos": 0.05,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "L4ToStow"
+        }
+      }
     }
   ],
   "globalConstraints": {

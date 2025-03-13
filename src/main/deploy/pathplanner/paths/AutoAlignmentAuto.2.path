@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5344262295081967,
-        "y": 7.207735655737704
+        "x": 1.8101434426229508,
+        "y": 7.075870901639344
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0978483606557377,
-        "y": 6.896055327868852
+        "x": 2.3735655737704917,
+        "y": 6.764190573770492
       },
       "isLocked": false,
       "linkedName": "AutoAlignmentAuto.0"
@@ -20,8 +20,8 @@
         "y": 5.8775
       },
       "prevControl": {
-        "x": 2.565368852459016,
-        "y": 6.908043032786885
+        "x": 3.0688524590163935,
+        "y": 6.4764856557377035
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,19 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "StationIntakeToStow",
+      "waypointRelativePos": 0.1,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StationIntakeToStow"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
