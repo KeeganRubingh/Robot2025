@@ -57,6 +57,42 @@
           "data": {
             "name": "L4ToStow"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AutoAlignmentAuto.3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoAlignStationOutside"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AutoAlignmentAuto.4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetL4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoAlignScoreRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L4ToStow"
+          }
         }
       ]
     }
