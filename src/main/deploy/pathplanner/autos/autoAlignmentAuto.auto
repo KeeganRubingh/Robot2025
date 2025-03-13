@@ -29,6 +29,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "AutoAlignStationCenter"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "AutoAlignmentAuto.2"
