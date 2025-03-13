@@ -17,6 +17,8 @@ import frc.robot.commands.StowToL4;
 import frc.robot.commands.StationIntakeReverseCommand;
 import frc.robot.commands.StationIntakeToStow;
 import frc.robot.commands.StationIntakeCommand;
+import frc.robot.commands.StationIntakeCommandFactory;
+import frc.robot.commands.StationIntakeCommandFactory.IntakePosition;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
@@ -81,6 +83,25 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("SetL2", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L2));
       NamedCommands.registerCommand("SetL3", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L3));
       NamedCommands.registerCommand("SetL4", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L4));
+
+      NamedCommands.registerCommand("AutoAlignStationInside", 
+        StationIntakeCommandFactory.getNewStationIntakeSequence(
+          () -> {return IntakePosition.Inside;}, 
+          shoulder, elbow, elevator, wrist, coralEE, drive
+        )
+      );
+      NamedCommands.registerCommand("AutoAlignStationCenter", 
+        StationIntakeCommandFactory.getNewStationIntakeSequence(
+          () -> {return IntakePosition.Center;}, 
+          shoulder, elbow, elevator, wrist, coralEE, drive
+        )
+      );
+      NamedCommands.registerCommand("AutoAlignStationOutside", 
+        StationIntakeCommandFactory.getNewStationIntakeSequence(
+          () -> {return IntakePosition.Outside;}, 
+          shoulder, elbow, elevator, wrist, coralEE, drive
+        )
+      );
 
       NamedCommands.registerCommand("AutoAlignScoreLeft", ReefScoreCommandFactory.getNewAutoReefCoralScoreSequenceCommand(
         ReefScoreCommandFactory.ReefPosition.Left, 
