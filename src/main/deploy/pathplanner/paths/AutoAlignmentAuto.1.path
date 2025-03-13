@@ -24,8 +24,8 @@
         "y": 5.6013831967213115
       },
       "nextControl": {
-        "x": 4.059539300527787,
-        "y": 5.871394499700563
+        "x": 4.059539300527782,
+        "y": 5.871394499700564
       },
       "isLocked": false,
       "linkedName": null
@@ -47,7 +47,14 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "L4ToStow",
+      "waypointRelativePos": 0.1,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

@@ -187,8 +187,7 @@ public class ReefScoreCommandFactory {
         return getNewAlignToReefCommand(position, false, drive)
                 .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
-            .andThen(new WaitCommand(0.2))
-            .andThen(new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
+            .andThen(new WaitCommand(0.2));
     }
 
     /**
