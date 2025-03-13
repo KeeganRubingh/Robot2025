@@ -112,7 +112,6 @@ import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
 import frc.robot.util.ReefPositionsUtil.AutoAlignSide;
 import frc.robot.util.ReefPositionsUtil.DeAlgaeLevel;
-import frc.robot.util.ReefPositionsUtil.IntakeAutoAlignPos;
 import frc.robot.util.ReefPositionsUtil.ScoreLevel;
 import frc.robot.util.SelectorCommandFactory;
 
@@ -338,7 +337,6 @@ public class RobotContainer {
 
     controller.leftBumper()
       .and(() -> ReefPositionsUtil.getInstance().getIsAutoAligning())
-      .and(() -> {return reefPositions.getIntakeAutoAlignPos() == IntakeAutoAlignPos.Left;})
       .onTrue(StationIntakeCommandFactory.getNewStationIntakeSequence(
           () -> intakePosChooser.get(), 
           shoulder, elbow, elevator, wrist, coralEndEffector, drive
