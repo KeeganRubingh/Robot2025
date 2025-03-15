@@ -50,6 +50,8 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.voltageSetPoint.mut_replace(m_setPoint);
     inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(Motor.getSupplyCurrent().getValue());
+    inputs.servoTarget.mut_replace(m_servo.getAngle(), Degrees);
+    inputs.servoPos.mut_replace(m_servo.getPosition(), Degrees);
   }
 
   @Override

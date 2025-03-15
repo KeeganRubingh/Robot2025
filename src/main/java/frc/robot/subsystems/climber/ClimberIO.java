@@ -18,6 +18,7 @@ public interface ClimberIO {
     public MutCurrent supplyCurrent;
     public MutCurrent torqueCurrent;
     public MutAngle servoTarget;
+    public MutAngle servoPos;
   }
 
   public void setTarget(Voltage target);

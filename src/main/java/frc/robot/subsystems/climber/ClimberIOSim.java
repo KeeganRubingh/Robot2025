@@ -56,6 +56,7 @@ public class ClimberIOSim implements ClimberIO {
     input.torqueCurrent.mut_replace(input.supplyCurrent.in(Amps), Amps);
     input.voltageSetPoint.mut_replace(appliedVoltage);
     input.servoTarget.mut_replace(servoTarget);
+    input.servoPos.mut_replace(servoTarget); // TODO Sim is perfect and has instant servos!
 
     // Periodic
     sim.setInputVoltage(appliedVoltage.in(Volts));
