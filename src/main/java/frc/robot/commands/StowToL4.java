@@ -113,6 +113,9 @@ public class StowToL4 extends SequentialCommandGroup {
                         .andThen(
                             elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
                         )
+                        .andThen(
+                            new WaitUntilCommand(elbow.getNewLessThanAngleTrigger(ElbowPositions.Final.position.getAsDouble() + 5.0))
+                        )
                 )
         );
         addRequirements(shoulder, elbow, wrist, elevator);
@@ -125,16 +128,13 @@ public class StowToL4 extends SequentialCommandGroup {
             .alongWith(new WaitCommand(0.25))
         )
         .andThen(coralEndEffector.getNewSetVoltsCommand(-4))
-        .andThen(new WaitCommand(0.25))
-        .andThen(new InstantCommand(()->{
-            System.out.println("lol");
-        }));
+        .andThen(new WaitCommand(0.25));
     }
 
     public static Command getNewStopScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector, Drive drive) {
         return
-        DriveCommands.joystickForwardDrive(drive, () -> 0.25, () -> 0.0, null)
-            .withTimeout(2.0)
+        DriveCommands.joystickForwardDrive(drive, () -> 0.5, () -> 0.0, null)
+            .withTimeout(1.0)
         .andThen(wrist.getNewWristTurnCommand(0)
             .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
         )
