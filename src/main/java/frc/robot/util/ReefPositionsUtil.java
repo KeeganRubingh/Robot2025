@@ -29,6 +29,7 @@ public class ReefPositionsUtil {
     private ScoreLevel selectedScoreLevel = ScoreLevel.L1;
     private DeAlgaeLevel selectedDeAlgaeLevel = DeAlgaeLevel.Low;
     private AutoAlignSide selectedAutoAlignSide = AutoAlignSide.Left;
+
     private boolean isAutoAligning = true;
 
     private static ReefPositionsUtil instance;
@@ -166,7 +167,7 @@ public class ReefPositionsUtil {
     public boolean isSelected(AutoAlignSide side) {
         return (side.equals(selectedAutoAlignSide));
     }
-
+    
     public void setIsAutoAligning(boolean isAutoAligning) {
         this.isAutoAligning = isAutoAligning;
     }

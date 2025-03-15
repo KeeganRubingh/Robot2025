@@ -31,9 +31,12 @@ import static frc.robot.subsystems.vision.VisionConstants.robotToCameraRight;
 import java.util.Map;
 import java.util.Optional;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -57,6 +60,8 @@ import frc.robot.commands.OutakeCoral;
 import frc.robot.commands.ReefScoreCommandFactory;
 import frc.robot.commands.ReefScoreCommandFactory.ReefPosition;
 import frc.robot.commands.StationIntakeCommand;
+import frc.robot.commands.StationIntakeCommandFactory;
+import frc.robot.commands.StationIntakeCommandFactory.IntakePosition;
 import frc.robot.commands.StationIntakeReverseCommand;
 import frc.robot.commands.StationIntakeToStow;
 import frc.robot.commands.StowCommand;
@@ -162,8 +167,16 @@ public class RobotContainer {
   final LoggedTunableNumber setShoulderAngle = new LoggedTunableNumber("RobotState/Shoulder/setAngle", 0);
   final LoggedTunableNumber setElbowAngle = new LoggedTunableNumber("RobotState/Elbow/setAngle", 0);
   final LoggedTunableNumber setClimberVolts = new LoggedTunableNumber("dashboardKey:RobotState/Climber/setVolts", 0);
+
+  private LoggedDashboardChooser<IntakePosition> intakePosChooser = new LoggedDashboardChooser<>("Intake Position");
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer(){
+
+    // Intake Options
+    intakePosChooser.addDefaultOption("Inside", IntakePosition.Inside);
+    intakePosChooser.addOption("Center", IntakePosition.Center);
+    intakePosChooser.addOption("Outside", IntakePosition.Outside);
 
     CanDef.Builder canivoreCanBuilder = CanDef.builder().bus(CanBus.CANivore);
     CanDef.Builder rioCanBuilder = CanDef.builder().bus(CanBus.Rio);
@@ -318,8 +331,16 @@ public class RobotContainer {
     .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
 
     // Coral Station Intake
-    controller.leftBumper()
+    controller.leftBumper().and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
       .onTrue(new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
+      .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+
+    controller.leftBumper()
+      .and(() -> ReefPositionsUtil.getInstance().getIsAutoAligning())
+      .onTrue(StationIntakeCommandFactory.getNewStationIntakeSequence(
+          () -> intakePosChooser.get(), 
+          shoulder, elbow, elevator, wrist, coralEndEffector, drive
+        ))
       .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
     // Go to barge
@@ -355,7 +376,7 @@ public class RobotContainer {
       () -> reefPositions.isSelected(ScoreLevel.L4)));
 
     // Conditional Confirm Coral
-    controller.rightTrigger().and(controller.rightBumper())
+    controller.rightTrigger().and(controller.rightBumper()).and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
       .onTrue(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
       .onFalse(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands));
 

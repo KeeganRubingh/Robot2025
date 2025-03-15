@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.OutakeCoral;
 import frc.robot.commands.ReefScoreCommandFactory;
+import frc.robot.commands.ReefScoreCommandFactory.ReefPosition;
 import frc.robot.commands.StopDrivetrainCommand;
 import frc.robot.commands.StowCommand;
 import frc.robot.commands.StowToL1;
@@ -17,6 +18,8 @@ import frc.robot.commands.StowToL4;
 import frc.robot.commands.StationIntakeReverseCommand;
 import frc.robot.commands.StationIntakeToStow;
 import frc.robot.commands.StationIntakeCommand;
+import frc.robot.commands.StationIntakeCommandFactory;
+import frc.robot.commands.StationIntakeCommandFactory.IntakePosition;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
@@ -47,6 +50,7 @@ public class AutoCommandManager {
 
   private void configureNamedCommands(Drive drive, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
       NamedCommands.registerCommand("Stow", new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
+      NamedCommands.registerCommand("L4ToStow", new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE)); // TODO: Swap to L4ToStow
       NamedCommands.registerCommand("StationIntake", new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEE));
       // Needed so not hit coral on elevator
       NamedCommands.registerCommand("StationIntakeToStow", new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
@@ -80,32 +84,41 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("SetL1", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L1));
       NamedCommands.registerCommand("SetL2", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L2));
       NamedCommands.registerCommand("SetL3", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L3));
-      NamedCommands.registerCommand("SetL4", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L4));
+      NamedCommands.registerCommand("SetL4", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L3));
 
-      NamedCommands.registerCommand("AutoAlignScoreLeft", ReefScoreCommandFactory.getNewAutoReefCoralScoreSequenceCommand(
-        ReefScoreCommandFactory.ReefPosition.Left, 
-        SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
-        SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEE), 
-        drive,
-        shoulder, 
-        elbow, 
-        elevator, 
-        wrist, 
-        coralEE, 
-        algaeEE
-      ));
-      NamedCommands.registerCommand("AutoAlignScoreRight", ReefScoreCommandFactory.getNewAutoReefCoralScoreSequenceCommand(
-        ReefScoreCommandFactory.ReefPosition.Right, 
-        SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
-        SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEE), 
-        drive,
-        shoulder, 
-        elbow, 
-        elevator, 
-        wrist, 
-        coralEE, 
-        algaeEE
-      ));
+      NamedCommands.registerCommand("AutoAlignStationInside", 
+        StationIntakeCommandFactory.getNewStationIntakeSequence(
+          () -> {return IntakePosition.Inside;}, 
+          shoulder, elbow, elevator, wrist, coralEE, drive
+        )
+      );
+      NamedCommands.registerCommand("AutoAlignStationCenter", 
+        StationIntakeCommandFactory.getNewStationIntakeSequence(
+          () -> {return IntakePosition.Center;}, 
+          shoulder, elbow, elevator, wrist, coralEE, drive
+        )
+      );
+      NamedCommands.registerCommand("AutoAlignStationOutside", 
+        StationIntakeCommandFactory.getNewStationIntakeSequence(
+          () -> {return IntakePosition.Outside;}, 
+          shoulder, elbow, elevator, wrist, coralEE, drive
+        ).withTimeout(1.0) // TODO Get accurate values or better solution & apply to all
+      );
+
+      NamedCommands.registerCommand("AutoAlignScoreLeft", 
+        ReefScoreCommandFactory.getNewReefCoralScoreSequence(
+            ReefPosition.Left, 
+            SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
+            SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEE),
+            SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEE, drive),
+            drive));
+      NamedCommands.registerCommand("AutoAlignScoreRight", 
+        ReefScoreCommandFactory.getNewReefCoralScoreSequence(
+          ReefPosition.Right, 
+          SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
+          SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEE),
+          SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEE, drive),
+          drive));
     
   }
 }

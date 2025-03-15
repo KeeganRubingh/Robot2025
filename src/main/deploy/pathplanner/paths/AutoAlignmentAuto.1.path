@@ -3,51 +3,47 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.358504098360656,
-        "y": 5.133862704918033
+        "x": 5.190676229508196,
+        "y": 5.1098872950819665
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.220240802255152,
-        "y": 5.3421491925979625
+        "x": 4.651229508196721,
+        "y": 5.901075819672129
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.5825,
-        "y": 5.98475
+        "x": 1.57,
+        "y": 7.291649590163933
       },
       "prevControl": {
-        "x": 4.774047885781448,
-        "y": 5.824096934505883
-      },
-      "nextControl": {
-        "x": 4.28025,
-        "y": 6.238249999999999
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.64775,
-        "y": 7.17425
-      },
-      "prevControl": {
-        "x": 4.087045710287377,
-        "y": 6.4404459053734575
+        "x": 2.6249180327868857,
+        "y": 6.788165983606556
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "AutoAlignmentAuto.0"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "L4ToStow",
+      "waypointRelativePos": 0.05,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "L4ToStow"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -57,8 +53,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 127.17092348994036
+    "velocity": 0.5,
+    "rotation": 127.64762064010765
   },
   "reversed": false,
   "folder": null,
