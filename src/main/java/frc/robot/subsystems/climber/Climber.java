@@ -36,6 +36,7 @@ public class Climber extends SubsystemBase {
     loggedclimber.torqueCurrent = Amps.mutable(0);
     loggedclimber.voltageSetPoint = Volts.mutable(0);
     loggedclimber.voltage = Volts.mutable(0);
+    loggedclimber.servoTarget = Degrees.mutable(0);
   }
 
   public void setTarget(Voltage target) {

@@ -450,9 +450,9 @@ public class RobotContainer {
     co_controller.povRight()
       .onTrue(new InstantCommand(() ->ReefPositionsUtil.getInstance().setAutoAlignSide(ReefPositionsUtil.AutoAlignSide.Right)));
     // Climb
-    co_controller.start()
+    co_controller.start().and(co_controller.back().negate())
       .onTrue(
-        climber.getNewSetServoAngleCommand(0.0)
+        climber.getNewSetServoAngleCommand(90.0)
         .andThen(new WaitCommand(0.1))
         .andThen(climber.getNewSetVoltsCommand(-3.0)) // negative was forward in test
       )
@@ -462,14 +462,14 @@ public class RobotContainer {
       );
 
     // Reverse climber
-    co_controller.back()
+    co_controller.back().and(co_controller.start().negate())
     .onTrue(
       climber.getNewSetServoAngleCommand(0.0)
       .andThen(new WaitCommand(0.1))
       .andThen(climber.getNewSetVoltsCommand(3.0))
     )
     .onFalse(
-      climber.getNewSetVoltsCommand(0.0)
+      climber.getNewSetVoltsCommand(90.0)
     );
 
   }

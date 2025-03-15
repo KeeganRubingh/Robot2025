@@ -1,6 +1,7 @@
 package frc.robot.subsystems.climber;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutCurrent;
 import edu.wpi.first.units.measure.MutVoltage;
@@ -16,6 +17,7 @@ public interface ClimberIO {
     public MutVoltage voltageSetPoint;
     public MutCurrent supplyCurrent;
     public MutCurrent torqueCurrent;
+    public MutAngle servoTarget;
   }
 
   public void setTarget(Voltage target);
