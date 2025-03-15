@@ -1,22 +1,15 @@
 package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
-import static edu.wpi.first.units.Units.*;
-
+import static edu.wpi.first.units.Units.Degrees;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
-import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.wrist.Wrist;
@@ -26,7 +19,7 @@ import frc.robot.util.LoggedTunableNumber;
 public class StowToGroundIntake extends SequentialCommandGroup {
     private static enum ShoulderPositions {
         Starting(new LoggedTunableNumber("StowToGroundIntake/Shoulder/StartingDegrees", 90)),
-        Final(new LoggedTunableNumber("StowToGroundIntake/Shoulder/FinalDegrees", 158));
+        Final(new LoggedTunableNumber("StowToGroundIntake/Shoulder/FinalDegrees", 55.5));
         
 
         DoubleSupplier position;
@@ -45,7 +38,7 @@ public class StowToGroundIntake extends SequentialCommandGroup {
 
     private static enum ElbowPositions {
         Starting(new LoggedTunableNumber("StowToGroundIntake/Elbow/StartingDegrees",65)),
-        Final(new LoggedTunableNumber("StowToGroundIntake/Elbow/FinalDegrees", 55.5));
+        Final(new LoggedTunableNumber("StowToGroundIntake/Elbow/FinalDegrees", 158));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -109,10 +102,9 @@ public class StowToGroundIntake extends SequentialCommandGroup {
     public StowToGroundIntake(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys) {
         addRequirements(shoulder, elbow, wrist, fingeys);
         addCommands(
-            wrist.getNewWristTurnCommand(0),
             elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
-            elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
+            wrist.getNewWristTurnCommand(-90)
         );
     }
 
@@ -134,22 +126,18 @@ public class StowToGroundIntake extends SequentialCommandGroup {
      */
     public static Command getTakeCoralFromGroundIntakeCommand(Intake intake, IntakeExtender extender, ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys) {
         return 
-        new WaitUntilCommand(wrist.getNewAtAngleTrigger(Degrees.of(0), Degrees.of(1)))
-        .andThen(intake.getNewSetVoltsCommand(0))
+        new WaitUntilCommand(wrist.getNewAtAngleTrigger(Degrees.of(-90), Degrees.of(1)))
+        .andThen(intake.getNewSetVoltsCommand(-2.5))
         .andThen(fingeys.getNewSetVoltsCommand(6))
             .alongWith(extender.getNewIntakeExtenderTurnCommand(0))
         .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(0), Degrees.of(1))))
         .andThen(intake.getNewSetVoltsCommand(-5))
-        .andThen(new WaitUntilCommand(fingeys.placeholderGetHasCoralSupplier()))
+        // .andThen(new WaitUntilCommand(fingeys.placeholderGetHasCoralSupplier())) // Keegan Lmao
+        .andThen(new WaitCommand(1))
         .andThen(
             extender.getNewIntakeExtenderTurnCommand(90)
             .alongWith(fingeys.getNewSetVoltsCommand(1))
-        )
-        .andThen(wrist.getNewWristTurnCommand(90))
-        .andThen(new WaitUntilCommand(wrist.getNewAtAngleTrigger(Degrees.of(90), Degrees.of(1))))
-        .andThen(new InstantCommand(() -> {
-            System.out.println("At End!");
-        }));
+        );
     }
 
     /**
@@ -160,8 +148,10 @@ public class StowToGroundIntake extends SequentialCommandGroup {
      * @param fingeys
      * @return
      */
-    public static Command getReturnToStowCommand(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys) {
-        return wrist.getNewWristTurnCommand(WristPositions.Starting.position)
+    public static Command getReturnToStowCommand(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys, IntakeExtender extender) {
+        return extender.getNewIntakeExtenderTurnCommand(90)
+        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(0), Degrees.of(45)).negate()))
+        .andThen(wrist.getNewWristTurnCommand(WristPositions.Starting.position))
         .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.Starting.position))
         .andThen(elbow.getNewSetAngleCommand(ElbowPositions.Starting.position));
     }
