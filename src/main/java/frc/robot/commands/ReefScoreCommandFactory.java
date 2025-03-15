@@ -148,46 +148,15 @@ public class ReefScoreCommandFactory {
      * @param drive
      * @return
      */
-    public static Command getNewReefCoralScoreSequence(ReefPosition position, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands, Drive drive) {
-        return getNewAlignToReefCommand(position, true, drive)
+    public static Command getNewReefCoralScoreSequence(ReefPosition position, boolean isBackingUp, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands, Drive drive) {
+        return 
+            getNewAlignToReefCommand(position, true, drive).onlyIf(()->isBackingUp)
                 .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
             .andThen(getNewAlignToReefCommand(position, false, drive))
             // .andThen(new WaitCommand(0.2))
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
             // .andThen(new WaitCommand(0.2))
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands));
-    }
-
-    /**
-     * Gets a command which aligns the robot to the nearest reef position and scores the coal
-     * @param position
-     * @param coralLevelCommands
-     * @param scoreCoralLevelCommands
-     * @param drive
-     * @param shoulder
-     * @param elbow
-     * @param elevator
-     * @param wrist
-     * @param coralEE
-     * @param algaeEE
-     * @return
-     */
-    public static Command getNewAutoReefCoralScoreSequenceCommand(
-        ReefPosition position, 
-        Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, 
-        Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands,
-        Drive drive,
-        ArmJoint shoulder, 
-        ArmJoint elbow, 
-        Elevator elevator, 
-        Wrist wrist, 
-        CoralEndEffector coralEE, 
-        AlgaeEndEffector algaeEE
-    ) {
-        return getNewAlignToReefCommand(position, false, drive)
-                .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
-            .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
-            .andThen(new WaitCommand(0.2));
     }
 
     /**
