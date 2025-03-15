@@ -613,5 +613,6 @@ public class RobotContainer {
     Logger.recordOutput("ReefPositions/AutoAlignSide/Right", reefPositions.isSelected(AutoAlignSide.Right));
     Logger.recordOutput("ReefPositions/DeAlgaePos/Top", reefPositions.isSelected(DeAlgaeLevel.Top));
     Logger.recordOutput("ReefPositions/DeAlgaePos/Low", reefPositions.isSelected(DeAlgaeLevel.Low));
+    Logger.recordOutput("ReefPositions/isAutoAlignEnabled", reefPositions.getIsAutoAligning());
   }
 }
