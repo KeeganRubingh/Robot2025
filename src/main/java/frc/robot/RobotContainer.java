@@ -31,6 +31,7 @@ import static frc.robot.subsystems.vision.VisionConstants.robotToCameraRight;
 import java.util.Map;
 import java.util.Optional;
 
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -406,6 +407,7 @@ public class RobotContainer {
     ).whileTrue(
       ReefScoreCommandFactory.getNewReefCoralScoreSequence(
         ReefPosition.Left, 
+        true,
         SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
         SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEndEffector),
         SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector, drive),
@@ -426,6 +428,7 @@ public class RobotContainer {
       ).whileTrue(
         ReefScoreCommandFactory.getNewReefCoralScoreSequence(
           ReefPosition.Right, 
+          true,
           SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
           SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEndEffector),
           SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector, drive),
@@ -713,5 +716,16 @@ public class RobotContainer {
       SignalLogger.setPath("/media/sda1/");
       SignalLogger.start();
     }
+  }
+
+  public void loggingPeriodic() {
+    Logger.recordOutput("ReefPositions/Selected Score Position", reefPositions.getScoreLevel());
+    Logger.recordOutput("ReefPositions/Selected DeAlgae Position", reefPositions.getDeAlgaeLevel());
+    Logger.recordOutput("ReefPositions/ScorePos/L1", reefPositions.isSelected(ScoreLevel.L1));
+    Logger.recordOutput("ReefPositions/ScorePos/L2", reefPositions.isSelected(ScoreLevel.L2));
+    Logger.recordOutput("ReefPositions/ScorePos/L3", reefPositions.isSelected(ScoreLevel.L3));
+    Logger.recordOutput("ReefPositions/ScorePos/L4", reefPositions.isSelected(ScoreLevel.L4));
+    Logger.recordOutput("ReefPositions/DeAlgaePos/Top", reefPositions.isSelected(DeAlgaeLevel.Top));
+    Logger.recordOutput("ReefPositions/DeAlgaePos/Low", reefPositions.isSelected(DeAlgaeLevel.Low));
   }
 }
