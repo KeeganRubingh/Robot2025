@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "StowToL4",
-      "waypointRelativePos": 0.4164292497625857,
+      "waypointRelativePos": 0.2754895340985858,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
