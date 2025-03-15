@@ -56,7 +56,7 @@ public class ElbowConstants extends ArmJointConstants {
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);
         this.ZPosition = Meters.of(0.377);
-        this.CanCoderOffset = Degrees.of(203.0);
+        this.CanCoderOffset = Degrees.of(80.0);
 
         this.LoggedName = "Elbow";
 

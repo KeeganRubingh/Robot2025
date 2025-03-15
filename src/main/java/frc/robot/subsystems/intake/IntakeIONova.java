@@ -29,7 +29,7 @@ public class IntakeIONova implements IntakeIO {
   private Voltage m_setPoint = Voltage.ofBaseUnits(0, Volts);
 
   public IntakeIONova(CanDef motorCanDef, CanDef sensorCanDef) {
-    Motor = new ThriftyNova(motorCanDef.id());
+    Motor = new ThriftyNova(motorCanDef.id()).setMotorType(MotorType.MINION);
     rangeSensor = new CANrange(sensorCanDef.id(),sensorCanDef.bus());
     Request = new VoltageOut(0.0);
 

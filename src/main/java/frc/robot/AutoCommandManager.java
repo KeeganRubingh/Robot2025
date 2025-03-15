@@ -113,18 +113,21 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("AutoAlignStationInside", 
         StationIntakeCommandFactory.getNewStationIntakeSequence(
           () -> {return IntakePosition.Inside;}, 
+          false,
           shoulder, elbow, elevator, wrist, coralEE, drive
         )
       );
       NamedCommands.registerCommand("AutoAlignStationCenter", 
         StationIntakeCommandFactory.getNewStationIntakeSequence(
           () -> {return IntakePosition.Center;}, 
+          false,
           shoulder, elbow, elevator, wrist, coralEE, drive
         )
       );
       NamedCommands.registerCommand("AutoAlignStationOutside", 
         StationIntakeCommandFactory.getNewStationIntakeSequence(
           () -> {return IntakePosition.Outside;}, 
+          false,
           shoulder, elbow, elevator, wrist, coralEE, drive
         ).withTimeout(1.0) // TODO Get accurate values or better solution & apply to all
       );

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.algaeendeffector;
 
 import com.thethriftybot.ThriftyNova;
+import com.thethriftybot.ThriftyNova.MotorType;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -23,7 +24,7 @@ public class AlgaeEndEffectorIONova implements AlgaeEndEffectorIO {
   private Voltage m_setPoint = Voltage.ofBaseUnits(0, Volts);
 
   public AlgaeEndEffectorIONova(CanDef motorCanDef, CanDef sensorCanDef) {
-    Motor = new ThriftyNova(motorCanDef.id());
+    Motor = new ThriftyNova(motorCanDef.id()).setMotorType(MotorType.MINION);
     m_sensor = new CANrange(sensorCanDef.id(),sensorCanDef.bus());
   }
 
