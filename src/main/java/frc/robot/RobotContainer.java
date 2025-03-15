@@ -384,6 +384,7 @@ public class RobotContainer {
       ReefScoreCommandFactory.getNewReefCoralScoreSequence(
         ReefPosition.Left, 
         true,
+        true,
         SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
         SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEndEffector),
         SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector, drive),
@@ -404,6 +405,7 @@ public class RobotContainer {
     ).whileTrue(
       ReefScoreCommandFactory.getNewReefCoralScoreSequence(
         ReefPosition.Right, 
+        true,
         true,
         SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
         SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEndEffector),

@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.2065,
-        "y": 5.355875
+        "x": 4.9868852459016395,
+        "y": 5.25373975409836
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.817233606557377,
-        "y": 5.6594836065573775
+        "x": 5.562295081967213,
+        "y": 5.7212602459016395
       },
       "isLocked": false,
-      "linkedName": "advancedPathPlanner.6"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "L4ToStow",
-      "waypointRelativePos": 0.10591603053435614,
+      "waypointRelativePos": 0.1,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
