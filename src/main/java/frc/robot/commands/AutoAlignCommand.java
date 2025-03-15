@@ -29,8 +29,8 @@ public class AutoAlignCommand extends Command {
     private final Function<Pose2d, Pose2d> getTargetPoseFn;
 
     //#region TODO get accurate values
-    private LoggedTunableGainsBuilder strafeGains = new LoggedTunableGainsBuilder("AutoAlign/strafeGains/", 4.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    private LoggedTunableGainsBuilder throttleGains = new LoggedTunableGainsBuilder("AutoAlign/throttleGains/", 7.0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0);
+    private LoggedTunableGainsBuilder throttleGains = new LoggedTunableGainsBuilder("AutoAlign/strafeGains/", 4.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    private LoggedTunableGainsBuilder strafeGains = new LoggedTunableGainsBuilder("AutoAlign/throttleGains/", 7.0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0);
     private LoggedTunableNumber maxStrafeTune = new LoggedTunableNumber("AutoAlign/strafeGains/maxVelMetersPerSecond",1);
     private LoggedTunableNumber maxThrottleTune = new LoggedTunableNumber("AutoAlign/throttleGains/maxVelMetersPerSecond",1);
     private LoggedTunableNumber maxAccelStrafeTune = new LoggedTunableNumber("AutoAlign/strafeGains/maxAccMetersPerSecond",1);
@@ -51,8 +51,8 @@ public class AutoAlignCommand extends Command {
     private double m_tx;
     private double m_ty;
     private double m_tr;
-    private ProfiledPIDController strafePID = new ProfiledPIDController(throttleGains.build().kP, throttleGains.build().kI ,throttleGains.build().kD, new Constraints(m_maxStrafe.in(MetersPerSecond), m_maxAccelStrafe.in(MetersPerSecondPerSecond)));
-    private ProfiledPIDController distancePID = new ProfiledPIDController(strafeGains.build().kP, strafeGains.build().kI ,strafeGains.build().kD, new Constraints(m_maxThrottle.in(MetersPerSecond), m_maxAccelDist.in(MetersPerSecondPerSecond)));
+    private ProfiledPIDController m_strafePID = new ProfiledPIDController(strafeGains.build().kP, strafeGains.build().kI ,strafeGains.build().kD, new Constraints(m_maxStrafe.in(MetersPerSecond), m_maxAccelStrafe.in(MetersPerSecondPerSecond)));
+    private ProfiledPIDController m_throttlePID = new ProfiledPIDController(throttleGains.build().kP, throttleGains.build().kI ,throttleGains.build().kD, new Constraints(m_maxThrottle.in(MetersPerSecond), m_maxAccelDist.in(MetersPerSecondPerSecond)));
     private PIDController spinPID = new PIDController(5.0, 0.0, 0.0);
 
     /**
@@ -86,8 +86,8 @@ public class AutoAlignCommand extends Command {
         m_maxAccelStrafe = MetersPerSecondPerSecond.of(maxAccelStrafeTune.getAsDouble());
         m_maxAccelDist = MetersPerSecondPerSecond.of(maxAccelDistanceTune.getAsDouble());
 
-        strafePID = new ProfiledPIDController(throttleGains.build().kP, throttleGains.build().kI ,throttleGains.build().kD, new Constraints(m_maxStrafe.in(MetersPerSecond), m_maxAccelStrafe.in(MetersPerSecondPerSecond)));
-        distancePID = new ProfiledPIDController(strafeGains.build().kP, strafeGains.build().kI ,strafeGains.build().kD, new Constraints(m_maxThrottle.in(MetersPerSecond), m_maxAccelDist.in(MetersPerSecondPerSecond)));
+        m_strafePID = new ProfiledPIDController(strafeGains.build().kP, strafeGains.build().kI ,strafeGains.build().kD, new Constraints(m_maxStrafe.in(MetersPerSecond), m_maxAccelStrafe.in(MetersPerSecondPerSecond)));
+        m_throttlePID = new ProfiledPIDController(throttleGains.build().kP, throttleGains.build().kI ,throttleGains.build().kD, new Constraints(m_maxThrottle.in(MetersPerSecond), m_maxAccelDist.in(MetersPerSecondPerSecond)));
     }
 
     /**
@@ -121,8 +121,8 @@ public class AutoAlignCommand extends Command {
         m_ty = -targetPose_R.getX();
         m_tr = targetPose_R.getRotation().unaryMinus().getRadians();
 
-        strafePID.reset(m_tx);
-        distancePID.reset(m_ty);
+        m_strafePID.reset(m_tx);
+        m_throttlePID.reset(m_ty);
         spinPID.reset();
     }
 
@@ -140,8 +140,8 @@ public class AutoAlignCommand extends Command {
         m_ty = 0.0 - targetPose_r.getX();
         m_tr = targetPose_r.getRotation().unaryMinus().getRadians();
 
-        m_strafe = MathUtil.clamp(strafePID.calculate(m_tx, 0.0), -m_maxStrafe.in(MetersPerSecond), m_maxStrafe.in(MetersPerSecond)); 
-        m_throttle = MathUtil.clamp(distancePID.calculate(m_ty, 0.0),-m_maxThrottle.in(MetersPerSecond),m_maxThrottle.in(MetersPerSecond));
+        m_strafe = MathUtil.clamp(m_strafePID.calculate(m_tx, 0.0), -m_maxStrafe.in(MetersPerSecond), m_maxStrafe.in(MetersPerSecond)); 
+        m_throttle = MathUtil.clamp(m_throttlePID.calculate(m_ty, 0.0),-m_maxThrottle.in(MetersPerSecond),m_maxThrottle.in(MetersPerSecond));
         m_spin = MathUtil.clamp(spinPID.calculate(m_tr, 0.0),-MAX_SPIN,MAX_SPIN);
 
         ChassisSpeeds speeds =
