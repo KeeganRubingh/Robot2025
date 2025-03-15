@@ -61,9 +61,9 @@ public class IntakeIOTalonFX implements IntakeIO {
     Motor.setControl(new StaticBrake());
   }
 
+  //TODO: IMPLEMENT RANGE SENSOR
   @Override
   public Distance getSensor() {
-      // TODO Auto-generated method stub
       return rangeSensor.getDistance(true).getValue();
   }
 }
