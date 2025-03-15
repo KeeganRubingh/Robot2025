@@ -9,6 +9,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -118,17 +119,26 @@ public class StowToL4 extends SequentialCommandGroup {
     }
 
     public static Command getNewScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
-        return(elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
-        .alongWith(wrist.getNewApplyCoastModeCommand())
-        .alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)));
+        return(
+            elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
+            .alongWith(wrist.getNewApplyCoastModeCommand())
+            .alongWith(new WaitCommand(0.25))
+        )
+        .andThen(coralEndEffector.getNewSetVoltsCommand(-4))
+        .andThen(new WaitCommand(0.25))
+        .andThen(new InstantCommand(()->{
+            System.out.println("lol");
+        }));
     }
 
     public static Command getNewStopScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector, Drive drive) {
-        return(coralEndEffector.getNewSetVoltsCommand(1)
-        .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
-        .alongWith(new WaitCommand(0.2))
-            .andThen(DriveCommands.joystickForwardDrive(drive, () -> 0.25, () -> 0.0, null).withTimeout(2.0))
-            .andThen(wrist.getNewWristTurnCommand(0)));
+        return
+        DriveCommands.joystickForwardDrive(drive, () -> 0.25, () -> 0.0, null)
+            .withTimeout(2.0)
+        .andThen(wrist.getNewWristTurnCommand(0)
+            .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
+        )
+        .andThen(coralEndEffector.getNewSetVoltsCommand(1));
     }
 
 }
