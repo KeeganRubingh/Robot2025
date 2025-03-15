@@ -19,13 +19,13 @@
         {
           "type": "named",
           "data": {
-            "name": "ScoreL4"
+            "name": "SetL4"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.1
+            "name": "AutoAlignScoreLeft"
           }
         },
         {
@@ -35,9 +35,9 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.5
+            "name": "AutoAlignStationOutside"
           }
         },
         {
@@ -49,13 +49,13 @@
         {
           "type": "named",
           "data": {
-            "name": "ScoreL4"
+            "name": "SetL4"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 1.0
+            "name": "AutoAlignScoreLeft"
           }
         },
         {
@@ -65,9 +65,9 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.5
+            "name": "AutoAlignStationOutside"
           }
         },
         {
@@ -79,13 +79,13 @@
         {
           "type": "named",
           "data": {
-            "name": "ScoreL4"
+            "name": "SetL4"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 1.0
+            "name": "AutoAlignScoreRight"
           }
         },
         {
@@ -95,9 +95,9 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.5
+            "name": "AutoAlignStationOutside"
           }
         },
         {
@@ -109,7 +109,13 @@
         {
           "type": "named",
           "data": {
-            "name": "ScoreL4"
+            "name": "SetL4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoAlignScoreRight"
           }
         },
         {

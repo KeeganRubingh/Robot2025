@@ -8,6 +8,7 @@ import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.elevator.Elevator;
@@ -17,7 +18,7 @@ import frc.robot.util.LoggedTunableNumber;
 public class StowToL3 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("StowToL3/shoulder/StartingDegrees", 10)),
+        Starting(new LoggedTunableNumber("StowToL3/shoulder/StartingDegrees", 95.0)),
         Final(new LoggedTunableNumber("StowToL3/shoulder/FinalDegrees", 42.5)),
         Confirm(new LoggedTunableNumber("StowToL3/shoulder/Confirm", 65));
 
@@ -74,21 +75,11 @@ public class StowToL3 extends SequentialCommandGroup {
 
     public StowToL3(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, Elevator elevator) {
         super(
+            new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.Starting.position)),
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
             .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
             .alongWith(elevator.getNewSetDistanceCommand(16))
-
-            // LOGIC NEEDED FOR INTAKE TO STOW
-            // .alongWith(
-            //     new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.angle().in(Degrees)))
-            //         .andThen(
-            //             elbow.getNewSetAngleCommand(ElbowPositions.Final.angle().in(Degrees))
-            //                 .alongWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.angle().in(Degrees)))
-            //         )
-            //     )
-            // ),
-            // shoulder.getNewSetAngleCommand(ShoulderPositions.Final.angle().in(Degrees))
         );
         addRequirements(shoulder, elbow, wrist, elevator);
     }

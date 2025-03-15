@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.606,
-        "y": 7.352
+        "x": 1.8086250000000001,
+        "y": 7.140124999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.191,
-        "y": 6.89375
+        "x": 2.393625,
+        "y": 6.681874999999999
       },
       "isLocked": false,
       "linkedName": "advancedPathPlanner.3"
     },
     {
       "anchor": {
-        "x": 3.6757500000000003,
-        "y": 5.06825
+        "x": 3.6708749999999997,
+        "y": 5.258375
       },
       "prevControl": {
-        "x": 3.0712499999999996,
-        "y": 5.86775
+        "x": 3.066374999999999,
+        "y": 6.057875
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,24 +33,26 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "StationIntakeToStow",
+      "name": "StationIntakeToL4",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "named",
+        "type": "sequential",
         "data": {
-          "name": "StationIntakeToStow"
-        }
-      }
-    },
-    {
-      "name": "StowToL4",
-      "waypointRelativePos": 0.7302405498281807,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "StowToL4"
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "StationIntakeToStow"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "StowToL4"
+              }
+            }
+          ]
         }
       }
     }
@@ -64,7 +66,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.5,
     "rotation": 120.96375653207349
   },
   "reversed": false,
