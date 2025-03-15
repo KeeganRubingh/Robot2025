@@ -34,7 +34,7 @@ public class AutoAlignCommand extends Command {
     private LoggedTunableNumber maxStrafeTune = new LoggedTunableNumber("AutoAlign/strafeGains/maxVelMetersPerSecond",1);
     private LoggedTunableNumber maxThrottleTune = new LoggedTunableNumber("AutoAlign/throttleGains/maxVelMetersPerSecond",1);
     private LoggedTunableNumber maxAccelStrafeTune = new LoggedTunableNumber("AutoAlign/strafeGains/maxAccMetersPerSecond",1);
-    private LoggedTunableNumber maxAccelDistanceTune = new LoggedTunableNumber("AutoAlign/distanceGains/maxAccMetersPerSecond",1);
+    private LoggedTunableNumber maxAccelDistanceTune = new LoggedTunableNumber("AutoAlign/throttleGains/maxAccMetersPerSecond",1);
     private LoggedTunableNumber toleranceB = new LoggedTunableNumber("AutoAlign/toleranceB", 0.01);
     private LoggedTunableNumber toleranceR = new LoggedTunableNumber("AutoAlign/toleranceR", 0.02);
     //#endregion
@@ -42,7 +42,7 @@ public class AutoAlignCommand extends Command {
     private LinearVelocity m_maxStrafe = MetersPerSecond.of(maxStrafeTune.getAsDouble()); 
     private LinearVelocity m_maxThrottle = MetersPerSecond.of(maxThrottleTune.getAsDouble());
     private LinearAcceleration m_maxAccelStrafe = MetersPerSecondPerSecond.of(maxAccelStrafeTune.getAsDouble());
-    private LinearAcceleration m_maxAccelDist = MetersPerSecondPerSecond.of(maxAccelStrafeTune.getAsDouble());
+    private LinearAcceleration m_maxAccelThrottle = MetersPerSecondPerSecond.of(maxAccelStrafeTune.getAsDouble());
     private static final double MAX_SPIN = Math.toRadians(180.0);
 
     private double m_strafe;
@@ -50,9 +50,11 @@ public class AutoAlignCommand extends Command {
     private double m_spin;
     private double m_tx;
     private double m_ty;
+    private double m_vx;
+    private double m_vy;
     private double m_tr;
     private ProfiledPIDController m_strafePID = new ProfiledPIDController(strafeGains.build().kP, strafeGains.build().kI ,strafeGains.build().kD, new Constraints(m_maxStrafe.in(MetersPerSecond), m_maxAccelStrafe.in(MetersPerSecondPerSecond)));
-    private ProfiledPIDController m_throttlePID = new ProfiledPIDController(throttleGains.build().kP, throttleGains.build().kI ,throttleGains.build().kD, new Constraints(m_maxThrottle.in(MetersPerSecond), m_maxAccelDist.in(MetersPerSecondPerSecond)));
+    private ProfiledPIDController m_throttlePID = new ProfiledPIDController(throttleGains.build().kP, throttleGains.build().kI ,throttleGains.build().kD, new Constraints(m_maxThrottle.in(MetersPerSecond), m_maxAccelThrottle.in(MetersPerSecondPerSecond)));
     private PIDController spinPID = new PIDController(5.0, 0.0, 0.0);
 
     /**
@@ -84,10 +86,10 @@ public class AutoAlignCommand extends Command {
         m_maxStrafe = MetersPerSecond.of(maxStrafeTune.getAsDouble()); 
         m_maxThrottle = MetersPerSecond.of(maxThrottleTune.getAsDouble());
         m_maxAccelStrafe = MetersPerSecondPerSecond.of(maxAccelStrafeTune.getAsDouble());
-        m_maxAccelDist = MetersPerSecondPerSecond.of(maxAccelDistanceTune.getAsDouble());
+        m_maxAccelThrottle = MetersPerSecondPerSecond.of(maxAccelDistanceTune.getAsDouble());
 
         m_strafePID = new ProfiledPIDController(strafeGains.build().kP, strafeGains.build().kI ,strafeGains.build().kD, new Constraints(m_maxStrafe.in(MetersPerSecond), m_maxAccelStrafe.in(MetersPerSecondPerSecond)));
-        m_throttlePID = new ProfiledPIDController(throttleGains.build().kP, throttleGains.build().kI ,throttleGains.build().kD, new Constraints(m_maxThrottle.in(MetersPerSecond), m_maxAccelDist.in(MetersPerSecondPerSecond)));
+        m_throttlePID = new ProfiledPIDController(throttleGains.build().kP, throttleGains.build().kI ,throttleGains.build().kD, new Constraints(m_maxThrottle.in(MetersPerSecond), m_maxAccelThrottle.in(MetersPerSecondPerSecond)));
     }
 
     /**
@@ -120,9 +122,11 @@ public class AutoAlignCommand extends Command {
         m_tx = -targetPose_R.getY();
         m_ty = -targetPose_R.getX();
         m_tr = targetPose_R.getRotation().unaryMinus().getRadians();
+        m_vx = drivetrain.getChassisSpeeds().vxMetersPerSecond;
+        m_vy = drivetrain.getChassisSpeeds().vyMetersPerSecond;
 
-        m_strafePID.reset(m_tx);
-        m_throttlePID.reset(m_ty);
+        m_strafePID.reset(m_tx,m_vy);
+        m_throttlePID.reset(m_ty,m_vx);
         spinPID.reset();
     }
 
@@ -140,8 +144,8 @@ public class AutoAlignCommand extends Command {
         m_ty = 0.0 - targetPose_r.getX();
         m_tr = targetPose_r.getRotation().unaryMinus().getRadians();
 
-        m_strafe = MathUtil.clamp(m_strafePID.calculate(m_tx, 0.0), -m_maxStrafe.in(MetersPerSecond), m_maxStrafe.in(MetersPerSecond)); 
-        m_throttle = MathUtil.clamp(m_throttlePID.calculate(m_ty, 0.0),-m_maxThrottle.in(MetersPerSecond),m_maxThrottle.in(MetersPerSecond));
+        m_strafe = m_strafePID.calculate(m_tx, 0.0); 
+        m_throttle = m_throttlePID.calculate(m_ty, 0.0);
         m_spin = MathUtil.clamp(spinPID.calculate(m_tr, 0.0),-MAX_SPIN,MAX_SPIN);
 
         ChassisSpeeds speeds =
@@ -151,14 +155,14 @@ public class AutoAlignCommand extends Command {
             m_spin);
         drivetrain.runVelocity(speeds);
 
-        Logger.recordOutput("AlignTx/TX", m_tx);
-        Logger.recordOutput("AlignTx/TZ", m_ty);
-        Logger.recordOutput("AlignTx/TR", m_tr);
-        Logger.recordOutput("AlignTx/strafe", m_strafe);
-        Logger.recordOutput("AlignTx/throttle", m_throttle);
-        Logger.recordOutput("AlignTx/spin", m_spin);
-        Logger.recordOutput("AlignTx/TargetPose",targetPose);
-        Logger.recordOutput("AlignTx/distance", distance);
+        Logger.recordOutput("AutoAlign/TX", m_tx);
+        Logger.recordOutput("AutoAlign/TZ", m_ty);
+        Logger.recordOutput("AutoAlign/TR", m_tr);
+        Logger.recordOutput("AutoAlign/strafe", m_strafe);
+        Logger.recordOutput("AutoAlign/throttle", m_throttle);
+        Logger.recordOutput("AutoAlign/spin", m_spin);
+        Logger.recordOutput("AutoAlign/TargetPose",targetPose);
+        Logger.recordOutput("AutoAlign/distance", distance);
     }
 
     /**
