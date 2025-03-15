@@ -261,14 +261,14 @@ public class RobotContainer {
         elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants(), InvertedValue.CounterClockwise_Positive, SensorDirectionValue.Clockwise_Positive), Optional.of(shoulder));
 
         coralEndEffector = new CoralEndEffector(new CoralEndEffectorIOTalonFX(canivoreCanBuilder.id(12).build(), canivoreCanBuilder.id(17).build()));
-        // coralEndEffector = new CoralEndEffector(new CoralEndEffectorIONova(canivoreCanBuilder.id(12).build(), canivoreCanBuilder.id(17).build()));
+        // coralEndEffector = new CoralEndEffector(new CoralEndEffectorIONova(rioCanBuilder.id(12).build(), canivoreCanBuilder.id(17).build()));
         
-        intake = new Intake(new IntakeIONova(canivoreCanBuilder.id(18).build(),canivoreCanBuilder.id(26).build()));
+        intake = new Intake(new IntakeIONova(rioCanBuilder.id(18).build(),rioCanBuilder.id(17).build()));
 
         intakeExtender = new IntakeExtender(new IntakeExtenderIOTalonFX(canivoreCanBuilder.id(16).build()));
 
         algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIOTalonFX(canivoreCanBuilder.id(15).build(), canivoreCanBuilder.id(24).build()));
-        // algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIONova(canivoreCanBuilder.id(15).build(), canivoreCanBuilder.id(24).build()));
+        // algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIONova(rioCanBuilder.id(15).build(), canivoreCanBuilder.id(24).build()));
 
         climber = new Climber(new ClimberIOTalonFX(rioCanBuilder.id(19).build()));
 
