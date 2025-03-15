@@ -469,7 +469,9 @@ public class RobotContainer {
       .andThen(climber.getNewSetVoltsCommand(3.0))
     )
     .onFalse(
-      climber.getNewSetVoltsCommand(90.0)
+      climber.getNewSetVoltsCommand(0.0)
+      .andThen(climber.getNewSetServoAngleCommand(90.0))
+      
     );
 
   }
