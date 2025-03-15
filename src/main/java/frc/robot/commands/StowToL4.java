@@ -127,7 +127,7 @@ public class StowToL4 extends SequentialCommandGroup {
         return(coralEndEffector.getNewSetVoltsCommand(1)
         .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
         .alongWith(new WaitCommand(0.2))
-            .andThen(DriveCommands.joystickForwardDrive(drive, () -> 0.25, () -> 0.0, null).withTimeout(0.5))
+            .andThen(DriveCommands.joystickForwardDrive(drive, () -> 0.25, () -> 0.0, null).withTimeout(2.0))
             .andThen(wrist.getNewWristTurnCommand(0)));
     }
 
