@@ -314,6 +314,9 @@ public class RobotContainer {
   }
 
   public void configureDriverBindings() {
+
+    //#region controller
+
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
       DriveCommands.joystickDrive(
@@ -332,11 +335,12 @@ public class RobotContainer {
       () -> reefPositions.isSelected(DeAlgaeLevel.Low)))
     .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
 
-    // Coral Station Intake
+    // Coral Station Intake No Auto Align
     controller.leftBumper().and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
       .onTrue(new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
       .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
+    // Coral Station Intake Auto Align Sequence
     controller.leftBumper()
       .and(() -> ReefPositionsUtil.getInstance().getIsAutoAligning())
       .onTrue(StationIntakeCommandFactory.getNewStationIntakeSequence(
@@ -351,15 +355,15 @@ public class RobotContainer {
       // Left as AlgaeStow instead of Stow in case Algae is not removed from Algae End Effector
       .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
 
+
+    //#region reef scoring
+
     // Hashmaps for Coral level commands
 
     Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands = SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist);
-
     Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands = SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEndEffector);
-    
     Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands = SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector, drive);
-    
-    // Go to conditional coral level no auto align
+
     /*  1. Right bumper pressed and AutoAligning is disabled
           - Goes to the score level of what is selected by the co-driver
         2. Right bumper pressed and AutoAligning is enabled
@@ -370,6 +374,49 @@ public class RobotContainer {
           - Else
             - Goes to Algae Stow
     */
+
+    // Left side reef auto align
+    controller.rightBumper()
+    .and(
+      ()->reefPositions.getIsAutoAligning()
+    ).and(
+      () -> {return reefPositions.getAutoAlignSide() == AutoAlignSide.Left;}
+    ).whileTrue(
+      ReefScoreCommandFactory.getNewReefCoralScoreSequence(
+        ReefPosition.Left, 
+        true,
+        SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
+        SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEndEffector),
+        SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector, drive),
+        drive
+      )
+    ).onFalse(new ConditionalCommand(
+      new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+      new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+      () -> reefPositions.isSelected(ScoreLevel.L4)
+    ));
+
+    // Right side reef auto align
+    controller.rightBumper()
+    .and(
+      ()->reefPositions.getIsAutoAligning()
+    ).and(
+      () -> {return reefPositions.getAutoAlignSide() == AutoAlignSide.Right;}
+    ).whileTrue(
+      ReefScoreCommandFactory.getNewReefCoralScoreSequence(
+        ReefPosition.Right, 
+        true,
+        SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
+        SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEndEffector),
+        SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector, drive),
+        drive)
+    ).onFalse(new ConditionalCommand(
+      new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+      new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+      () -> reefPositions.isSelected(ScoreLevel.L4)
+    ));
+
+    // Go to conditional coral level no auto align
     controller.rightBumper().and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
     .onTrue(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
     .onFalse(new ConditionalCommand(
@@ -381,11 +428,12 @@ public class RobotContainer {
     controller.rightTrigger().and(controller.rightBumper()).and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
       .onTrue(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
       .onFalse(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands));
+    //#endregion
 
     // Confirm Barge
     controller.rightTrigger().and(controller.y())
-      .onTrue(new BargeScoreCommand(algaeEndEffector))
-      .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
+    .onTrue(new BargeScoreCommand(algaeEndEffector))
+    .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
 
     // Outtake Algae (Also processor score from stow pos)
     controller.povLeft()
@@ -397,68 +445,30 @@ public class RobotContainer {
       .onTrue(new OutakeCoral(coralEndEffector))
       .onFalse(coralEndEffector.getNewSetVoltsCommand(0.0));
 
-    /*  1. PovLeft is pressed
-          - 
-    */
-    controller.rightBumper()
-    .and(
-      ()->reefPositions.getIsAutoAligning()
-    ).and(
-      () -> {return reefPositions.getAutoAlignSide() == AutoAlignSide.Left;}
-    ).whileTrue(
-      ReefScoreCommandFactory.getNewReefCoralScoreSequence(
-        ReefPosition.Left, 
-        SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
-        SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEndEffector),
-        SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector, drive),
-        drive
-      )
-    )
-    .onFalse(new ConditionalCommand(
-        new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-        () -> reefPositions.isSelected(ScoreLevel.L4)
-      ));
-
-      controller.rightBumper()
-      .and(
-        ()->reefPositions.getIsAutoAligning()
-      ).and(
-        () -> {return reefPositions.getAutoAlignSide() == AutoAlignSide.Right;}
-      ).whileTrue(
-        ReefScoreCommandFactory.getNewReefCoralScoreSequence(
-          ReefPosition.Right, 
-          SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
-          SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEndEffector),
-          SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector, drive),
-          drive)
-      )
-      .onFalse(new ConditionalCommand(
-          new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-          new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-          () -> reefPositions.isSelected(ScoreLevel.L4)
-        ));
-
+    // Toggle auto align on/off
     controller.start()
       .onTrue(new InstantCommand(() -> {reefPositions.setIsAutoAligning(!reefPositions.getIsAutoAligning());}));
 
-    //L4
+    //#endregion
+    //#region Co-Controller
+
+    // Select L4
     co_controller.y().and(controller.rightBumper().negate())
       .onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L4));
-    //L3
+    // Select L3
     co_controller.x().and(controller.rightBumper().negate())
       .onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L3));
-    //L2
+    // Select L2
     co_controller.b().and(controller.rightBumper().negate())
       .onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L2));
-    //L1
+    // Select L1
     co_controller.a().and(controller.rightBumper().negate())
       .onTrue(reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L1));
 
-    // L3/L4 DeAlgae
+    // Select L3/L4 DeAlgae
     co_controller.rightBumper().and(controller.leftTrigger().negate())
       .onTrue(reefPositions.getNewSetDeAlgaeLevelCommand(DeAlgaeLevel.Top));
-    // L2/L3 DeAlgae
+    // Select L2/L3 DeAlgae
     co_controller.rightTrigger().and(controller.leftTrigger().negate())
       .onTrue(reefPositions.getNewSetDeAlgaeLevelCommand(DeAlgaeLevel.Low));
 
@@ -467,142 +477,15 @@ public class RobotContainer {
       .onTrue(new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
       .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
+    // Select Left Auto Aligning
     co_controller.povLeft()
       .onTrue(new InstantCommand(() ->ReefPositionsUtil.getInstance().setAutoAlignSide(ReefPositionsUtil.AutoAlignSide.Left)));
 
+    // Select Right Auto Aligning
     co_controller.povRight()
       .onTrue(new InstantCommand(() ->ReefPositionsUtil.getInstance().setAutoAlignSide(ReefPositionsUtil.AutoAlignSide.Right)));
-  }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}. Used for getting SysIDs
-   */
-  private void configureButtonBindings() {
-
-          double povSpeed = 1.0;
-          double REVERSE = -1.0;
-          controller
-              .povUp()
-              .whileTrue(
-                  DriveCommands.joystickForwardDrive(
-                      drive, () -> povSpeed * REVERSE, () -> 0.0, null));
-          controller
-              .povDown()
-              .whileTrue(
-                  DriveCommands.joystickForwardDrive(
-                      drive, () -> -(povSpeed * REVERSE), () -> 0.0, null));
-          controller
-              .povRight()
-              .whileTrue(
-                  DriveCommands.joystickForwardDrive(
-                      drive, () -> 0.0, () -> -(povSpeed * REVERSE), null));
-          controller
-              .povLeft()
-              .whileTrue(
-                  DriveCommands.joystickForwardDrive(
-                      drive, () -> 0.0, () -> (povSpeed * REVERSE), null));
-      
-      
-    //Auto Align
-    // controller.leftStick().onTrue(new RoughAlignToReef(drive,false));
-
-    //Scoring
-      //Constants
-    final double L4_READY_POS = -100;
-    final double L3_READY_POS = 50;
-    final double L2_READY_POS = 50;
-
-      //L4
-    controller.rightTrigger().and(co_controller.y())
-      .onTrue(elbow.getNewSetAngleCommand(L4_READY_POS-80).alongWith(wrist.getNewApplyCoastModeCommand()).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
-      .onFalse(coralEndEffector.getNewSetVoltsCommand(1).alongWith(elbow.getNewSetAngleCommand(L4_READY_POS)).alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
-      //L3
-    controller.rightTrigger().and(co_controller.x())
-      .onTrue(elbow.getNewSetAngleCommand(L3_READY_POS-80).alongWith(wrist.getNewApplyCoastModeCommand()).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
-      .onFalse(coralEndEffector.getNewSetVoltsCommand(1).alongWith(elbow.getNewSetAngleCommand(L3_READY_POS)).alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
-      //L2
-    controller.rightTrigger().and(co_controller.b())
-      .onTrue(elbow.getNewSetAngleCommand(L2_READY_POS-80).alongWith(wrist.getNewApplyCoastModeCommand()).alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
-      .onFalse(coralEndEffector.getNewSetVoltsCommand(1).alongWith(elbow.getNewSetAngleCommand(L2_READY_POS)).alongWith(new WaitCommand(0.2)).andThen(wrist.getNewWristTurnCommand(0)));
-      //L1
-    controller.rightTrigger().and(co_controller.a())
-      .onTrue(coralEndEffector.getNewSetVoltsCommand(-4))
-      .onFalse(coralEndEffector.getNewSetVoltsCommand(1));
-      //Barge
-    // controller.rightTrigger().and(co_controller.povUp())
-    //   .onTrue(algaeEndEffector.getNewSetVoltsCommand(-6.0))
-    //   .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
-
-    //Barge
-    co_controller.povUp().onTrue(new StowToBarge(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-
-    // Reef DeAlgaefy scoring position sets
-    // co_controller.rightBumper().onTrue(reefPositions.getNewSetDeAlgaeLevel(DeAlgaeLevel.Top)); // L3/4
-    // co_controller.rightTrigger().onTrue(reefPositions.getNewSetDeAlgaeLevel(DeAlgaeLevel.Low)); // L2/3
-
-    //Algae Commands
-      //Take Algae L2
-    //co_controller.rightTrigger()
-    //  .onTrue(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator))
-    //  .onFalse(algaeEndEffector.getNewSetVoltsCommand(4).alongWith(elevator.getNewSetDistanceCommand(0)).alongWith(elbow.getNewSetAngleCommand(70)).alongWith(shoulder.getNewSetAngleCommand(20)));
-    //  //Take Algae L3
-    //co_controller.rightBumper()
-    //  .onTrue(new TakeAlgaeL3(shoulder, elbow, wrist, algaeEndEffector, elevator))
-    //  .onFalse(algaeEndEffector.getNewSetVoltsCommand(4).alongWith(elevator.getNewSetDistanceCommand(0)).alongWith(elbow.getNewSetAngleCommand(70)).alongWith(shoulder.getNewSetAngleCommand(20)));
-    //  //Eject Algae
-    //co_controller.leftTrigger().onTrue(new OutakeAlgae(algaeEndEffector)).onFalse(algaeEndEffector.getNewSetVoltsCommand(0));
-
-    // TODO: Implement climbing controls (L Bumper climb and (maybe) L Trigger unclimb)
-
-    // // Lock to 0° when A button is held
-    // controller
-    //     .a()
-    //     .whileTrue(
-    //         DriveCommands.joystickDriveAtAngle(
-    //             drive,
-    //             () -> -controller.getLeftY(),
-    //             () -> -controller.getLeftX(),
-    //             () -> new Rotation2d()));
-    // // Reset gyro to 0° when B button is pressed
-    // controller
-    //     .b()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //                 () ->
-    //                     drive.setPose(
-    //                         new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-    //                 drive)
-    //             .ignoringDisable(true));
-
-    // // controller.rightBumper()
-    // // .onTrue(
-    // //   elbow.getNewSetAngleCommand(-30).alongWith(shoulder.getNewSetAngleCommand(75))
-    // //   .andThen(new WaitUntilCommand(elbow.getNewAtSetpointTrigger().and(shoulder.getNewAtSetpointTrigger())))
-    // //   .andThen(
-    // //     elbow.getNewSetAngleCommand(70)
-    // //     .until(elbow.getNewAtSetpointTrigger().and(shoulder.getNewAtSetpointTrigger()))
-    // //   )
-    
-    // // ).onFalse(elbow.getNewSetAngleCommand(0).alongWith(shoulder.getNewSetAngleCommand(0)));
-
-    // // Auto aim command example FOR DIFFERENTIAL DRIVE
-    // // @SuppressWarnings("resource")
-    // // PIDController aimController = new PIDController(0.2, 0.0, 0.0);
-    // // aimController.enableContinuousInput(-Math.PI, Math.PI);
-    // // keyboard
-    // //     .button(1)
-    // //     .whileTrue(
-    // //         Commands.startRun(
-    // //             () -> {
-    // //               aimController.reset();
-    // //             },
-    // //             () -> {
-    // //               drive.run(0.0, aimController.calculate(vision.getTargetX(0).getRadians()));
-    // //             },
-    // //             drive));
+    //#endregion
   }
 
   public void configureTestButtonBindings (){
