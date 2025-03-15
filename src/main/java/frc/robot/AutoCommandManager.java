@@ -6,6 +6,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.L4ToStow;
 import frc.robot.commands.OutakeCoral;
 import frc.robot.commands.ReefScoreCommandFactory;
 import frc.robot.commands.ReefScoreCommandFactory.ReefPosition;
@@ -74,7 +75,7 @@ public class AutoCommandManager {
 
   private void configureNamedCommands(Drive drive, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
       NamedCommands.registerCommand("Stow", new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
-      NamedCommands.registerCommand("L4ToStow", new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE)); // TODO: Swap to L4ToStow
+      NamedCommands.registerCommand("L4ToStow", new L4ToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
       NamedCommands.registerCommand("StationIntake", new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEE));
       // Needed so not hit coral on elevator
       NamedCommands.registerCommand("StationIntakeToStow", new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
@@ -82,7 +83,7 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("StowToL1", new StowToL1(shoulder, elbow, wrist));
       NamedCommands.registerCommand("StowToL2", new StowToL2(shoulder, elbow, elevator, wrist));
       NamedCommands.registerCommand("StowToL3", new StowToL3(shoulder, elbow, wrist, elevator));
-      NamedCommands.registerCommand("StowToL4", new StowToL3(shoulder, elbow, wrist, elevator));
+      NamedCommands.registerCommand("StowToL4", new StowToL4(shoulder, elbow, elevator, wrist));
       NamedCommands.registerCommand("ScoreL1",StowToL1.getNewScoreCommand(coralEE)
         .andThen(new WaitCommand(0.2))
         .andThen(StowToL1.getNewStopScoreCommand(coralEE)));
@@ -92,7 +93,7 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("ScoreL3",StowToL3.getNewScoreCommand(shoulder, elbow, wrist, coralEE)
         .andThen(new WaitCommand(0.2))
         .andThen(StowToL3.getNewStopScoreCommand(elbow, wrist, coralEE)));
-      NamedCommands.registerCommand("ScoreL4",StowToL3.getNewScoreCommand(shoulder, elbow, wrist, coralEE)
+      NamedCommands.registerCommand("ScoreL4",StowToL4.getNewScoreCommand(elbow, wrist, coralEE)
         .andThen(new WaitCommand(0.2))
         .andThen(StowToL3.getNewStopScoreCommand(elbow, wrist, coralEE)));
 
@@ -100,7 +101,7 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("StopScoreL1",StowToL1.getNewStopScoreCommand(coralEE));
       NamedCommands.registerCommand("StopScoreL2",StowToL2.getNewStopScoreCommand(elbow, wrist, coralEE));
       NamedCommands.registerCommand("StopScoreL3",StowToL3.getNewStopScoreCommand(elbow, wrist, coralEE));
-      NamedCommands.registerCommand("StopScoreL4",StowToL3.getNewStopScoreCommand(elbow, wrist, coralEE));
+      NamedCommands.registerCommand("StopScoreL4",StowToL4.getNewStopScoreCommand(elbow, wrist, coralEE, drive));
   
       NamedCommands.registerCommand("CoralOuttake", new OutakeCoral(coralEE));
       NamedCommands.registerCommand("StopDrivetrain", new StopDrivetrainCommand(drive));
@@ -108,7 +109,7 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("SetL1", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L1));
       NamedCommands.registerCommand("SetL2", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L2));
       NamedCommands.registerCommand("SetL3", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L3));
-      NamedCommands.registerCommand("SetL4", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L3));
+      NamedCommands.registerCommand("SetL4", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L4));
 
       NamedCommands.registerCommand("AutoAlignStationInside", 
         StationIntakeCommandFactory.getNewStationIntakeSequence(
@@ -136,6 +137,7 @@ public class AutoCommandManager {
         ReefScoreCommandFactory.getNewReefCoralScoreSequence(
             ReefPosition.Left, 
             false,
+            false,
             SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
             SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEE),
             SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEE, drive),
@@ -143,6 +145,7 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("AutoAlignScoreRight", 
         ReefScoreCommandFactory.getNewReefCoralScoreSequence(
           ReefPosition.Right, 
+          false,
           false,
           SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
           SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEE),

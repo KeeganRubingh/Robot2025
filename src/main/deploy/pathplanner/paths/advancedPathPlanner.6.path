@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.8086250000000001,
-        "y": 7.164499999999999
+        "x": 1.6183401639344261,
+        "y": 7.267674180327869
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3690934760843785,
-        "y": 6.9030911862814595
+        "x": 2.1788086400188043,
+        "y": 7.006265366609329
       },
       "isLocked": false,
-      "linkedName": "advancedPathPlanner.5"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "advancedPathPlanner.6"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
