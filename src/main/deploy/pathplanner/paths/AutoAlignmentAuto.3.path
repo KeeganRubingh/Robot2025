@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.57,
-        "y": 7.292
+        "x": 1.896375,
+        "y": 6.95
       },
       "prevControl": {
-        "x": 2.3376024590163933,
-        "y": 6.764190573770492
+        "x": 2.663977459016394,
+        "y": 6.422190573770492
       },
       "nextControl": null,
       "isLocked": false,
@@ -40,6 +40,17 @@
         "type": "named",
         "data": {
           "name": "L4ToStow"
+        }
+      }
+    },
+    {
+      "name": "StationIntake",
+      "waypointRelativePos": 0.5750902527075807,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StationIntake"
         }
       }
     }
