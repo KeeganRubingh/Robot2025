@@ -33,24 +33,26 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "L4ToStow",
+      "name": "L4ToStationIntake",
       "waypointRelativePos": 0.05,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "named",
+        "type": "sequential",
         "data": {
-          "name": "L4ToStow"
-        }
-      }
-    },
-    {
-      "name": "StationIntake",
-      "waypointRelativePos": 0.5765342960288811,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "StationIntake"
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "L4ToStow"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "StationIntake"
+              }
+            }
+          ]
         }
       }
     }

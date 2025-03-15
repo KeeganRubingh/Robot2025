@@ -59,12 +59,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "L4ToStow"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "AutoAlignmentAuto.3"
