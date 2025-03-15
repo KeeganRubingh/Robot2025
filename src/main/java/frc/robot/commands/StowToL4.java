@@ -23,8 +23,7 @@ import frc.robot.util.LoggedTunableNumber;
 public class StowToL4 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("MoveToL4Command/shoulder/StartingDegrees", 0)),
-        MidPoint(new LoggedTunableNumber("MoveToL4Command/shoulder/MidPointDegrees", 0)),
+        Starting(new LoggedTunableNumber("MoveToL4Command/shoulder/StartingDegrees", 95.0)),
         SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", -20)),
         Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", -55));
 
@@ -101,6 +100,7 @@ public class StowToL4 extends SequentialCommandGroup {
 
     public StowToL4(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
         super(
+            new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.Starting.position)),
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position)
                 .alongWith(

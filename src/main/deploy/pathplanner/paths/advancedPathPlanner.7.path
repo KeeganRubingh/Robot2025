@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.058811475409836,
-        "y": 5.2897028688524586
+        "x": 5.2065,
+        "y": 5.355875
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.669545081967213,
-        "y": 5.593311475409836
+        "x": 5.817233606557377,
+        "y": 5.6594836065573775
       },
       "isLocked": false,
       "linkedName": "advancedPathPlanner.6"
@@ -33,13 +33,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Stow",
+      "name": "L4ToStow",
       "waypointRelativePos": 0.10591603053435614,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Stow"
+          "name": "L4ToStow"
         }
       }
     }
@@ -53,7 +53,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": 55.1561245293354
   },
   "reversed": false,
