@@ -135,7 +135,7 @@ public class ReefScoreCommandFactory {
         Command returnedCommand = new AutoAlignCommand(getGetTargetPositionFunction(position, isBackingUp), drive);
         //If we're backing up, add a condition to kill when we're farther away than the backup distance
         if(isBackingUp) {
-            returnedCommand = returnedCommand.until(() -> (drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) > offsetBBackingUp.getAsDouble()));
+            returnedCommand = returnedCommand.unless(() -> (drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) > offsetBBackingUp.getAsDouble()));
         }
         return returnedCommand;
     }
@@ -150,7 +150,7 @@ public class ReefScoreCommandFactory {
      */
     public static Command getNewReefCoralScoreSequence(ReefPosition position, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands, Drive drive) {
         return getNewAlignToReefCommand(position, true, drive)
-                .alongWith(new WaitCommand(0.1).andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands)))
+                .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
             .andThen(getNewAlignToReefCommand(position, false, drive))
             // .andThen(new WaitCommand(0.2))
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
