@@ -164,8 +164,9 @@ public class StationIntakeCommandFactory {
      * @param drive
      * @return
      */
-    public static Command getNewStationIntakeSequence(Supplier<IntakePosition> position, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, Drive drive) {
+    public static Command getNewStationIntakeSequence(Supplier<IntakePosition> position, boolean moveArm, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, Drive drive) {
         // IMPORTANT: NEEDS TO BE PLACED IN PATH NOT HERE TOO LATE
-        return getNewAlignToStationCommand(position, false, drive);
+        return new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEE).onlyIf(() -> {return moveArm;})
+        .andThen(getNewAlignToStationCommand(position, false, drive));
     }
 }

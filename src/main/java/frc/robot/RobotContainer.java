@@ -344,7 +344,8 @@ public class RobotContainer {
     controller.leftBumper()
       .and(() -> ReefPositionsUtil.getInstance().getIsAutoAligning())
       .onTrue(StationIntakeCommandFactory.getNewStationIntakeSequence(
-          () -> intakePosChooser.get(), 
+          () -> intakePosChooser.get(),
+          true,
           shoulder, elbow, elevator, wrist, coralEndEffector, drive
         ))
       .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
@@ -602,11 +603,14 @@ public class RobotContainer {
 
   public void loggingPeriodic() {
     Logger.recordOutput("ReefPositions/Selected Score Position", reefPositions.getScoreLevel());
+    Logger.recordOutput("ReefPositions/Selected Auto Align Side", reefPositions.getAutoAlignSide());
     Logger.recordOutput("ReefPositions/Selected DeAlgae Position", reefPositions.getDeAlgaeLevel());
     Logger.recordOutput("ReefPositions/ScorePos/L1", reefPositions.isSelected(ScoreLevel.L1));
     Logger.recordOutput("ReefPositions/ScorePos/L2", reefPositions.isSelected(ScoreLevel.L2));
     Logger.recordOutput("ReefPositions/ScorePos/L3", reefPositions.isSelected(ScoreLevel.L3));
     Logger.recordOutput("ReefPositions/ScorePos/L4", reefPositions.isSelected(ScoreLevel.L4));
+    Logger.recordOutput("ReefPositions/AutoAlignSide/Left", reefPositions.isSelected(AutoAlignSide.Left));
+    Logger.recordOutput("ReefPositions/AutoAlignSide/Right", reefPositions.isSelected(AutoAlignSide.Right));
     Logger.recordOutput("ReefPositions/DeAlgaePos/Top", reefPositions.isSelected(DeAlgaeLevel.Top));
     Logger.recordOutput("ReefPositions/DeAlgaePos/Low", reefPositions.isSelected(DeAlgaeLevel.Low));
   }
