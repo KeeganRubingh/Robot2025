@@ -61,4 +61,10 @@ public class IntakeIONova implements IntakeIO {
   public void stop() {
     Motor.setVoltage(0);
   }
+
+  //TODO: IMPLEMENT RANGE SENSOR
+  @Override
+  public Distance getSensor() {
+      return rangeSensor.getDistance(true).getValue();
+  }
 }

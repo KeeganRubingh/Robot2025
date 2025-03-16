@@ -133,9 +133,13 @@ public class ReefScoreCommandFactory {
         Function<Pose2d, Pose2d> positionFunction = getGetTargetPositionFunction(position, isBackingUp);
         //Base command
         Command returnedCommand = new AutoAlignCommand(getGetTargetPositionFunction(position, isBackingUp), drive);
-        //If we're backing up, add a condition to kill when we're farther away than the backup distance
+        //If we're backing up, add kill conditions
         if(isBackingUp) {
-            returnedCommand = returnedCommand.unless(() -> (drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) > offsetBBackingUp.getAsDouble()));
+            returnedCommand = returnedCommand
+                // Kill when we are out of the distance (not necessary since we kill)
+                // .until(() -> (drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) > offsetBBackingUp.getAsDouble()))
+                // Don't run the backup if we are out of the distance
+                .unless(() -> (drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) > offsetBBackingUp.getAsDouble()));
         }
         return returnedCommand;
     }
