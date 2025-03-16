@@ -50,6 +50,7 @@ public class CoralEndEffectorIOTalonFX implements CoralEndEffectorIO {
     inputs.voltageSetPoint.mut_replace(m_setPoint);
     inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(Motor.getSupplyCurrent().getValue());
+    inputs.sensorDistance.mut_replace(m_sensor.getDistance(true).getValue());
   }
 
   @Override
