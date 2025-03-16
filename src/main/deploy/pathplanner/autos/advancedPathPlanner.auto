@@ -119,9 +119,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "advancedPathPlanner.7"
+            "name": "L4ToStow"
           }
         }
       ]

@@ -132,13 +132,9 @@ public class StowToL4 extends SequentialCommandGroup {
     }
 
     public static Command getNewStopScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector, Drive drive) {
-        return
-        DriveCommands.joystickForwardDrive(drive, () -> 0.5, () -> 0.0, null)
-            .withTimeout(1.0)
-        .andThen(wrist.getNewWristTurnCommand(0)
-            .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
-        )
-        .andThen(coralEndEffector.getNewSetVoltsCommand(1));
+        return wrist.getNewWristTurnCommand(0)
+                .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
+            .andThen(coralEndEffector.getNewSetVoltsCommand(1));
     }
 
 }
