@@ -30,6 +30,7 @@ import frc.robot.subsystems.wrist.Wrist;
 import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
+import frc.robot.util.ReefPositionsUtil.ScoreLevel;
 
 public class ReefScoreCommandFactory {
 
@@ -160,7 +161,10 @@ public class ReefScoreCommandFactory {
             // .andThen(new WaitCommand(0.2))
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
             // .andThen(new WaitCommand(0.2))
-            .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands));
+            .andThen(
+                getNewAlignToReefCommand(position, true, drive).onlyIf(()->ReefPositionsUtil.getInstance().isSelected(ScoreLevel.L4))
+                    .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands))
+            );
     }
 
     /**

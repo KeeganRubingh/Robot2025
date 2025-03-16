@@ -128,9 +128,9 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("AutoAlignStationOutside", 
         StationIntakeCommandFactory.getNewStationIntakeSequence(
           () -> {return IntakePosition.Outside;}, 
-          false,
+          true,
           shoulder, elbow, elevator, wrist, coralEE, drive
-        ).withTimeout(1.0) // TODO Get accurate values or better solution & apply to all
+        )
       );
 
       NamedCommands.registerCommand("AutoAlignScoreLeft", 
