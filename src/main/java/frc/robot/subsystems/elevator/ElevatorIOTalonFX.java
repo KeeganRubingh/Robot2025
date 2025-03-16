@@ -4,7 +4,6 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
@@ -36,7 +35,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   public ElevatorIOTalonFX() {}
 
-  public MotionMagicTorqueCurrentFOC Request;
+  public MotionMagicVoltage Request;
   public TalonFX leaderMotor;
   public TalonFX followerMotor;
 
@@ -47,7 +46,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   public ElevatorIOTalonFX(CanDef leftDef, CanDef rightDef) {
     leaderMotor = new TalonFX(leftDef.id(), leftDef.bus());
     followerMotor = new TalonFX(rightDef.id(), rightDef.bus());
-    Request = new MotionMagicTorqueCurrentFOC(0);
+    Request = new MotionMagicVoltage(0);
 
     configureTalons();
   }
