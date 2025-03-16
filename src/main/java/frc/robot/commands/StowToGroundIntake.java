@@ -74,7 +74,7 @@ public class StowToGroundIntake extends SequentialCommandGroup {
 
     private static enum IntakeExtenderPositions {
         Starting(new LoggedTunableNumber("StowToGroundIntake/Wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("StowToGroundIntake/Wrist/FinalDegrees", 90));
+        Final(new LoggedTunableNumber("StowToGroundIntake/Wrist/FinalDegrees", -144));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -115,9 +115,9 @@ public class StowToGroundIntake extends SequentialCommandGroup {
      * @return
      */
     public static Command getRunGroundIntakeCommand(Intake intake, IntakeExtender extender) {
-        return intake.getNewSetVoltsCommand(6)
-                .alongWith(extender.getNewIntakeExtenderTurnCommand(90))
-                .alongWith(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(90), Degrees.of(1))));
+        return intake.getNewSetVoltsCommand(0)
+                .alongWith(extender.getNewIntakeExtenderTurnCommand(-144))
+                .alongWith(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(-144), Degrees.of(1))));
     }
 
     /**
@@ -127,15 +127,15 @@ public class StowToGroundIntake extends SequentialCommandGroup {
     public static Command getTakeCoralFromGroundIntakeCommand(Intake intake, IntakeExtender extender, ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys) {
         return 
         new WaitUntilCommand(wrist.getNewAtAngleTrigger(Degrees.of(-90), Degrees.of(1)))
-        .andThen(intake.getNewSetVoltsCommand(-2.5))
+        // .andThen(intake.getNewSetVoltsCommand(-2.5))
         .andThen(fingeys.getNewSetVoltsCommand(6))
-            .alongWith(extender.getNewIntakeExtenderTurnCommand(0))
+            .alongWith(extender.getNewIntakeExtenderTurnCommand(-90))
         .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(0), Degrees.of(1))))
         .andThen(intake.getNewSetVoltsCommand(-5))
         // .andThen(new WaitUntilCommand(fingeys.placeholderGetHasCoralSupplier())) // Keegan Lmao
         .andThen(new WaitCommand(1))
         .andThen(
-            extender.getNewIntakeExtenderTurnCommand(90)
+            extender.getNewIntakeExtenderTurnCommand(0)
             .alongWith(fingeys.getNewSetVoltsCommand(1))
         );
     }
@@ -150,7 +150,7 @@ public class StowToGroundIntake extends SequentialCommandGroup {
      */
     public static Command getReturnToStowCommand(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys, IntakeExtender extender) {
         return extender.getNewIntakeExtenderTurnCommand(90)
-        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(0), Degrees.of(45)).negate()))
+        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(-90), Degrees.of(45)).negate()))
         .andThen(wrist.getNewWristTurnCommand(WristPositions.Starting.position))
         .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.Starting.position))
         .andThen(elbow.getNewSetAngleCommand(ElbowPositions.Starting.position));
