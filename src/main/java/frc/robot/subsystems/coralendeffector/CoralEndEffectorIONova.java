@@ -30,7 +30,7 @@ public class CoralEndEffectorIONova implements CoralEndEffectorIO {
     inputs.voltageSetPoint.mut_replace(m_setPoint);
     inputs.voltage.mut_replace(motor.getVoltage(), Volts);
     inputs.supplyCurrent.mut_replace(motor.getSupplyCurrent(), Amps);
-    inputs.hasCoral = m_sensor.getDistance().getValue().lt(Inches.of(CoralEndEffector.CORAL_DISTANCE_THRESHOLD.get()));
+    inputs.coralDistance.mut_replace(m_sensor.getDistance().getValue());
   }
 
   @Override

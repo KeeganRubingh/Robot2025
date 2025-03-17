@@ -45,7 +45,7 @@ public class IntakeIOSim implements IntakeIO {
     input.statorCurrent.mut_replace(sim.getCurrentDrawAmps(), Amps);
     input.voltageSetPoint.mut_replace(appliedVoltage);
     input.voltage.mut_replace(Volts.of(sim.getInputVoltage()));
-    input.hasCoral = Inches.of(intakeSensorSim.get()).lt(Inches.of(Intake.CORAL_DISTANCE_THRESHOLD.get()));
+    input.coralDistance.mut_replace(Inches.of(intakeSensorSim.get()));
 
     // Periodic
     sim.setInputVoltage(appliedVoltage.in(Volts));

@@ -45,7 +45,7 @@ public class AlgaeEndEffectorIOSim implements AlgaeEndEffectorIO {
     input.supplyCurrent.mut_replace(sim.getCurrentDrawAmps(), Amps);
     input.torqueCurrent.mut_replace(input.supplyCurrent.in(Amps), Amps);
     input.voltageSetPoint.mut_replace(appliedVoltage);
-    input.hasAlgae = Inches.of(algaeEESensorSim.get()).lt(Inches.of(AlgaeEndEffector.ALGAE_DISTANCE_THRESHOLD.get()));
+    input.algaeDistance.mut_replace(Inches.of(algaeEESensorSim.get()));
 
     // Periodic
     sim.setInputVoltage(appliedVoltage.in(Volts));

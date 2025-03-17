@@ -3,6 +3,7 @@ package frc.robot.subsystems.coralendeffector;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.BooleanSupplier;
@@ -36,7 +37,7 @@ public class CoralEndEffector extends SubsystemBase {
     logged.torqueCurrent = Amps.mutable(0);
     logged.voltageSetPoint = Volts.mutable(0);
     logged.voltage = Volts.mutable(0);
-    logged.hasCoral = false;
+    logged.coralDistance = Inches.mutable(100);
   }
 
   private void setTarget(Voltage target) {

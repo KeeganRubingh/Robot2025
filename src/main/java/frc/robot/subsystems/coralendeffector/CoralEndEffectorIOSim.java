@@ -43,7 +43,7 @@ public class CoralEndEffectorIOSim implements CoralEndEffectorIO {
     input.supplyCurrent.mut_replace(sim.getCurrentDrawAmps(), Amps);
     input.torqueCurrent.mut_replace(input.supplyCurrent.in(Amps), Amps);
     input.voltageSetPoint.mut_replace(appliedVoltage);
-    input.hasCoral = Inches.of(coralEESensorSim.get()).lt(Inches.of(CoralEndEffector.CORAL_DISTANCE_THRESHOLD.get()));
+    input.coralDistance.mut_replace(Inches.of(coralEESensorSim.get()));
 
     // Periodic
     sim.setInputVoltage(appliedVoltage.in(Volts));

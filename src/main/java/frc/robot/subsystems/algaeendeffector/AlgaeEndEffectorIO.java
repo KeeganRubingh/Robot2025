@@ -2,6 +2,7 @@ package frc.robot.subsystems.algaeendeffector;
 
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutCurrent;
+import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
@@ -15,7 +16,7 @@ public interface AlgaeEndEffectorIO {
     public MutVoltage voltageSetPoint;
     public MutCurrent supplyCurrent;
     public MutCurrent torqueCurrent;
-    public boolean hasAlgae;
+    public MutDistance algaeDistance;
   }
 
   public void setTarget(Voltage target);

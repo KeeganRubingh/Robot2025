@@ -46,7 +46,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.voltage.mut_replace(motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(motor.getSupplyCurrent().getValue());
     inputs.statorCurrent.mut_replace(motor.getStatorCurrent().getValue());
-    inputs.hasCoral = rangeSensor.getDistance().getValue().lt(Inches.of(Intake.CORAL_DISTANCE_THRESHOLD.get()));
+    inputs.coralDistance.mut_replace(rangeSensor.getDistance().getValue());
   }
 
   @Override

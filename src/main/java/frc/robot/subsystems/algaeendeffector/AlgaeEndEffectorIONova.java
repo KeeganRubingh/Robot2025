@@ -35,7 +35,7 @@ public class AlgaeEndEffectorIONova implements AlgaeEndEffectorIO {
     inputs.voltage.mut_replace(motor.getVoltage(), Volts);
     inputs.supplyCurrent.mut_replace(motor.getSupplyCurrent(), Amps);
     inputs.torqueCurrent.mut_replace(motor.getStatorCurrent(), Amps);
-    inputs.hasAlgae = m_sensor.getDistance().getValue().lt(Inches.of(AlgaeEndEffector.ALGAE_DISTANCE_THRESHOLD.get()));
+    inputs.algaeDistance.mut_replace(m_sensor.getDistance().getValue());
   }
 
   @Override

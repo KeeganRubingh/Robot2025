@@ -50,7 +50,7 @@ public class IntakeIONova implements IntakeIO {
     inputs.voltageSetPoint.mut_replace(m_setPoint);
     inputs.voltage.mut_replace(Volts.of(Motor.getVoltage()));
     inputs.supplyCurrent.mut_replace(Amps.of(Motor.getSupplyCurrent()));
-    inputs.hasCoral = rangeSensor.getDistance().getValue().lt(Inches.of(Intake.CORAL_DISTANCE_THRESHOLD.get()));
+    inputs.coralDistance.mut_replace(rangeSensor.getDistance().getValue());
   }
 
   @Override

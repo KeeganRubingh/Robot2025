@@ -38,7 +38,7 @@ public class AlgaeEndEffector extends SubsystemBase {
     logged.torqueCurrent = Amps.mutable(0);
     logged.voltage = Volts.mutable(0);
     logged.voltageSetPoint = Volts.mutable(0);
-    logged.hasAlgae = false;
+    logged.algaeDistance = Inches.mutable(100);
   }
 
   private void setTarget(Voltage target) {
@@ -58,7 +58,7 @@ public class AlgaeEndEffector extends SubsystemBase {
   }
 
   public Trigger hasAlgaeTrigger() {
-    return new Trigger(() -> logged.hasAlgae);
+    return new Trigger(() -> logged.algaeDistance.lt(Inches.of(AlgaeEndEffector.ALGAE_DISTANCE_THRESHOLD.get())));
   }
 
   @Override

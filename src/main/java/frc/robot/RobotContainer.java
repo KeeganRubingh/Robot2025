@@ -327,6 +327,7 @@ public class RobotContainer {
     
     // Conditional DeAlgae
     controller.leftTrigger()
+    .and(algaeEndEffector.hasAlgaeTrigger().negate())
     .onTrue(new ConditionalCommand(
       new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator), 
       new TakeAlgaeL3(shoulder, elbow, wrist, algaeEndEffector, elevator), 

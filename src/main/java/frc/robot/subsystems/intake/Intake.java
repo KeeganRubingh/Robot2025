@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.Voltage;
@@ -26,6 +27,7 @@ public class Intake extends SubsystemBase{
     loggedIntake.statorCurrent = Amps.mutable(0);
     loggedIntake.voltage = Volts.mutable(0);
     loggedIntake.voltageSetPoint = Volts.mutable(0);
+    loggedIntake.coralDistance = Inches.mutable(100);
   }
 
   private void setTarget(Voltage target) {
@@ -52,7 +54,7 @@ public class Intake extends SubsystemBase{
   }
 
   public Trigger hasCoralTrigger() {
-    return new Trigger(() -> loggedIntake.hasCoral);
+    return new Trigger(() -> loggedIntake.coralDistance.lt(Inches.of(CORAL_DISTANCE_THRESHOLD.get())));
   }
 
   @Override

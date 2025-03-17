@@ -48,7 +48,7 @@ public class AlgaeEndEffectorIOTalonFX implements AlgaeEndEffectorIO {
     inputs.voltage.mut_replace(motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(motor.getSupplyCurrent().getValue());
     inputs.torqueCurrent.mut_replace(motor.getStatorCurrent().getValue());
-    inputs.hasAlgae = m_sensor.getDistance().getValue().lt(Inches.of(AlgaeEndEffector.ALGAE_DISTANCE_THRESHOLD.get()));
+    inputs.algaeDistance.mut_replace(m_sensor.getDistance().getValue());
   }
 
   @Override
