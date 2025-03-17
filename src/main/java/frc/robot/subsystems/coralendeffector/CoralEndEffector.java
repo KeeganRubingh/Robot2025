@@ -56,7 +56,9 @@ public class CoralEndEffector extends SubsystemBase {
   }
 
   public Trigger hasCoralTrigger() {
-    return new Trigger(() -> logged.hasCoral);
+    return new Trigger(() -> {
+      return logged.coralDistance.lt(Inches.of(CoralEndEffector.CORAL_DISTANCE_THRESHOLD.get()));
+    });
   }
 
   @Override
