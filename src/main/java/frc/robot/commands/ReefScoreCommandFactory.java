@@ -156,7 +156,7 @@ public class ReefScoreCommandFactory {
     public static Command getNewReefCoralScoreSequence(ReefPosition position, boolean moveArm, boolean isBackingUp, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands, Drive drive) {
         return 
             getNewAlignToReefCommand(position, true, drive).onlyIf(()->isBackingUp)
-                .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands).onlyIf(() -> {return moveArm;}))
+                .alongWith(DriveCommands.brakeDrive(drive).andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands)).onlyIf(() -> {return moveArm;}))
             .andThen(getNewAlignToReefCommand(position, false, drive))
             // .andThen(new WaitCommand(0.2))
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
