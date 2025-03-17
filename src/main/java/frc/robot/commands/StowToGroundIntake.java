@@ -115,9 +115,10 @@ public class StowToGroundIntake extends SequentialCommandGroup {
      * @return
      */
     public static Command getRunGroundIntakeCommand(Intake intake, IntakeExtender extender) {
-        return intake.getNewSetVoltsCommand(0)
+        return intake.getNewSetVoltsCommand(6)
                 .alongWith(extender.getNewIntakeExtenderTurnCommand(-144))
-                .alongWith(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(-144), Degrees.of(1))));
+                .alongWith(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(-144), Degrees.of(1))))
+                .andThen(new WaitUntilCommand(intake.hasCoralTrigger()));
     }
 
     /**
@@ -127,7 +128,7 @@ public class StowToGroundIntake extends SequentialCommandGroup {
     public static Command getTakeCoralFromGroundIntakeCommand(Intake intake, IntakeExtender extender, ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys) {
         return 
         new WaitUntilCommand(wrist.getNewAtAngleTrigger(Degrees.of(-90), Degrees.of(1)))
-        // .andThen(intake.getNewSetVoltsCommand(-2.5))
+        .andThen(intake.getNewSetVoltsCommand(2.5))
         .andThen(fingeys.getNewSetVoltsCommand(6))
             .alongWith(extender.getNewIntakeExtenderTurnCommand(-90))
         .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(0), Degrees.of(1))))
