@@ -136,7 +136,7 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("AutoAlignScoreLeft", 
         ReefScoreCommandFactory.getNewReefCoralScoreSequence(
             ReefPosition.Left, 
-            false,
+            true,
             false,
             SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
             SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEE),
@@ -145,7 +145,7 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("AutoAlignScoreRight", 
         ReefScoreCommandFactory.getNewReefCoralScoreSequence(
           ReefPosition.Right, 
-          false,
+          true,
           false,
           SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), 
           SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEE),
