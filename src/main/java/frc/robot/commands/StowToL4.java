@@ -98,6 +98,9 @@ public class StowToL4 extends SequentialCommandGroup {
         }
     }
 
+    /**
+     * Regular StowToL4 using both Elevator and Arm
+     */
     public StowToL4(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
         super(
             new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.Starting.position)),
@@ -119,6 +122,42 @@ public class StowToL4 extends SequentialCommandGroup {
                 )
         );
         addRequirements(shoulder, elbow, wrist, elevator);
+    }
+
+    /**
+     * {@summary StowToL4 with only Elevator motions}
+     * Typically used in autos, when the arm is already in position but the elevator isn't because Center Of Mass!
+     */
+    public StowToL4(Elevator elevator) {
+        super(
+            elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position)
+                .alongWith(
+                    new WaitUntilCommand(elevator.getNewGreaterThanDistanceTrigger(ElevatorPositions.SafeToSwingShoulder.position))
+                )
+        );
+    }
+
+    /**
+     * {@summary StowToL4 without Elevator motions, only arm motions}
+     * Typically used in autos, when we want to move while arm is ready for L4 because efficiency
+     */
+    public StowToL4(ArmJoint shoulder, ArmJoint elbow, Wrist wrist) {
+        super(
+            new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.Starting.position)),
+            wrist.getNewWristTurnCommand(WristPositions.Final.position),
+            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
+            elbow.getNewSetAngleCommand(ElbowPositions.MidPoint.position)
+                .andThen(
+                    new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
+                        .andThen(
+                            elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
+                        )
+                        .andThen(
+                            new WaitUntilCommand(elbow.getNewLessThanAngleTrigger(ElbowPositions.Final.position.getAsDouble() + 5.0))
+                        )
+                )
+        );
+        addRequirements(shoulder, elbow, wrist);
     }
 
     public static Command getNewScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
