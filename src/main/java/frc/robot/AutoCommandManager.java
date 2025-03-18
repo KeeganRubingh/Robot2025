@@ -4,23 +4,24 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.L4ToStow;
 import frc.robot.commands.OutakeCoral;
 import frc.robot.commands.ReefScoreCommandFactory;
 import frc.robot.commands.ReefScoreCommandFactory.ReefPosition;
+import frc.robot.commands.StationIntakeCommand;
+import frc.robot.commands.StationIntakeCommandFactory;
+import frc.robot.commands.StationIntakeCommandFactory.IntakePosition;
+import frc.robot.commands.StationIntakeReverseCommand;
+import frc.robot.commands.StationIntakeToStow;
 import frc.robot.commands.StopDrivetrainCommand;
 import frc.robot.commands.StowCommand;
 import frc.robot.commands.StowToL1;
 import frc.robot.commands.StowToL2;
 import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
-import frc.robot.commands.StationIntakeReverseCommand;
-import frc.robot.commands.StationIntakeToStow;
-import frc.robot.commands.StationIntakeCommand;
-import frc.robot.commands.StationIntakeCommandFactory;
-import frc.robot.commands.StationIntakeCommandFactory.IntakePosition;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
@@ -28,8 +29,8 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.ReefPositionsUtil;
-import frc.robot.util.SelectorCommandFactory;
 import frc.robot.util.ReefPositionsUtil.ScoreLevel;
+import frc.robot.util.SelectorCommandFactory;
 
 
 public class AutoCommandManager {
@@ -83,7 +84,9 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("StowToL1", new StowToL1(shoulder, elbow, wrist));
       NamedCommands.registerCommand("StowToL2", new StowToL2(shoulder, elbow, elevator, wrist));
       NamedCommands.registerCommand("StowToL3", new StowToL3(shoulder, elbow, wrist, elevator));
-      NamedCommands.registerCommand("StowToL4", new StowToL4(shoulder, elbow, elevator, wrist));
+      NamedCommands.registerCommand("StowToL4Elevator", new StowToL4(elevator));
+      NamedCommands.registerCommand("StowToL4Arm", new StowToL4(shoulder, elbow, wrist));
+      NamedCommands.registerCommand("WaitUntilL4", StowToL4.getNewWaitUntilL4Command(shoulder, elbow, elevator, wrist));
       NamedCommands.registerCommand("ScoreL1",StowToL1.getNewScoreCommand(coralEE)
         .andThen(new WaitCommand(0.2))
         .andThen(StowToL1.getNewStopScoreCommand(coralEE)));
