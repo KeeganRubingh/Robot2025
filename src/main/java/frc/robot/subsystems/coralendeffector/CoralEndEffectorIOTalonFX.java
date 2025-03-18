@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.CanDef;
 import frc.robot.util.PhoenixUtil;
@@ -19,7 +20,7 @@ public class CoralEndEffectorIOTalonFX implements CoralEndEffectorIO {
   private VoltageOut request;
   private TalonFX motor;
   private CANrange m_sensor;
-
+  private LinearFilter filter = LinearFilter.movingAverage(5);
   private Voltage m_setPoint = Volts.of(0);
 
   public CoralEndEffectorIOTalonFX(CanDef canbus, CanDef sensorCanDef) {
@@ -50,7 +51,7 @@ public class CoralEndEffectorIOTalonFX implements CoralEndEffectorIO {
     inputs.voltage.mut_replace(motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(motor.getSupplyCurrent().getValue());
     inputs.torqueCurrent.mut_replace(motor.getStatorCurrent().getValue());
-    inputs.coralDistance.mut_replace(m_sensor.getDistance().getValue());
+    inputs.coralDistance.mut_replace(filter.calculate(m_sensor.getDistance().getValue().in(Inches)), Inches);
     // inputs.hasCoral = m_sensor.getDistance().getValue().lt(Inches.of(CoralEndEffector.CORAL_DISTANCE_THRESHOLD.get()));
   }
 

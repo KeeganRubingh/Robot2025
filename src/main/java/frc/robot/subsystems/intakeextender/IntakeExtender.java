@@ -30,7 +30,7 @@ public class IntakeExtender extends SubsystemBase {
     "IntakeExtender", 
     80.0, 0, 10, 
     0, 0, 0, 0, 
-    32.0, 5.0, 0, 0, 0
+    32.0, 2.5, 0, 0, 0
   );
   
   public IntakeExtender(IntakeExtenderIO intakeExtenderIO) {

@@ -524,6 +524,7 @@ public class RobotContainer {
     
     // GROUND INTAKE PARTY
     testcontroller.a()
+      .and(coralEndEffector.hasCoralTrigger().negate())//todo and hascoral not
       .onTrue(
         new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
         .andThen(StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender))
