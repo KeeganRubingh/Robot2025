@@ -166,6 +166,8 @@ public class StationIntakeCommandFactory {
      */
     public static Command getNewStationIntakeSequence(Supplier<IntakePosition> position, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, Drive drive) {
         return new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEE)
-            .andThen(getNewAlignToStationCommand(position, false, drive));
+            .andThen(
+                getNewAlignToStationCommand(position, false, drive)
+            );
     }
 }
