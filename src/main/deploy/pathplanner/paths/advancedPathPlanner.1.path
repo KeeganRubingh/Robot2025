@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.2455,
-        "y": 5.10725
+        "x": 5.190676229508196,
+        "y": 5.793186475409836
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.994237704918032,
-        "y": 6.447735655737703
+        "x": 4.243647540983606,
+        "y": 6.176793032786884
       },
       "isLocked": false,
-      "linkedName": "advancedPathPlanner.0"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.6063524590163931,
-        "y": 7.351588114754097
+        "x": 1.7745,
+        "y": 7.2132499999999995
       },
       "prevControl": {
-        "x": 1.2983219180314312,
-        "y": 7.504797725655595
+        "x": 2.2896516393442625,
+        "y": 6.991956967213114
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "advancedPathPlanner.1"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,24 +33,26 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Stow",
-      "waypointRelativePos": 0.10209923664122908,
+      "name": "L4ToStationIntake",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "named",
+        "type": "sequential",
         "data": {
-          "name": "Stow"
-        }
-      }
-    },
-    {
-      "name": "StationIntake",
-      "waypointRelativePos": 0.4905033238366551,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "StationIntake"
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "L4ToStow"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "StationIntake"
+              }
+            }
+          ]
         }
       }
     }
@@ -64,7 +66,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.5,
     "rotation": 125.67640822186192
   },
   "reversed": false,

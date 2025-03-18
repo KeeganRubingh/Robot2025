@@ -28,9 +28,9 @@ public class IntakeExtender extends SubsystemBase {
 
   public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
     "IntakeExtender", 
-    120.0, 0, 0, 
+    80.0, 0, 10, 
     0, 0, 0, 0, 
-    2.0, 1.0, 0, 0, 0
+    32.0, 2.5, 0, 0, 0
   );
   
   public IntakeExtender(IntakeExtenderIO intakeExtenderIO) {

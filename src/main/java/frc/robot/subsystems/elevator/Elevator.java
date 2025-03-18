@@ -79,7 +79,7 @@ public class Elevator extends SubsystemBase {
         this);
   }
 
-  public Trigger getNewAtAngleTrigger(Distance dist, Distance tolerance) {
+  public Trigger getNewAtDistanceTrigger(Distance dist, Distance tolerance) {
     return new Trigger(() -> {
       return MathUtil.isNear(dist.baseUnitMagnitude(), loggedelevator.distance.baseUnitMagnitude(), tolerance.baseUnitMagnitude());
     });
@@ -93,6 +93,17 @@ public class Elevator extends SubsystemBase {
   public Trigger getNewGreaterThanDistanceTrigger(DoubleSupplier distance) {
     return new Trigger(() -> {
       return loggedelevator.distance.in(Inches) > distance.getAsDouble();
+    });
+  }
+
+  /**
+   * Returns when this joint is less than 'angle' away from the forward horizontal
+   * @param angle
+   * @return
+   */
+  public Trigger getNewLessThanDistanceTrigger(DoubleSupplier distance) {
+    return new Trigger(() -> {
+      return loggedelevator.distance.in(Inches) < distance.getAsDouble();
     });
   }
 

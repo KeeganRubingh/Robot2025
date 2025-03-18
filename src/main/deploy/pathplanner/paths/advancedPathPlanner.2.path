@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6063524590163931,
-        "y": 7.351588114754097
+        "x": 1.690266393442623,
+        "y": 7.303637295081967
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.505794083412489,
-        "y": 6.548897121880403
+        "x": 2.589708017838719,
+        "y": 6.5009463022082725
       },
       "isLocked": false,
-      "linkedName": "advancedPathPlanner.1"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.9195000000000007,
-        "y": 5.24375
+        "x": 3.812090163934426,
+        "y": 5.577407786885245
       },
       "prevControl": {
-        "x": 2.0125009831907668,
-        "y": 6.928842669833684
+        "x": 2.972950819672131,
+        "y": 6.320645491803278
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "advancedPathPlanner.2"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,24 +33,37 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "StationIntakeToStow",
+      "name": "StationIntakeToL4Arm",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "named",
+        "type": "sequential",
         "data": {
-          "name": "StationIntakeToStow"
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "StationIntakeToStow"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "StowToL4Arm"
+              }
+            }
+          ]
         }
       }
     },
     {
-      "name": "StowToL4",
-      "waypointRelativePos": 0.8902671755725152,
+      "name": "StowToL4Elevator",
+      "waypointRelativePos": 0.9,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "StowToL4"
+          "name": "StowToL4Elevator"
         }
       }
     }
@@ -64,7 +77,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.5,
     "rotation": 120.1413855520754
   },
   "reversed": false,

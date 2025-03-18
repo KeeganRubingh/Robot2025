@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Stow"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "autoAlignmentAuto.0"
@@ -50,12 +56,6 @@
           "type": "named",
           "data": {
             "name": "AutoAlignScoreLeft"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L4ToStow"
           }
         },
         {

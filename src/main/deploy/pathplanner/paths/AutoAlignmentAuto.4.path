@@ -33,13 +33,26 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "StationIntakeToStow",
+      "name": "StationIntakeToL4",
       "waypointRelativePos": 0.1,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "named",
+        "type": "sequential",
         "data": {
-          "name": "StationIntakeToStow"
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "StationIntakeToStow"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "StowToL4"
+              }
+            }
+          ]
         }
       }
     }

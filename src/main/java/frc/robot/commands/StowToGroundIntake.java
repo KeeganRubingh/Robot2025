@@ -74,7 +74,7 @@ public class StowToGroundIntake extends SequentialCommandGroup {
 
     private static enum IntakeExtenderPositions {
         Starting(new LoggedTunableNumber("StowToGroundIntake/Wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("StowToGroundIntake/Wrist/FinalDegrees", 90));
+        Final(new LoggedTunableNumber("StowToGroundIntake/Wrist/FinalDegrees", -144));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -116,27 +116,29 @@ public class StowToGroundIntake extends SequentialCommandGroup {
      */
     public static Command getRunGroundIntakeCommand(Intake intake, IntakeExtender extender) {
         return intake.getNewSetVoltsCommand(6)
-                .alongWith(extender.getNewIntakeExtenderTurnCommand(90))
-                .alongWith(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(90), Degrees.of(1))));
+                .alongWith(extender.getNewIntakeExtenderTurnCommand(-144))
+                .alongWith(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(-144), Degrees.of(10))))
+                .andThen(new WaitUntilCommand(intake.hasCoralTrigger()))
+                .andThen(intake.getNewSetVoltsCommand(0))
+                .andThen(extender.getNewIntakeExtenderTurnCommand(0));//TODO -25 this is the VALUE for STOW but currently is not getting there
     }
 
     /**
      * The third part of the ground intake. Raises the ground intake, takes a coral from it, then moves it to the ready pos
      * @return
      */
-    public static Command getTakeCoralFromGroundIntakeCommand(Intake intake, IntakeExtender extender, ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys) {
+    public static Command getTakeCoralFromGroundIntakeCommand(Intake intake, IntakeExtender extender, ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
         return 
         new WaitUntilCommand(wrist.getNewAtAngleTrigger(Degrees.of(-90), Degrees.of(1)))
-        .andThen(intake.getNewSetVoltsCommand(-2.5))
-        .andThen(fingeys.getNewSetVoltsCommand(6))
+        .andThen(coralEndEffector.getNewSetVoltsCommand(6))
             .alongWith(extender.getNewIntakeExtenderTurnCommand(0))
-        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(0), Degrees.of(1))))
+        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(0), Degrees.of(3))))
         .andThen(intake.getNewSetVoltsCommand(-5))
-        // .andThen(new WaitUntilCommand(fingeys.placeholderGetHasCoralSupplier())) // Keegan Lmao
-        .andThen(new WaitCommand(1))
+        .andThen(new WaitUntilCommand(coralEndEffector.hasCoralTrigger())) 
+        .andThen(intake.getNewSetVoltsCommand(0))
         .andThen(
-            extender.getNewIntakeExtenderTurnCommand(90)
-            .alongWith(fingeys.getNewSetVoltsCommand(1))
+            extender.getNewIntakeExtenderTurnCommand(-40) //TODO -25 this is the VALUE for STOW but currently is not getting there
+            .alongWith(coralEndEffector.getNewSetVoltsCommand(1))
         );
     }
 
@@ -149,9 +151,10 @@ public class StowToGroundIntake extends SequentialCommandGroup {
      * @return
      */
     public static Command getReturnToStowCommand(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys, IntakeExtender extender) {
-        return extender.getNewIntakeExtenderTurnCommand(90)
-        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(0), Degrees.of(45)).negate()))
+        return extender.getNewIntakeExtenderTurnCommand(-45)
+        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(-45), Degrees.of(5))))
         .andThen(wrist.getNewWristTurnCommand(WristPositions.Starting.position))
+        .andThen(new WaitUntilCommand(wrist.getNewAtAngleTrigger(Degrees.of(WristPositions.Starting.position.getAsDouble()), Degrees.of(1))))
         .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.Starting.position))
         .andThen(elbow.getNewSetAngleCommand(ElbowPositions.Starting.position));
     }

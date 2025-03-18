@@ -1,12 +1,15 @@
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-import java.util.stream.Stream;
+import static edu.wpi.first.units.Units.*;
 
-import static edu.wpi.first.units.Units.Degrees;
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
+import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.elevator.Elevator;
@@ -18,7 +21,7 @@ public class StationIntakeCommand extends SequentialCommandGroup {
     private static final String className = StationIntakeCommand.class.getSimpleName();
 
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber(className + "/shoulder/StartingDegrees", 10.0)),
+        Starting(new LoggedTunableNumber(className + "/shoulder/StartingDegrees", -45.0)),
         Final(new LoggedTunableNumber(className + "/shoulder/FinalDegrees", 180.0-58.5));
 
         DoubleSupplier position;
@@ -71,23 +74,31 @@ public class StationIntakeCommand extends SequentialCommandGroup {
         }
     }
 
+    private enum ElevatorPositions {
+        Starting(new LoggedTunableNumber(className + "/elevator/StartingInches", 2.5));
+
+        DoubleSupplier position;
+        MutDistance distance;
+
+        ElevatorPositions(DoubleSupplier position) {
+            this.position = position;
+            this.distance = Inches.mutable(0.0);
+        }
+
+        public Distance distance() {
+            this.distance.mut_replace(this.position.getAsDouble(), Inches);
+            return this.distance;
+        }
+    }
+
     public StationIntakeCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEndEffector) {
         super(
+            new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.Starting.position)),
+            new WaitUntilCommand(elevator.getNewLessThanDistanceTrigger(ElevatorPositions.Starting.position)),
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
             .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
             .alongWith(coralEndEffector.getNewSetVoltsCommand(6.0))
-
-            // LOGIC NEEDED FOR INTAKE TO STOW
-            // .alongWith(
-            //     new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.angle().in(Degrees)))
-            //         .andThen(
-            //             elbow.getNewSetAngleCommand(ElbowPositions.Final.angle().in(Degrees))
-            //                 .alongWith(new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.ShoulderSafeSwing.angle().in(Degrees)))
-            //         )
-            //     )
-            // ),
-            // shoulder.getNewSetAngleCommand(ShoulderPositions.Final.angle().in(Degrees))
         );
         addRequirements(shoulder, elbow, elevator, wrist);
     }

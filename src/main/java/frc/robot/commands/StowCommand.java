@@ -78,7 +78,7 @@ public class StowCommand extends SequentialCommandGroup {
 
     private enum ElevatorPositions {
         Starting(new LoggedTunableNumber("StowCommand/elevator/StartingInches", 0)),
-        Final(new LoggedTunableNumber("StowCommand/elevator/FinalInches", -0.25));
+        Final(new LoggedTunableNumber("StowCommand/elevator/FinalInches",0));
 
         DoubleSupplier position;
         MutDistance distance;

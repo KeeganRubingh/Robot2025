@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.629441024758686,
-        "y": 5.0984395028858485
+        "x": 6.821004098360655,
+        "y": 5.097899590163934
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.2455,
-        "y": 5.10725
+        "x": 5.4903688524590155,
+        "y": 5.409579918032787
       },
       "prevControl": {
-        "x": 4.9993173417595616,
-        "y": 5.060715503173248
+        "x": 5.793577868852458,
+        "y": 5.3588319672131135
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "advancedPathPlanner.0"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,13 +33,24 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "StowToL4",
-      "waypointRelativePos": 0.4164292497625857,
+      "name": "StowToL4Arm",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "StowToL4"
+          "name": "StowToL4Arm"
+        }
+      }
+    },
+    {
+      "name": "StowToL4Elevator",
+      "waypointRelativePos": 0.9,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StowToL4Elevator"
         }
       }
     }
@@ -53,7 +64,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": 60.07900000000001
   },
   "reversed": false,
