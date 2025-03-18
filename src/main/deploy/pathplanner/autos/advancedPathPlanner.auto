@@ -17,15 +17,40 @@
           }
         },
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "SetL4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoAlignScoreLeft"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StowToL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignScoreLeft"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ScoreL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "BackupL4Left"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopScoreL4"
+                }
+              }
+            ]
           }
         },
         {
@@ -35,9 +60,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "AutoAlignStationOutside"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StationIntake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignStationOutside"
+                }
+              }
+            ]
           }
         },
         {
@@ -47,15 +85,40 @@
           }
         },
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "SetL4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoAlignScoreLeft"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StowToL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignScoreLeft"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ScoreL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "BackupL4Left"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopScoreL4"
+                }
+              }
+            ]
           }
         },
         {
@@ -65,9 +128,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "AutoAlignStationOutside"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StationIntake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignStationOutside"
+                }
+              }
+            ]
           }
         },
         {
@@ -77,15 +153,40 @@
           }
         },
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "SetL4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoAlignScoreRight"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StowToL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignScoreRight"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ScoreL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "BackupL4Right"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopScoreL4"
+                }
+              }
+            ]
           }
         },
         {
@@ -95,9 +196,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "AutoAlignStationOutside"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StationIntake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignStationOutside"
+                }
+              }
+            ]
           }
         },
         {
@@ -107,15 +221,40 @@
           }
         },
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "SetL4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoAlignScoreRight"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StowToL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignScoreRight"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ScoreL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "BackupL4Right"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopScoreL4"
+                }
+              }
+            ]
           }
         },
         {
