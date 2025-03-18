@@ -347,7 +347,6 @@ public class RobotContainer {
       .and(coralEndEffector.hasCoralTrigger().negate())
       .onTrue(StationIntakeCommandFactory.getNewStationIntakeSequence(
           () -> intakePosChooser.get(),
-          true,
           shoulder, elbow, elevator, wrist, coralEndEffector, drive
         ))
       .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
