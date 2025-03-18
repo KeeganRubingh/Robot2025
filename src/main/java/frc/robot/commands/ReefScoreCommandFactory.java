@@ -153,11 +153,11 @@ public class ReefScoreCommandFactory {
      * @param drive
      * @return
      */
-    public static Command getNewReefCoralScoreSequence(ReefPosition position, boolean moveArm, boolean isBackingUp, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands, Drive drive) {
+    public static Command getNewReefCoralScoreSequence(ReefPosition position, boolean isBackingUp, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands, Drive drive) {
         return 
             getNewAlignToReefCommand(position, true, drive).onlyIf(()->isBackingUp)
-                .andThen(DriveCommands.brakeDrive(drive).onlyIf(() -> {return moveArm;}))
-                .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands).onlyIf(() -> {return moveArm;}))
+                .andThen(DriveCommands.brakeDrive(drive))
+                .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
             .andThen(getNewAlignToReefCommand(position, false, drive))
             // .andThen(new WaitCommand(0.2))
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))

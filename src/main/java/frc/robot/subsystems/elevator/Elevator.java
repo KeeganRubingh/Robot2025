@@ -79,7 +79,7 @@ public class Elevator extends SubsystemBase {
         this);
   }
 
-  public Trigger getNewAtAngleTrigger(Distance dist, Distance tolerance) {
+  public Trigger getNewAtDistanceTrigger(Distance dist, Distance tolerance) {
     return new Trigger(() -> {
       return MathUtil.isNear(dist.baseUnitMagnitude(), loggedelevator.distance.baseUnitMagnitude(), tolerance.baseUnitMagnitude());
     });
