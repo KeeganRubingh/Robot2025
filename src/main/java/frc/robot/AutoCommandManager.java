@@ -84,7 +84,7 @@ public class AutoCommandManager {
       NamedCommands.registerCommand("StowToL1", new StowToL1(shoulder, elbow, wrist));
       NamedCommands.registerCommand("StowToL2", new StowToL2(shoulder, elbow, elevator, wrist));
       NamedCommands.registerCommand("StowToL3", new StowToL3(shoulder, elbow, wrist, elevator));
-      NamedCommands.registerCommand("StowToL4Elevator", new StowToL4(elevator));
+      NamedCommands.registerCommand("StowToL4Elevator", new StowToL4(elevator, shoulder));
       NamedCommands.registerCommand("StowToL4Arm", new StowToL4(shoulder, elbow, wrist));
       NamedCommands.registerCommand("WaitUntilL4", StowToL4.getNewWaitUntilL4Command(shoulder, elbow, elevator, wrist));
       NamedCommands.registerCommand("ScoreL1",StowToL1.getNewScoreCommand(coralEE)

@@ -126,14 +126,14 @@ public class StowToL4 extends SequentialCommandGroup {
     /**
      * {@summary StowToL4 with only Elevator motions}
      * Typically used in autos, when the arm is already in position but the elevator isn't because Center Of Mass!
+     * @param shoulder Is only used for checking safezones
      */
-    public StowToL4(Elevator elevator) {
+    public StowToL4(Elevator elevator, ArmJoint shoulder) {
         super(
+            new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.Starting.position)),
             elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position)
-                .alongWith(
-                    new WaitUntilCommand(elevator.getNewGreaterThanDistanceTrigger(ElevatorPositions.SafeToSwingShoulder.position))
-                )
         );
+        addRequirements(elevator);
     }
 
     /**

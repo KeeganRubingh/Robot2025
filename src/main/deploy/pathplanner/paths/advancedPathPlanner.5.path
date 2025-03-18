@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "L4ToStationIntake",
-      "waypointRelativePos": 0.09637404580153311,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "sequential",

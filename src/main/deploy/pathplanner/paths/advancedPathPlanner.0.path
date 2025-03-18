@@ -33,13 +33,24 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "StowToL4",
-      "waypointRelativePos": 0.2754895340985858,
+      "name": "StowToL4Arm",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "StowToL4"
+          "name": "StowToL4Arm"
+        }
+      }
+    },
+    {
+      "name": "StowToL4Elevator",
+      "waypointRelativePos": 0.9,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StowToL4Elevator"
         }
       }
     }
