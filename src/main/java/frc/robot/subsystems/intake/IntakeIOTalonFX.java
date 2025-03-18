@@ -10,6 +10,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
+
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.CanDef;
 import frc.robot.util.PhoenixUtil;
@@ -18,7 +20,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   private VoltageOut request;
   private TalonFX motor;
   private CANrange rangeSensor;
-  
+  private LinearFilter filter = LinearFilter.movingAverage(5);
   private Voltage m_setPoint = Volts.of(0);
 
   public IntakeIOTalonFX(CanDef motorCanDef) {
@@ -46,7 +48,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.voltage.mut_replace(motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(motor.getSupplyCurrent().getValue());
     inputs.statorCurrent.mut_replace(motor.getStatorCurrent().getValue());
-    inputs.coralDistance.mut_replace(rangeSensor.getDistance().getValue());
+    inputs.coralDistance.mut_replace(filter.calculate(rangeSensor.getDistance().getValue().in(Inches)), Inches);
   }
 
   @Override
