@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 5.4903688524590155,
-        "y": 5.409579918032787
+        "x": 5.598258196721312,
+        "y": 5.38560450819672
       },
       "prevControl": {
-        "x": 5.793577868852458,
-        "y": 5.3588319672131135
+        "x": 5.9014672131147545,
+        "y": 5.334856557377047
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     },
     {
       "name": "StowToL4Elevator",
-      "waypointRelativePos": 0.9,
+      "waypointRelativePos": 1.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -57,7 +57,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -65,7 +65,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 60.07900000000001
+    "rotation": 45.88140399658227
   },
   "reversed": false,
   "folder": null,
@@ -73,5 +73,5 @@
     "velocity": 0,
     "rotation": 0.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

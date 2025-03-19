@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -8,6 +10,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.L4ToStow;
 import frc.robot.commands.OutakeCoral;
 import frc.robot.commands.ReefScoreCommandFactory;
@@ -76,90 +79,123 @@ public class AutoCommandManager {
   }
 
   private void configureNamedCommands(Drive drive, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
-      NamedCommands.registerCommand("Stow", new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
-      NamedCommands.registerCommand("L4ToStow", new L4ToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
-      NamedCommands.registerCommand("StationIntake", new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEE));
-      // Needed so not hit coral on elevator
-      NamedCommands.registerCommand("StationIntakeToStow", new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
-      NamedCommands.registerCommand("StartIntake", new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEE));
-      NamedCommands.registerCommand("StowToL1", new StowToL1(shoulder, elbow, wrist));
-      NamedCommands.registerCommand("StowToL2", new StowToL2(shoulder, elbow, elevator, wrist));
-      NamedCommands.registerCommand("StowToL3", new StowToL3(shoulder, elbow, wrist, elevator));
-      NamedCommands.registerCommand("StowToL4", new StowToL4(elbow, elbow, elevator, wrist));
-      NamedCommands.registerCommand("StowToL4Elevator", new StowToL4(elevator, shoulder));
-      NamedCommands.registerCommand("StowToL4Arm", new StowToL4(shoulder, elbow, wrist));
-      NamedCommands.registerCommand("WaitUntilL4", StowToL4.getNewWaitUntilL4Command(shoulder, elbow, elevator, wrist));
+    //#region Stows
+    NamedCommands.registerCommand("Stow", //new PrintCommand("Stow")); //
+    new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
+    NamedCommands.registerCommand("L4ToStow", //new PrintCommand("L4ToStow")); //
+      new L4ToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
+    // Needed so not hit coral on elevator
+    NamedCommands.registerCommand("StationIntakeToStow", //new PrintCommand("StationIntakeToStow")); //
+      new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
+    NamedCommands.registerCommand("WaitUntilElevatorStow", new WaitUntilCommand(elevator.getNewAtDistanceTrigger(Inches.of(0.0), Inches.of(1.0))));
+    //#endregion
 
-      NamedCommands.registerCommand("ScoreL1",StowToL1.getNewScoreCommand(coralEE)
-        .andThen(new WaitCommand(0.2))
-        .andThen(StowToL1.getNewStopScoreCommand(coralEE)));
-      NamedCommands.registerCommand("ScoreL2",StowToL2.getNewScoreCommand(shoulder, elbow, wrist, coralEE)
-        .andThen(new WaitCommand(0.2))
-        .andThen(StowToL2.getNewStopScoreCommand(elbow, wrist, coralEE)));
-      NamedCommands.registerCommand("ScoreL3",StowToL3.getNewScoreCommand(shoulder, elbow, wrist, coralEE)
+    //#region Intakes
+    NamedCommands.registerCommand("StationIntake", //new PrintCommand("StationIntake")); //
+      new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEE));
+    NamedCommands.registerCommand("ReverseStationIntake", new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEE));
+    //#endregion
+
+    //#region Prep Scores
+    NamedCommands.registerCommand("StowToL1", new PrintCommand("StowToL1")); //new StowToL1(shoulder, elbow, wrist));
+    NamedCommands.registerCommand("StowToL2", new PrintCommand("StowToL2")); //new StowToL2(shoulder, elbow, elevator, wrist));
+    NamedCommands.registerCommand("StowToL3", new PrintCommand("StowToL3")); //new StowToL3(shoulder, elbow, wrist, elevator));
+    NamedCommands.registerCommand("StowToL4", //new PrintCommand("StowToL4")); //
+      new StowToL4(shoulder, elbow, elevator, wrist));
+    NamedCommands.registerCommand("StowToL4Elevator", //new PrintCommand("StowToL4Elevator")); //
+      new StowToL4(elevator, shoulder));
+    NamedCommands.registerCommand("StowToL4Arm", //new PrintCommand("StowToL4Arm")); //
+      new StowToL4(shoulder, elbow, wrist));
+    NamedCommands.registerCommand("WaitUntilL4", //new PrintCommand("WaitUntilL4"));//
+      new StopDrivetrainCommand(drive)
+        .unless(StowToL4.getNewAtL4Trigger(shoulder, elbow, elevator, wrist))
+        .andThen(new WaitUntilCommand(StowToL4.getNewAtL4Trigger(shoulder, elbow, elevator, wrist))));
+    //#endregion
+
+    //#region Confirm Scores
+    NamedCommands.registerCommand("ScoreL1", new PrintCommand("ScoreL1"));
+      // StowToL1.getNewScoreCommand(coralEE)
+      //   .andThen(new WaitCommand(0.2))
+      //   .andThen(StowToL1.getNewStopScoreCommand(coralEE)));
+    NamedCommands.registerCommand("ScoreL2", new PrintCommand("ScoreL2"));
+      // StowToL2.getNewScoreCommand(shoulder, elbow, wrist, coralEE)
+      //   .andThen(new WaitCommand(0.2))
+      //   .andThen(StowToL2.getNewStopScoreCommand(elbow, wrist, coralEE)));
+    NamedCommands.registerCommand("ScoreL3", new PrintCommand("ScoreL3"));
+      // StowToL3.getNewScoreCommand(shoulder, elbow, wrist, coralEE)
+      //   .andThen(new WaitCommand(0.2))
+      //   .andThen(StowToL3.getNewStopScoreCommand(elbow, wrist, coralEE)));
+    NamedCommands.registerCommand("ScoreL4", //new PrintCommand("ScoreL4"));
+      StowToL4.getNewScoreCommand(elbow, wrist, coralEE)
         .andThen(new WaitCommand(0.2))
         .andThen(StowToL3.getNewStopScoreCommand(elbow, wrist, coralEE)));
-      NamedCommands.registerCommand("ScoreL4",StowToL4.getNewScoreCommand(elbow, wrist, coralEE)
-        .andThen(new WaitCommand(0.2))
-        .andThen(StowToL3.getNewStopScoreCommand(elbow, wrist, coralEE)));
+    //#endregion
 
-      // MAY NOT use added Score Command
-      NamedCommands.registerCommand("StopScoreL1",StowToL1.getNewStopScoreCommand(coralEE));
-      NamedCommands.registerCommand("StopScoreL2",StowToL2.getNewStopScoreCommand(elbow, wrist, coralEE));
-      NamedCommands.registerCommand("StopScoreL3",StowToL3.getNewStopScoreCommand(elbow, wrist, coralEE));
-      NamedCommands.registerCommand("StopScoreL4",StowToL4.getNewStopScoreCommand(elbow, wrist, coralEE, drive));
-      NamedCommands.registerCommand("BackupL4Left", 
-        ReefScoreCommandFactory.getNewAlignToReefCommand(
+    //#region StopScore/Backup
+    NamedCommands.registerCommand("StopScoreL1", new PrintCommand("StopScoreL1"));//StowToL1.getNewStopScoreCommand(coralEE));
+    NamedCommands.registerCommand("StopScoreL2", new PrintCommand("StopScoreL2"));//StowToL2.getNewStopScoreCommand(elbow, wrist, coralEE));
+    NamedCommands.registerCommand("StopScoreL3", new PrintCommand("StopScoreL3"));//StowToL3.getNewStopScoreCommand(elbow, wrist, coralEE));
+    NamedCommands.registerCommand("StopScoreL4", StowToL4.getNewStopScoreCommand(elbow, wrist, coralEE, drive));
+    NamedCommands.registerCommand("BackupL4Left", 
+      ReefScoreCommandFactory.getNewAlignToReefCommand(
+        ReefPosition.Left, 
+        true, 
+        drive
+    ));
+    NamedCommands.registerCommand("BackupL4Right", 
+      ReefScoreCommandFactory.getNewAlignToReefCommand(
+        ReefPosition.Right, 
+        true, 
+        drive
+    ));
+    //#endregion
+
+    NamedCommands.registerCommand("CoralOuttake", new OutakeCoral(coralEE));
+    NamedCommands.registerCommand("StopDrivetrain", new StopDrivetrainCommand(drive));
+    NamedCommands.registerCommand("StopUnlessL4", 
+      new StopDrivetrainCommand(drive)
+        .unless(StowToL4.getNewAtL4Trigger(shoulder, elbow, elevator, wrist))
+    );
+
+    // Deprecated
+    NamedCommands.registerCommand("SetL1", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L1));
+    NamedCommands.registerCommand("SetL2", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L2));
+    NamedCommands.registerCommand("SetL3", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L3));
+    NamedCommands.registerCommand("SetL4", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L4));
+
+    //#region Auto Align
+    NamedCommands.registerCommand("AutoAlignStationInside", 
+      StationIntakeCommandFactory.getNewAlignToStationCommand(
+        () -> {return IntakePosition.Inside;}, 
+        false, 
+        drive
+      )
+    );
+    NamedCommands.registerCommand("AutoAlignStationCenter", 
+      StationIntakeCommandFactory.getNewAlignToStationCommand(
+        () -> {return IntakePosition.Center;}, 
+        false,
+        drive
+      )
+    );
+    NamedCommands.registerCommand("AutoAlignStationOutside", 
+      StationIntakeCommandFactory.getNewAlignToStationCommand(
+        () -> {return IntakePosition.Outside;},
+        false,
+        drive
+      )
+    );
+
+    NamedCommands.registerCommand("AutoAlignScoreLeft", 
+      ReefScoreCommandFactory.getNewReefCoralScoreSequence(
           ReefPosition.Left, 
-          true, 
-          drive
-      ));
-      NamedCommands.registerCommand("BackupL4Right", 
-        ReefScoreCommandFactory.getNewAlignToReefCommand(
-          ReefPosition.Right, 
-          true, 
-          drive
-      ));
-  
-      NamedCommands.registerCommand("CoralOuttake", new OutakeCoral(coralEE));
-      NamedCommands.registerCommand("StopDrivetrain", new StopDrivetrainCommand(drive));
-
-      NamedCommands.registerCommand("SetL1", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L1));
-      NamedCommands.registerCommand("SetL2", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L2));
-      NamedCommands.registerCommand("SetL3", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L3));
-      NamedCommands.registerCommand("SetL4", ReefPositionsUtil.getInstance().getNewSetScoreLevelCommand(ScoreLevel.L4));
-
-      NamedCommands.registerCommand("AutoAlignStationInside", 
-        StationIntakeCommandFactory.getNewAlignToStationCommand(
-          () -> {return IntakePosition.Inside;}, 
-          false, 
-          drive
-        )
-      );
-      NamedCommands.registerCommand("AutoAlignStationCenter", 
-        StationIntakeCommandFactory.getNewAlignToStationCommand(
-          () -> {return IntakePosition.Center;}, 
-          false,
-          drive
-        )
-      );
-      NamedCommands.registerCommand("AutoAlignStationOutside", 
-        StationIntakeCommandFactory.getNewAlignToStationCommand(
-          () -> {return IntakePosition.Outside;},
-          false,
-          drive
-        )
-      );
-
-      NamedCommands.registerCommand("AutoAlignScoreLeft", 
-        ReefScoreCommandFactory.getNewReefCoralScoreSequence(
-            ReefPosition.Left, 
-            false,
-            drive));
-      NamedCommands.registerCommand("AutoAlignScoreRight", 
-        ReefScoreCommandFactory.getNewReefCoralScoreSequence(
-          ReefPosition.Right, 
           false,
           drive));
+    NamedCommands.registerCommand("AutoAlignScoreRight", 
+      ReefScoreCommandFactory.getNewReefCoralScoreSequence(
+        ReefPosition.Right, 
+        false,
+        drive));
+    //#endregion
   }
 }
