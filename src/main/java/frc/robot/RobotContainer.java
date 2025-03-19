@@ -53,6 +53,7 @@ import frc.robot.commands.BargeAlignCommand;
 import frc.robot.commands.BargeScoreCommand;
 import frc.robot.commands.DisengageClimber;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.GroundIntakeToStow;
 import frc.robot.commands.EngageClimber;
 import frc.robot.commands.L4ToStow;
 import frc.robot.commands.NeutralClimber;
@@ -354,20 +355,38 @@ public class RobotContainer {
     controller.leftBumper()
       .and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
       .and(coralEndEffector.hasCoralTrigger().negate())
-      .onTrue(new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
+      .and(algaeEndEffector.hasAlgaeTrigger().negate()) 
+      .onTrue(
+        new ConditionalCommand(
+          new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
+          .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector)), 
+          new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector),
+          intake.hasCoralTrigger()
+        )
+      )
       .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
     // Coral Station Intake Auto Align Sequence†
     controller.leftBumper()
       .and(() -> ReefPositionsUtil.getInstance().getIsAutoAligning())
       .and(coralEndEffector.hasCoralTrigger().negate())
-      .onTrue(StationIntakeCommandFactory.getNewStationIntakeSequence(
-          () -> {
+      .and(algaeEndEffector.hasAlgaeTrigger().negate()) 
+      .onTrue(
+        new ConditionalCommand(
+          new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
+          .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector))
+          .andThen(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender))
+          , 
+          StationIntakeCommandFactory.getNewStationIntakeSequence(
+            () -> {
             IntakePosition pos = intakePosChooser.get();
             return pos == null ? IntakePosition.Inside : pos;
           },
-          shoulder, elbow, elevator, wrist, coralEndEffector, drive
-        ))
+            shoulder, elbow, elevator, wrist, coralEndEffector, drive
+          ), 
+          intake.hasCoralTrigger()
+        )
+      )
       .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
     // Go to barge auto align
@@ -631,12 +650,22 @@ public class RobotContainer {
     
     // GROUND INTAKE PARTY
     testcontroller.a()
-      // .and(coralEndEffector.hasCoralTrigger().negate())//todo and hascoral not
+      .and(coralEndEffector.hasCoralTrigger().and(algaeEndEffector.hasAlgaeTrigger()).negate())
       .whileTrue(
-        new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
-        .andThen(StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender))
-        .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector))
-      ).onFalse(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender,intake));
+        new ConditionalCommand(
+          StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender), 
+          new ConditionalCommand(
+            StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector), 
+            new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
+            .andThen(StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender))
+            .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector)), 
+            coralEndEffector.hasCoralTrigger()
+          ), 
+        algaeEndEffector.hasAlgaeTrigger()
+        )
+      ).onFalse(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender, intake));
+    
+
 
     SmartDashboard.putData(new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector));
     // System.out.println(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector));
