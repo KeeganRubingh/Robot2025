@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.commands.GroundIntakeToStow;
 import frc.robot.commands.L4ToStow;
 import frc.robot.commands.OutakeCoral;
 import frc.robot.commands.ReefScoreCommandFactory;
@@ -31,6 +32,7 @@ import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.ReefPositionsUtil;
 import frc.robot.util.ReefPositionsUtil.ScoreLevel;
@@ -42,8 +44,8 @@ public class AutoCommandManager {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  public AutoCommandManager(Drive drive, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
-    configureNamedCommands(drive, shoulder, elbow, elevator, wrist, coralEE, algaeEE);;
+  public AutoCommandManager(Drive drive, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE, IntakeExtender intakeExtender) {
+    configureNamedCommands(drive, shoulder, elbow, elevator, wrist, coralEE, algaeEE, intakeExtender);;
     
 
     // PathPlannerAuto CharacterizationTest = new PathPlannerAuto("CharacterizeAuto");
@@ -78,7 +80,7 @@ public class AutoCommandManager {
     return autoChooser.get();
   }
 
-  private void configureNamedCommands(Drive drive, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
+  private void configureNamedCommands(Drive drive, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE, IntakeExtender intakeExtender) {
     //#region Stows
     NamedCommands.registerCommand("Stow", //new PrintCommand("Stow")); //
     new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
@@ -87,6 +89,8 @@ public class AutoCommandManager {
     // Needed so not hit coral on elevator
     NamedCommands.registerCommand("StationIntakeToStow", //new PrintCommand("StationIntakeToStow")); //
       new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
+    NamedCommands.registerCommand("GroundIntakeToStow",
+      intakeExtender.getNewIntakeExtenderTurnCommand(115));
     NamedCommands.registerCommand("WaitUntilElevatorStow", new WaitUntilCommand(elevator.getNewAtDistanceTrigger(Inches.of(0.0), Inches.of(1.0))));
     //#endregion
 
@@ -169,21 +173,21 @@ public class AutoCommandManager {
         () -> {return IntakePosition.Inside;}, 
         false, 
         drive
-      )
+      ).andThen(new WaitUntilCommand(coralEE.hasCoralTrigger())).until(coralEE.hasCoralTrigger())
     );
     NamedCommands.registerCommand("AutoAlignStationCenter", 
       StationIntakeCommandFactory.getNewAlignToStationCommand(
         () -> {return IntakePosition.Center;}, 
         false,
         drive
-      )
+      ).andThen(new WaitUntilCommand(coralEE.hasCoralTrigger())).until(coralEE.hasCoralTrigger())
     );
     NamedCommands.registerCommand("AutoAlignStationOutside", 
       StationIntakeCommandFactory.getNewAlignToStationCommand(
         () -> {return IntakePosition.Outside;},
         false,
         drive
-      )
+      ).andThen(new WaitUntilCommand(coralEE.hasCoralTrigger())).until(coralEE.hasCoralTrigger())
     );
 
     NamedCommands.registerCommand("AutoAlignScoreLeft", 
