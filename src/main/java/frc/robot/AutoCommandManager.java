@@ -90,7 +90,7 @@ public class AutoCommandManager {
     NamedCommands.registerCommand("StationIntakeToStow", //new PrintCommand("StationIntakeToStow")); //
       new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
     NamedCommands.registerCommand("GroundIntakeToStow",
-      intakeExtender.getNewIntakeExtenderTurnCommand(115));
+      intakeExtender.getNewIntakeExtenderTurnCommand(-25));
     NamedCommands.registerCommand("WaitUntilElevatorStow", new WaitUntilCommand(elevator.getNewAtDistanceTrigger(Inches.of(0.0), Inches.of(1.0))));
     //#endregion
 
