@@ -658,6 +658,7 @@ public class RobotContainer {
             StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector), 
             new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
             .andThen(StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender))
+            .andThen(new WaitUntilCommand(intake.hasCoralTrigger()))
             .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector)), 
             coralEndEffector.hasCoralTrigger()
           ), 
