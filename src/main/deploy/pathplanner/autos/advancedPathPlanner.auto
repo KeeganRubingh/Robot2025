@@ -41,6 +41,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "WaitUntilL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "AutoAlignScoreLeft"
                 }
               },
@@ -116,6 +122,12 @@
                 "type": "named",
                 "data": {
                   "name": "StowToL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "WaitUntilL4"
                 }
               },
               {
@@ -213,6 +225,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "WaitUntilL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "AutoAlignScoreRight"
                 }
               },
@@ -288,6 +306,12 @@
                 "type": "named",
                 "data": {
                   "name": "StowToL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "WaitUntilL4"
                 }
               },
               {
