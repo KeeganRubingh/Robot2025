@@ -346,7 +346,10 @@ public class RobotContainer {
       .and(() -> ReefPositionsUtil.getInstance().getIsAutoAligning())
       .and(coralEndEffector.hasCoralTrigger().negate())
       .onTrue(StationIntakeCommandFactory.getNewStationIntakeSequence(
-          () -> intakePosChooser.get(),
+          () -> {
+            IntakePosition pos = intakePosChooser.get();
+            return pos == null ? IntakePosition.Inside : pos;
+          },
           shoulder, elbow, elevator, wrist, coralEndEffector, drive
         ))
       .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
@@ -439,7 +442,9 @@ public class RobotContainer {
 
     // Outtake Algae (Also processor score from stow pos)
     controller.povLeft()
-      .onTrue(new OutakeAlgae(algaeEndEffector))
+      .onTrue(
+        new OutakeAlgae(algaeEndEffector)
+        )
       .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
 
     //Outtake Coral
