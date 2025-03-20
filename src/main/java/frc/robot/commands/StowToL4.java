@@ -171,10 +171,9 @@ public class StowToL4 extends SequentialCommandGroup {
         return(
             elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
             .alongWith(wrist.getNewApplyCoastModeCommand())
-            .alongWith(new WaitCommand(0.25))
+            .alongWith(new WaitUntilCommand(elbow.getNewAtAngleTrigger(ElbowPositions.Confirm.angle(), Degrees.of(2.5))))
         )
-        .andThen(coralEndEffector.getNewSetVoltsCommand(-4))
-        .andThen(new WaitCommand(0.25));
+        .andThen(coralEndEffector.getNewSetVoltsCommand(-4));
     }
 
     public static Command getNewStopScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector, Drive drive) {
