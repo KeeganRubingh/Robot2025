@@ -129,10 +129,7 @@ public class AutoCommandManager {
       // StowToL3.getNewScoreCommand(shoulder, elbow, wrist, coralEE)
       //   .andThen(new WaitCommand(0.2))
       //   .andThen(StowToL3.getNewStopScoreCommand(elbow, wrist, coralEE)));
-    NamedCommands.registerCommand("ScoreL4", //new PrintCommand("ScoreL4"));
-      StowToL4.getNewScoreCommand(elbow, wrist, coralEE)
-        .andThen(new WaitCommand(0.2))
-        .andThen(StowToL3.getNewStopScoreCommand(elbow, wrist, coralEE)));
+    NamedCommands.registerCommand("ScoreL4", StowToL4.getNewScoreCommand(elbow, wrist, coralEE));
     //#endregion
 
     //#region StopScore/Backup
