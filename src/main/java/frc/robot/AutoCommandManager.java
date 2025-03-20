@@ -89,8 +89,8 @@ public class AutoCommandManager {
     // Needed so not hit coral on elevator
     NamedCommands.registerCommand("StationIntakeToStow", //new PrintCommand("StationIntakeToStow")); //
       new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
-    NamedCommands.registerCommand("GroundIntakeToStow",
-      intakeExtender.getNewIntakeExtenderTurnCommand(-25));
+    // NamedCommands.registerCommand("GroundIntakeToStow",
+    //   intakeExtender.getNewIntakeExtenderTurnCommand(-35));
     NamedCommands.registerCommand("WaitUntilElevatorStow", new WaitUntilCommand(elevator.getNewAtDistanceTrigger(Inches.of(0.0), Inches.of(1.0))));
     //#endregion
 
