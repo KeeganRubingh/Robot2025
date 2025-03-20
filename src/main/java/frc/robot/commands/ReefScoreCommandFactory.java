@@ -171,10 +171,7 @@ public class ReefScoreCommandFactory {
     public static Command getNewReefCoralScoreSequence(ReefPosition position, boolean isBackingUp, Drive drive) {
         return getNewAlignToReefCommand(position, true, drive).onlyIf(()->isBackingUp)
             .andThen(DriveCommands.brakeDrive(drive))
-            .andThen(getNewAlignToReefCommand(position, false, drive))
-            .andThen(
-                getNewAlignToReefCommand(position, true, drive).onlyIf(()->ReefPositionsUtil.getInstance().isSelected(ScoreLevel.L4))
-            );
+            .andThen(getNewAlignToReefCommand(position, false, drive));
     }
 
     /**
