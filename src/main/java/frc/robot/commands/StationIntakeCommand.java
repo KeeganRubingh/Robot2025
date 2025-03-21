@@ -39,8 +39,8 @@ public class StationIntakeCommand extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber(className + "/elbow/StartingDegrees", 10.0)),
-        Final(new LoggedTunableNumber(className + "/elbow/FinalDegrees", 180.0-38.5));
+        Starting(new LoggedTunableNumber(className + "/elbow/StartingDegrees", 50.0)),
+        Final(new LoggedTunableNumber(className + "/elbow/FinalDegrees", 142.5));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -93,6 +93,7 @@ public class StationIntakeCommand extends SequentialCommandGroup {
 
     public StationIntakeCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEndEffector) {
         super(
+            new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.Starting.position)),
             new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.Starting.position)),
             new WaitUntilCommand(elevator.getNewLessThanDistanceTrigger(ElevatorPositions.Starting.position)),
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
