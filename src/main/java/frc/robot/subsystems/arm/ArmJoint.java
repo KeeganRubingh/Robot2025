@@ -85,6 +85,16 @@ public class ArmJoint extends SubsystemBase {
     });
   }
 
+  public Trigger getNewAtAngleTrigger(Supplier<Angle> angle,Supplier<Angle> tolerance) {
+    return getNewAtAngleTrigger(()->angle.get().in(Degrees), ()->tolerance.get().in(Degrees));
+  }
+
+  public Trigger getNewAtAngleTrigger(DoubleSupplier angleDegrees, DoubleSupplier toleranceDegrees) {
+    return new Trigger(() -> {
+      return MathUtil.isNear(angleDegrees.getAsDouble(), m_loggedArm.angle.in(Degrees), toleranceDegrees.getAsDouble());
+    });
+  }
+
   /**
    * @deprecated lmao don't use it. GREG HAS SPOKEN!
    * @return

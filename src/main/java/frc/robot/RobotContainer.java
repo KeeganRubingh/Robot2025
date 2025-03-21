@@ -52,6 +52,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.L4ToStow;
 import frc.robot.commands.OutakeAlgae;
 import frc.robot.commands.OutakeCoral;
+import frc.robot.commands.ReadyProcessorScore;
 import frc.robot.commands.ReefScoreCommandFactory;
 import frc.robot.commands.ReefScoreCommandFactory.ReefPosition;
 import frc.robot.commands.StationIntakeCommand;
@@ -443,9 +444,14 @@ public class RobotContainer {
     // Outtake Algae (Also processor score from stow pos)
     controller.povLeft()
       .onTrue(
-        new OutakeAlgae(algaeEndEffector)
+        new ReadyProcessorScore(shoulder, elbow, elevator, wrist, algaeEndEffector)
         )
-      .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
+      .onFalse(
+        new OutakeAlgae(algaeEndEffector)
+        .andThen(new WaitCommand(0.2))
+        .andThen(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector))
+        .andThen(algaeEndEffector.getNewSetVoltsCommand(0.0))
+      );
 
     //Outtake Coral
     controller.povRight()
