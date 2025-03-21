@@ -24,8 +24,8 @@ public class StowToL4 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("MoveToL4Command/shoulder/StartingDegrees", 95.0)),
-        SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", -20)),
-        Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", -55));
+        SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", 60)),
+        Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", -57));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -161,7 +161,7 @@ public class StowToL4 extends SequentialCommandGroup {
     }
 
     public static Trigger getNewAtL4Trigger(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
-        return shoulder.getNewAtAngleTrigger(Degrees.of(ShoulderPositions.Final.position.getAsDouble()), Degrees.of(5.0))
+        return shoulder.getNewAtAngleTrigger(Degrees.of(ShoulderPositions.Final.position.getAsDouble()), Degrees.of(6.0))
             .and(elbow.getNewAtAngleTrigger(Degrees.of(ElbowPositions.Final.position.getAsDouble()), Degrees.of(5.0)))
             .and(elevator.getNewAtDistanceTrigger(Inches.of(ElevatorPositions.Final.position.getAsDouble()), Inches.of(2.0)))
             .and(wrist.getNewAtAngleTrigger(Degrees.of(WristPositions.Final.position.getAsDouble()), Degrees.of(5.0)));
@@ -171,7 +171,7 @@ public class StowToL4 extends SequentialCommandGroup {
         return(
             elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
             .alongWith(wrist.getNewApplyCoastModeCommand())
-            .alongWith(new WaitUntilCommand(elbow.getNewAtAngleTrigger(ElbowPositions.Confirm.angle(), Degrees.of(2.5))))
+            .alongWith(new WaitUntilCommand(elbow.getNewAtAngleTrigger(ElbowPositions.Confirm.angle(), Degrees.of(5.0))))
         )
         .andThen(coralEndEffector.getNewSetVoltsCommand(-4));
     }
