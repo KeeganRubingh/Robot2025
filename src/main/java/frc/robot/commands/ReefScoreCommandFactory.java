@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 
@@ -17,18 +16,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
-import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
-
-import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
 import frc.robot.util.ReefPositionsUtil.DeAlgaeLevel;
@@ -58,6 +50,7 @@ public class ReefScoreCommandFactory {
     private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlign/offsetBBackingUp", 1.0);
     private static LoggedTunableNumber rightOffsetBFinal = new LoggedTunableNumber("AutoAlign/rightOffsetBFinal", 0.68);
     private static LoggedTunableNumber leftOffsetBFinal = new LoggedTunableNumber("AutoAlign/leftOffsetBFinal", 0.68);
+    private static LoggedTunableNumber algaeOffsetBFinal = new LoggedTunableNumber("AutoAlign/algaeOffsetBFinal", 0.5);
     private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlign/offsetL", 0.155);
     private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.2);
     //#endregion
@@ -108,6 +101,7 @@ public class ReefScoreCommandFactory {
                 case Center:
                 default:
                     appliedOffset = 0;
+                    backOffset = algaeOffsetBFinal.get();
                     break;
             }
             Transform2d offset = new Transform2d(isBackingUp ? offsetBBackingUp.getAsDouble() : backOffset, appliedOffset, Rotation2d.kZero);

@@ -94,6 +94,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
+            elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position),
             algaeEE.getNewSetVoltsCommand(4.0)
         );
         addRequirements(shoulder, elbow,  elevator, wrist, algaeEE);
