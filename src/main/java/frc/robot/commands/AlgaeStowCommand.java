@@ -22,8 +22,7 @@ import frc.robot.util.LoggedTunableNumber;
 public class AlgaeStowCommand extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
-        Final(new LoggedTunableNumber("StowToAlgaeStow/shoulder/FinalDegrees", 20.0)), 
-        SafeToLowerElevator(new LoggedTunableNumber("StowToAlgaeStow/shoulder/SafeToLowerElevator", -45.0));
+        Final(new LoggedTunableNumber("StowToAlgaeStow/shoulder/FinalDegrees", 65.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -40,7 +39,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Final(new LoggedTunableNumber("StowToAlgaeStow/elbow/FinalDegrees", 70.0));
+        Final(new LoggedTunableNumber("StowToAlgaeStow/elbow/FinalDegrees", 65.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -95,9 +94,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
-            new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToLowerElevator.position)),
-            elevator.getNewSetDistanceCommand(ElevatorPositions.Final.distance().in(Inches)),
-            algaeEE.getNewSetVoltsCommand(5.0)
+            algaeEE.getNewSetVoltsCommand(4.0)
         );
         addRequirements(shoulder, elbow,  elevator, wrist, algaeEE);
     }
