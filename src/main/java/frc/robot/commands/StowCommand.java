@@ -23,7 +23,7 @@ public class StowCommand extends SequentialCommandGroup {
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("StowCommand/shoulder/StartingDegrees", 0)),
         SafeToSwingElbow(new LoggedTunableNumber("StowCommand/shoulder/SafeToSwingElbowDegrees", 105)),
-        SafeToSwingElbowHigh(new LoggedTunableNumber("StowCommand/shoulder/SafeToSwingElbowHighDegrees", 10)),
+        SafeToSwingElbowHigh(new LoggedTunableNumber("StowCommand/shoulder/SafeToSwingElbowHighDegrees", -10)),
         Final(new LoggedTunableNumber("StowCommand/shoulder/FinalDegrees", 90));
 
         DoubleSupplier position;

@@ -76,7 +76,7 @@ public class TakeAlgaeL3 extends SequentialCommandGroup {
 
     private enum ElevatorPositions {
         Starting(new LoggedTunableNumber("TakeAlgaeL3/elevator/StartingInches", 0)),
-        Final(new LoggedTunableNumber("TakeAlgaeL3/elevator/FinalInches", 5));
+        Final(new LoggedTunableNumber("TakeAlgaeL3/elevator/FinalInches", 7));
 
         DoubleSupplier position;
         MutDistance distance;
@@ -96,7 +96,7 @@ public class TakeAlgaeL3 extends SequentialCommandGroup {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position)
             .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position)),
-            toesies.getNewSetVoltsCommand(6)
+            toesies.getNewSetVoltsCommand(8)
             .alongWith(shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position))
             .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position))
 

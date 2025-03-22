@@ -150,8 +150,9 @@ public class StowToGroundIntake extends SequentialCommandGroup {
      * @param fingeys
      * @return
      */
-    public static Command getReturnToStowCommand(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys, IntakeExtender extender) {
+    public static Command getReturnToStowCommand(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys, IntakeExtender extender, Intake intake) {
         return extender.getNewIntakeExtenderTurnCommand(-45)
+        .andThen(intake.getNewSetSpeedCommand(0))
         .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(-45), Degrees.of(5))))
         .andThen(wrist.getNewWristTurnCommand(WristPositions.Starting.position))
         .andThen(new WaitUntilCommand(wrist.getNewAtAngleTrigger(Degrees.of(WristPositions.Starting.position.getAsDouble()), Degrees.of(1))))

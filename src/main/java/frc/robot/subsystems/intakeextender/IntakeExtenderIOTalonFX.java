@@ -39,7 +39,7 @@ public class IntakeExtenderIOTalonFX implements IntakeExtenderIO {
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
     cfg.Voltage.PeakReverseVoltage = 7;
     cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    cfg.Feedback.SensorToMechanismRatio = 37.5;
+    cfg.Feedback.SensorToMechanismRatio = 33.3333;
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }
 

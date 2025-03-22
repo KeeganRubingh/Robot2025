@@ -1,6 +1,8 @@
 package frc.robot.commands;
 
+import java.util.concurrent.TransferQueue;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -9,12 +11,15 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.LoggedTunableGainsBuilder;
@@ -57,6 +62,9 @@ public class AutoAlignCommand extends Command {
     private ProfiledPIDController m_throttlePID = new ProfiledPIDController(throttleGains.build().kP, throttleGains.build().kI ,throttleGains.build().kD, new Constraints(m_maxThrottle.in(MetersPerSecond), m_maxAccelThrottle.in(MetersPerSecondPerSecond)));
     private PIDController spinPID = new PIDController(5.0, 0.0, 0.0);
 
+    private Supplier<Transform2d> speedModSupplier;
+    private double lastTimestamp = 0.0;
+
     /**
      * This command utilitzes the swerve drive while it isn't field relative.
      * The swerve drive returns back to field relative after the command is used.
@@ -65,8 +73,23 @@ public class AutoAlignCommand extends Command {
      * @param name The LoggedTunableNumber's (should be) exclusive name
      */
     public AutoAlignCommand(Function<Pose2d, Pose2d> getTargetPoseFunction, Drive drivetrain, String name) {
+        this(getTargetPoseFunction, ()->Transform2d.kZero, drivetrain, name);
+    }
+
+    public AutoAlignCommand(Function<Pose2d, Pose2d> getTargetPoseFunction, Supplier<Transform2d> speedOffset, Drive drivetrain, String name) {
         this.getTargetPoseFn = getTargetPoseFunction;
         this.drivetrain = drivetrain;
+        this.speedModSupplier = speedOffset;
+    }
+
+    /**
+     * This command utilitzes the swerve drive while it isn't field relative.
+     * The swerve drive returns back to field relative after the command is used.
+     * @param getDrivePoseFunction A function that takes a current drivetrain pose and returns a target position.
+     * @param drivetrain The Drive class to get the current pose from.
+     */
+    public AutoAlignCommand(Function<Pose2d, Pose2d> getTargetPoseFunction, Supplier<Transform2d> speedOffset, Drive drivetrain) {
+        this(getTargetPoseFunction, speedOffset, drivetrain, "AutoAlign");
     }
 
     /**
@@ -88,8 +111,8 @@ public class AutoAlignCommand extends Command {
         m_maxAccelStrafe = MetersPerSecondPerSecond.of(maxAccelStrafeTune.getAsDouble());
         m_maxAccelThrottle = MetersPerSecondPerSecond.of(maxAccelDistanceTune.getAsDouble());
 
-        m_strafePID = new ProfiledPIDController(strafeGains.build().kP, strafeGains.build().kI ,strafeGains.build().kD, new Constraints(m_maxStrafe.in(MetersPerSecond), m_maxAccelStrafe.in(MetersPerSecondPerSecond)));
-        m_throttlePID = new ProfiledPIDController(throttleGains.build().kP, throttleGains.build().kI ,throttleGains.build().kD, new Constraints(m_maxThrottle.in(MetersPerSecond), m_maxAccelThrottle.in(MetersPerSecondPerSecond)));
+        m_strafePID = new ProfiledPIDController(strafeGains.build().kP, strafeGains.build().kI, strafeGains.build().kD, new Constraints(m_maxStrafe.in(MetersPerSecond), m_maxAccelStrafe.in(MetersPerSecondPerSecond)));
+        m_throttlePID = new ProfiledPIDController(throttleGains.build().kP, throttleGains.build().kI, throttleGains.build().kD, new Constraints(m_maxThrottle.in(MetersPerSecond), m_maxAccelThrottle.in(MetersPerSecondPerSecond)));
     }
 
     /**
@@ -136,6 +159,8 @@ public class AutoAlignCommand extends Command {
     */
     @Override
     public void execute() {
+        targetPose = targetPose.transformBy(speedModSupplier.get().times(Timer.getFPGATimestamp() - lastTimestamp));
+
         Pose2d targetPose_r = getRelativeTarget();
 
         double distance = getCurrentPose().getTranslation().getDistance(targetPose.getTranslation());
@@ -163,6 +188,9 @@ public class AutoAlignCommand extends Command {
         Logger.recordOutput("AutoAlign/spin", m_spin);
         Logger.recordOutput("AutoAlign/TargetPose",targetPose);
         Logger.recordOutput("AutoAlign/distance", distance);
+
+
+        lastTimestamp = Timer.getFPGATimestamp();
     }
 
     /**
