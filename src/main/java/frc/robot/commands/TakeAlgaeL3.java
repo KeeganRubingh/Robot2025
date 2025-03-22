@@ -96,7 +96,7 @@ public class TakeAlgaeL3 extends SequentialCommandGroup {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position)
             .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position)),
-            toesies.getNewSetVoltsCommand(6)
+            toesies.getNewSetVoltsCommand(8)
             .alongWith(shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position))
             .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position))
 
