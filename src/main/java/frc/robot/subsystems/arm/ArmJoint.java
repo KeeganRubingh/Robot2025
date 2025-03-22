@@ -30,6 +30,8 @@ public class ArmJoint extends SubsystemBase {
   ArmInputsAutoLogged m_loggedArm = new ArmInputsAutoLogged();
 
   public LoggedTunableGainsBuilder tunableGains;
+  public LoggedTunableGainsBuilder tunableSlot1Gains;
+  
   private Supplier<Angle> previousJointAngleSupplier;
 
   public ArmJoint(ArmJointIO armJointIO, Optional<ArmJoint> previousJoint) {
@@ -52,6 +54,7 @@ public class ArmJoint extends SubsystemBase {
     m_constants = armJointIO.getConstants();
     m_constants.mechanismSimCallback.accept(m_loggedArm.angle);
     tunableGains = m_constants.TalonFXGains;
+    tunableSlot1Gains = m_constants.TalonFXGainsSlot1;
     m_loggedArm.angle.mut_replace(m_constants.StartingAngle);
   }
 
@@ -61,6 +64,14 @@ public class ArmJoint extends SubsystemBase {
 
   public void setAngle(Angle angle) {
     m_armJointIO.setTarget(angle);
+  }
+
+  public void setAngleSlot0(Angle angle) {
+    m_armJointIO.setTargetWithSlot(angle, 0);
+  }
+
+  public void setAngleSlot1(Angle angle) {
+    m_armJointIO.setTargetWithSlot(angle, 0);
   }
   
   public Command getNewSetAngleCommand(DoubleSupplier degrees) {
@@ -138,7 +149,8 @@ public class ArmJoint extends SubsystemBase {
 
   @Override
   public void periodic() {
-    tunableGains.ifGainsHaveChanged((gains) -> this.m_armJointIO.setGains(gains));
+    tunableGains.ifGainsHaveChanged((gains) -> this.m_armJointIO.setGains(gains,0));
+    tunableSlot1Gains.ifGainsHaveChanged((gains) -> this.m_armJointIO.setGains(gains,1));
     m_armJointIO.updateInputs(m_loggedArm);
     Logger.processInputs("RobotState/" + m_constants.LoggedName, m_loggedArm);
   }
