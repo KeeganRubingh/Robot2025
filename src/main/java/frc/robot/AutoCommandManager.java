@@ -27,6 +27,8 @@ import frc.robot.commands.StowToL1;
 import frc.robot.commands.StowToL2;
 import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
+import frc.robot.commands.TakeAlgaeL2;
+import frc.robot.commands.TakeAlgaeL3;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
@@ -181,6 +183,19 @@ public class AutoCommandManager {
         ReefPosition.Right, 
         false,
         drive));
-    //#endregion
+//#endregion
+      NamedCommands.registerCommand("AutoAlignAlgaePluck",
+        ReefScoreCommandFactory.getNewAlgaePluckAutoAlignCommand(drive, false)
+      );
+      NamedCommands.registerCommand("AutoAlignAlgaePluckBackup",
+        ReefScoreCommandFactory.getNewAlgaePluckAutoAlignCommand(drive, true)
+      );
+
+      NamedCommands.registerCommand("TakeAlgaeL2",
+       new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator)
+      );
+      NamedCommands.registerCommand("TakeAlgaeL3",
+       new TakeAlgaeL3(shoulder, elbow, wrist, algaeEE, elevator)
+      );
   }
 }
