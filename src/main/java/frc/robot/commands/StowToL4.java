@@ -109,7 +109,7 @@ public class StowToL4 extends SequentialCommandGroup {
                 .alongWith(
                     new WaitUntilCommand(elevator.getNewGreaterThanDistanceTrigger(ElevatorPositions.SafeToSwingShoulder.position))
                 ),
-            shoulder.getNewSetAngleWithSlotCommand(ShoulderPositions.Final.position, 1),
+            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
             elbow.getNewSetAngleCommand(ElbowPositions.MidPoint.position)
                 .andThen(
                     new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
