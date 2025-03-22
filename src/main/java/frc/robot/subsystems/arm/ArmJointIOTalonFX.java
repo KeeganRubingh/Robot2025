@@ -3,6 +3,8 @@ package frc.robot.subsystems.arm;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
+import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -87,7 +89,8 @@ public class ArmJointIOTalonFX implements ArmJointIO {
       FollowerMotor.setControl(new Follower(Motor.getDeviceID(), false));
     }
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
-    setGains(Gains.getEmpty());
+    setGains(Gains.getEmpty(),0);
+    setGains(Gains.getEmpty(),1);
   }
 
   @Override
@@ -103,7 +106,12 @@ public class ArmJointIOTalonFX implements ArmJointIO {
 
   @Override
   public void setTarget(Angle target) {
-    Request = Request.withPosition(target);
+    setTargetWithSlot(target, 0);
+  }
+
+  @Override
+  public void setTargetWithSlot(Angle target, int slot) {
+    Request = Request.withPosition(target).withSlot(slot);
     Motor.setControl(Request);
     m_setPoint = target;
   }
@@ -119,17 +127,18 @@ public class ArmJointIOTalonFX implements ArmJointIO {
   }
 
     @Override
-  public void setGains(Gains gains) {
-    Slot0Configs slot0Configs = new Slot0Configs();
-    slot0Configs.kP = gains.kP;
-    slot0Configs.kI = gains.kI;
-    slot0Configs.kD = gains.kD;
-    slot0Configs.kS = gains.kS;
-    slot0Configs.kG = gains.kG;
-    slot0Configs.kV = gains.kV;
-    slot0Configs.kA = gains.kA;
-    slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
-    PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(slot0Configs));
+  public void setGains(Gains gains,int slot) {
+    SlotConfigs slotConfigs = new SlotConfigs();
+    slotConfigs.kP = gains.kP;
+    slotConfigs.kI = gains.kI;
+    slotConfigs.kD = gains.kD;
+    slotConfigs.kS = gains.kS;
+    slotConfigs.kG = gains.kG;
+    slotConfigs.kV = gains.kV;
+    slotConfigs.kA = gains.kA;
+    slotConfigs.GravityType = GravityTypeValue.Arm_Cosine;
+    slotConfigs.SlotNumber = slot;
+    PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(slotConfigs));
 
     MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
     motionMagicConfigs.MotionMagicCruiseVelocity = gains.kMMV;

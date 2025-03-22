@@ -26,6 +26,8 @@ public interface ArmJointIO {
 
   public void setTarget(Angle target);
 
+  public void setTargetWithSlot(Angle target, int slot);
+
   /**
    * Takes a set of inputs, retrieves the current values of these inputs, then updates the given
    * input set.
@@ -40,5 +42,5 @@ public interface ArmJointIO {
    */
   public ArmJointConstants getConstants();
 
-  public void setGains(Gains gains);
+  public void setGains(Gains gains,int slot);
 }

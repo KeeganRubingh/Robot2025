@@ -23,6 +23,7 @@ public abstract class ArmJointConstants {
     public Gains SimGains;
 
     public LoggedTunableGainsBuilder TalonFXGains;
+    public LoggedTunableGainsBuilder TalonFXGainsSlot1;
 
     public AngularVelocity MaxVelocity;
     public AngularAcceleration MaxAcceleration;

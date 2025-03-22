@@ -48,6 +48,11 @@ public class ArmJointIOSim implements ArmJointIO {
     controller.setGoal(target.in(Degrees));
   }
 
+  @Override
+  public void setTargetWithSlot(Angle target, int slot) {
+    setTarget(target);
+  }
+
   /**
    * Updates the applied voltage to drive the arm towards the noted position
    */
@@ -103,7 +108,9 @@ public class ArmJointIOSim implements ArmJointIO {
     return m_Constants;
   }
 
-  public void setGains(Gains gains) {
-    // DriverStation.reportWarning("Sim gains tuning not implemented", true);
+  @Override
+  public void setGains(Gains gains, int slot) {
+      // TODO Auto-generated method stub
+      
   }
 }
