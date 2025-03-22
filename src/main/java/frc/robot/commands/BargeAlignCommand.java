@@ -19,7 +19,7 @@ import frc.robot.util.LoggedTunableNumber;
 
 public class BargeAlignCommand extends AutoAlignCommand {
     private static final AprilTagFieldLayout aprilTagLayout = Drive.getAprilTagLayout();
-    private static final LoggedTunableNumber offsetB = new LoggedTunableNumber("BargeAlignCommand/offsetB",0.1);
+    private static final LoggedTunableNumber offsetB = new LoggedTunableNumber("BargeAlignCommand/offsetB",0.5);
     private static final LoggedTunableNumber maxHorziontalOffset = new LoggedTunableNumber("BargeAlignCommand/maxHorizontalOffset", 1.5);
 
     public BargeAlignCommand(Drive drive, Supplier<Double> strafeControl) {
@@ -29,12 +29,16 @@ public class BargeAlignCommand extends AutoAlignCommand {
     public static Pose2d getBargeScorePose(Pose2d robotPose) {
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Red);
         Pose2d originPose = alliance == Alliance.Red ? aprilTagLayout.getTagPose(5).orElse(Pose3d.kZero).toPose2d() : aprilTagLayout.getTagPose(14).orElse(Pose3d.kZero).toPose2d();
+        double xOffset = alliance == Alliance.Red ? offsetB.get() : -offsetB.get();
 
-        Transform2d tagOffset = new Transform2d(originPose,robotPose);
-        tagOffset = new Transform2d(offsetB.get(), MathUtil.clamp(tagOffset.getY(),-maxHorziontalOffset.get(),maxHorziontalOffset.get()), tagOffset.getRotation());
+        Pose2d newPose = new Pose2d(
+          originPose.getX() + xOffset, 
+          MathUtil.clamp(robotPose.getY(),originPose.getY()-offsetB.get(),originPose.getY()+offsetB.get()), 
+          originPose.getRotation()
+        );
 
-        Logger.recordOutput("BargeAlignCommand/targetPose", originPose.transformBy(tagOffset));
-        return originPose.transformBy(tagOffset);
+        Logger.recordOutput("BargeAlignCommand/targetPose", newPose);
+        return newPose;
   }
 
   //Must be killed manually
