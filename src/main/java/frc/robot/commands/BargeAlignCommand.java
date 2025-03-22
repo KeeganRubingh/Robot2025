@@ -28,12 +28,9 @@ public class BargeAlignCommand extends AutoAlignCommand {
     private static Pose2d originPose;
     private static Alliance alliance;
 
-    private static Supplier<Double> strafeControl;
-
     public BargeAlignCommand(Drive drive, Supplier<Double> strafeControl) {
-        super ((p)->getBargeScorePose(p),()->new Transform2d(strafeControl.get(),0.0,Rotation2d.kZero),drive);
+        super ((p)->getBargeScorePose(p),()->new Transform2d(0.0,strafeControl.get(),Rotation2d.kZero),drive);
         addRequirements(drive);
-        BargeAlignCommand.strafeControl = strafeControl;
     }
 
     private static Pose2d getBargeScorePose(Pose2d robotPose) {

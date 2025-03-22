@@ -159,8 +159,8 @@ public class AutoAlignCommand extends Command {
     */
     @Override
     public void execute() {
-        
-        targetPose.transformBy(speedModSupplier.get().times(Timer.getFPGATimestamp() - lastTimestamp));
+        targetPose = targetPose.transformBy(speedModSupplier.get().times(Timer.getFPGATimestamp() - lastTimestamp));
+
         Pose2d targetPose_r = getRelativeTarget();
 
         double distance = getCurrentPose().getTranslation().getDistance(targetPose.getTranslation());
