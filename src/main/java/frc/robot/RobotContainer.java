@@ -301,7 +301,7 @@ public class RobotContainer {
     }
 
 
-    autoCommandManager = new AutoCommandManager(drive, shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector);
+    autoCommandManager = new AutoCommandManager(drive, shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender);
     reefPositions = ReefPositionsUtil.getInstance();
     ReefScoreCommandFactory.initialize();
 

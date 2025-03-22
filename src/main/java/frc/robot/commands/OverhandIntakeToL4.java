@@ -1,28 +1,24 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.*;
-
 import java.util.function.DoubleSupplier;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
-public class StationIntakeCommand extends SequentialCommandGroup {
-
-    private static final String className = StationIntakeCommand.class.getSimpleName();
+public class OverhandIntakeToL4 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber(className + "/shoulder/StartingDegrees", -45.0)),
-        Final(new LoggedTunableNumber(className + "/shoulder/FinalDegrees", 180.0-58.5));
+        Final(new LoggedTunableNumber("OverhandIntakeToL4/shoulder/FinalDegrees", -55.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -39,8 +35,7 @@ public class StationIntakeCommand extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber(className + "/elbow/StartingDegrees", 50.0)),
-        Final(new LoggedTunableNumber(className + "/elbow/FinalDegrees", 142.5));
+        Final(new LoggedTunableNumber("OverhandIntakeToL4/elbow/FinalDegrees", -100.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -57,8 +52,7 @@ public class StationIntakeCommand extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Starting(new LoggedTunableNumber(className + "/wrist/StartingDegrees", 0.0)),
-        Final(new LoggedTunableNumber(className + "/wrist/FinalDegrees", -90.0));
+        Final(new LoggedTunableNumber("OverhandIntakeToL4/wrist/FinalDegrees", 0.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -75,7 +69,7 @@ public class StationIntakeCommand extends SequentialCommandGroup {
     }
 
     private enum ElevatorPositions {
-        Starting(new LoggedTunableNumber(className + "/elevator/StartingInches", 2.5));
+        Final(new LoggedTunableNumber("OverhandIntakeToL4/elevator/FinalInches", 16.0));
 
         DoubleSupplier position;
         MutDistance distance;
@@ -91,16 +85,18 @@ public class StationIntakeCommand extends SequentialCommandGroup {
         }
     }
 
-    public StationIntakeCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEndEffector) {
+    /**
+     * Regular StowToL4 using both Elevator and Arm
+     */
+    public OverhandIntakeToL4(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE) {
         super(
-            new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.Starting.position)),
-            new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.Starting.position)),
-            new WaitUntilCommand(elevator.getNewLessThanDistanceTrigger(ElevatorPositions.Starting.position)),
+            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
+            elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
-            .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
-            .alongWith(coralEndEffector.getNewSetVoltsCommand(6.0))
+            elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position),
+            coralEE.getNewSetVoltsCommand(1.0)
         );
-        addRequirements(shoulder, elbow, elevator, wrist);
+        addRequirements(shoulder, elbow, wrist, elevator);
     }
+
 }

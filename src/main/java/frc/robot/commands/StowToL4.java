@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.drive.Drive;
@@ -23,8 +24,8 @@ public class StowToL4 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("MoveToL4Command/shoulder/StartingDegrees", 95.0)),
-        SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", -20)),
-        Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", -55));
+        SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", 60)),
+        Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", -57));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -159,23 +160,20 @@ public class StowToL4 extends SequentialCommandGroup {
         addRequirements(shoulder, elbow, wrist);
     }
 
-    public static Command getNewWaitUntilL4Command(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
-        return new WaitUntilCommand(
-            shoulder.getNewAtAngleTrigger(Degrees.of(ShoulderPositions.Final.position.getAsDouble()), Degrees.of(5.0))
-                .and(elbow.getNewAtAngleTrigger(Degrees.of(ElbowPositions.Final.position.getAsDouble()), Degrees.of(5.0)))
-                .and(elevator.getNewAtDistanceTrigger(Inches.of(ElevatorPositions.Final.position.getAsDouble()), Inches.of(2.0)))
-                .and(wrist.getNewAtAngleTrigger(Degrees.of(WristPositions.Final.position.getAsDouble()), Degrees.of(5.0)))
-        );
+    public static Trigger getNewAtL4Trigger(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
+        return shoulder.getNewAtAngleTrigger(Degrees.of(ShoulderPositions.Final.position.getAsDouble()), Degrees.of(6.0))
+            .and(elbow.getNewAtAngleTrigger(Degrees.of(ElbowPositions.Final.position.getAsDouble()), Degrees.of(5.0)))
+            .and(elevator.getNewAtDistanceTrigger(Inches.of(ElevatorPositions.Final.position.getAsDouble()), Inches.of(2.0)))
+            .and(wrist.getNewAtAngleTrigger(Degrees.of(WristPositions.Final.position.getAsDouble()), Degrees.of(5.0)));
     }
 
     public static Command getNewScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
         return(
             elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
             .alongWith(wrist.getNewApplyCoastModeCommand())
-            .alongWith(new WaitCommand(0.25))
+            .alongWith(new WaitUntilCommand(elbow.getNewAtAngleTrigger(ElbowPositions.Confirm.angle(), Degrees.of(5.0))))
         )
-        .andThen(coralEndEffector.getNewSetVoltsCommand(-4))
-        .andThen(new WaitCommand(0.25));
+        .andThen(coralEndEffector.getNewSetVoltsCommand(-4));
     }
 
     public static Command getNewStopScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector, Drive drive) {

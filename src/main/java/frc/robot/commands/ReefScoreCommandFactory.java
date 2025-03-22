@@ -159,13 +159,18 @@ public class ReefScoreCommandFactory {
                 .andThen(DriveCommands.brakeDrive(drive))
                 .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
             .andThen(getNewAlignToReefCommand(position, false, drive))
-            // .andThen(new WaitCommand(0.2))
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
-            // .andThen(new WaitCommand(0.2))
+            // Added wait for score L4 so no need for wait here
             .andThen(
                 getNewAlignToReefCommand(position, true, drive).onlyIf(()->ReefPositionsUtil.getInstance().isSelected(ScoreLevel.L4))
                     .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands))
             );
+    }
+
+    public static Command getNewReefCoralScoreSequence(ReefPosition position, boolean isBackingUp, Drive drive) {
+        return getNewAlignToReefCommand(position, true, drive).onlyIf(()->isBackingUp)
+            .andThen(DriveCommands.brakeDrive(drive))
+            .andThen(getNewAlignToReefCommand(position, false, drive));
     }
 
     /**
