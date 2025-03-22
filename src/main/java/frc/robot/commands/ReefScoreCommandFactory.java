@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.drive.Drive;
@@ -194,6 +195,7 @@ public class ReefScoreCommandFactory {
                 new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator), 
                 new TakeAlgaeL3(shoulder, elbow, wrist, algaeEE, elevator), 
                 () -> ReefPositionsUtil.getInstance().isSelected(DeAlgaeLevel.Low)))
+            .andThen(new WaitCommand(0.5))
             .andThen(getNewAlignToReefCommand(ReefPosition.Center, true, drive));
     }
     
