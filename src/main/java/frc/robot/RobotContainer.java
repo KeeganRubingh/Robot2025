@@ -46,6 +46,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AlgaeStowCommand;
@@ -374,11 +375,69 @@ public class RobotContainer {
         ))
       .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
-    // Go to barge
+    // Go to barge auto align
     controller.y()
-      .onTrue(new StowToBarge(shoulder, elbow, elevator, wrist))
-      // Left as AlgaeStow instead of Stow in case Algae is not removed from Algae End Effector
-      .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
+      .and(()->ReefPositionsUtil.getInstance().getIsAutoAligning())
+      .whileTrue(
+        new StowToBarge(shoulder,elbow,elevator,wrist)
+          .andThen(new BargeAlignCommand(drive,()->testcontroller.getLeftX()))
+          .andThen(new BargeScoreCommand(algaeEndEffector))
+      )
+      .onFalse(
+        new ConditionalCommand(
+          new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector), 
+          new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+          algaeEndEffector.hasAlgaeTrigger()
+        )
+      );
+
+    // Go to barge no auto align
+    controller.y()
+      .and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
+      .onTrue(
+        new StowToBarge(shoulder, elbow, elevator, wrist)
+      )
+      .onFalse(
+        new ConditionalCommand(
+          new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector), 
+          new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+          algaeEndEffector.hasAlgaeTrigger()
+        )
+      );
+
+    controller.b()
+      .and(()->ReefPositionsUtil.getInstance().getIsAutoAligning())
+      .onTrue(
+        new AlgaeStowCommand(shoulder,elbow,elevator,wrist,algaeEndEffector)
+          .alongWith(new ProcessorAlignCommand(drive))
+        .andThen(new OutakeAlgae(algaeEndEffector))
+        .andThen(new WaitUntilCommand(algaeEndEffector.hasAlgaeTrigger().negate()))
+        .andThen(
+          new ConditionalCommand(
+            new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector), 
+            new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+            algaeEndEffector.hasAlgaeTrigger()
+          )
+        )
+      );
+
+    controller.b()
+      .and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
+      .onTrue(
+        new ReadyProcessorScore(shoulder, elbow, elevator, wrist, algaeEndEffector)
+        )
+      .onFalse(
+        new OutakeAlgae(algaeEndEffector)
+        .andThen(new WaitCommand(0.3))
+        .andThen(new WaitUntilCommand(algaeEndEffector.hasAlgaeTrigger().negate()))
+        .andThen(
+          new ConditionalCommand(
+            new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector), 
+            new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+            algaeEndEffector.hasAlgaeTrigger()
+          )
+        )
+      );
 
 
     //#region reef scoring
