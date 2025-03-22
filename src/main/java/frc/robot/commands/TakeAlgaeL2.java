@@ -76,7 +76,7 @@ public class TakeAlgaeL2 extends SequentialCommandGroup {
 
     private enum ElevatorPositions {
         Starting(new LoggedTunableNumber("TakeAlgaeL2/elevator/StartingInches", 0)),
-        Final(new LoggedTunableNumber("TakeAlgaeL2/elevator/FinalInches", 10));
+        Final(new LoggedTunableNumber("TakeAlgaeL2/elevator/FinalInches", 6));
 
         DoubleSupplier position;
         MutDistance distance;

@@ -30,6 +30,7 @@ import frc.robot.subsystems.wrist.Wrist;
 import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
+import frc.robot.util.ReefPositionsUtil.ScoreLevel;
 
 public class ReefScoreCommandFactory {
 
@@ -52,11 +53,11 @@ public class ReefScoreCommandFactory {
     private static int[] targetIds;
 
     //#region TODO Find Accurate Values
-    private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlign/offsetBBackingUp", 0.75);
-    private static LoggedTunableNumber rightOffsetBFinal = new LoggedTunableNumber("AutoAlign/rightOffsetBFinal", 0.55 + Inches.of(4.5).in(Meters) /*1 coral width*/);
-    private static LoggedTunableNumber leftOffsetBFinal = new LoggedTunableNumber("AutoAlign/leftOffsetBFinal", 0.45 + Inches.of(4.5).in(Meters) /*1 coral width*/);
-    private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlign/offsetL", 0.3); //(papa smurf)
-    private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.14);
+    private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlign/offsetBBackingUp", 1.0);
+    private static LoggedTunableNumber rightOffsetBFinal = new LoggedTunableNumber("AutoAlign/rightOffsetBFinal", 0.68);
+    private static LoggedTunableNumber leftOffsetBFinal = new LoggedTunableNumber("AutoAlign/leftOffsetBFinal", 0.68);
+    private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlign/offsetL", 0.155);
+    private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.2);
     //#endregion
 
     /**
@@ -133,9 +134,13 @@ public class ReefScoreCommandFactory {
         Function<Pose2d, Pose2d> positionFunction = getGetTargetPositionFunction(position, isBackingUp);
         //Base command
         Command returnedCommand = new AutoAlignCommand(getGetTargetPositionFunction(position, isBackingUp), drive);
-        //If we're backing up, add a condition to kill when we're farther away than the backup distance
+        //If we're backing up, add kill conditions
         if(isBackingUp) {
-            returnedCommand = returnedCommand.until(() -> (drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) > offsetBBackingUp.getAsDouble()));
+            returnedCommand = returnedCommand
+                // Kill when we are out of the distance (not necessary since we kill)
+                // .until(() -> (drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) > offsetBBackingUp.getAsDouble()))
+                // Don't run the backup if we are out of the distance
+                .unless(() -> (drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) > offsetBBackingUp.getAsDouble()));
         }
         return returnedCommand;
     }
@@ -148,47 +153,24 @@ public class ReefScoreCommandFactory {
      * @param drive
      * @return
      */
-    public static Command getNewReefCoralScoreSequence(ReefPosition position, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands, Drive drive) {
-        return getNewAlignToReefCommand(position, true, drive)
-                .alongWith(new WaitCommand(0.1).andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands)))
+    public static Command getNewReefCoralScoreSequence(ReefPosition position, boolean isBackingUp, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands, Drive drive) {
+        return 
+            getNewAlignToReefCommand(position, true, drive).onlyIf(()->isBackingUp)
+                .andThen(DriveCommands.brakeDrive(drive))
+                .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
             .andThen(getNewAlignToReefCommand(position, false, drive))
-            // .andThen(new WaitCommand(0.2))
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
-            // .andThen(new WaitCommand(0.2))
-            .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands));
+            // Added wait for score L4 so no need for wait here
+            .andThen(
+                getNewAlignToReefCommand(position, true, drive).onlyIf(()->ReefPositionsUtil.getInstance().isSelected(ScoreLevel.L4))
+                    .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands))
+            );
     }
 
-    /**
-     * Gets a command which aligns the robot to the nearest reef position and scores the coal
-     * @param position
-     * @param coralLevelCommands
-     * @param scoreCoralLevelCommands
-     * @param drive
-     * @param shoulder
-     * @param elbow
-     * @param elevator
-     * @param wrist
-     * @param coralEE
-     * @param algaeEE
-     * @return
-     */
-    public static Command getNewAutoReefCoralScoreSequenceCommand(
-        ReefPosition position, 
-        Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, 
-        Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands,
-        Drive drive,
-        ArmJoint shoulder, 
-        ArmJoint elbow, 
-        Elevator elevator, 
-        Wrist wrist, 
-        CoralEndEffector coralEE, 
-        AlgaeEndEffector algaeEE
-    ) {
-        return getNewAlignToReefCommand(position, false, drive)
-                .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
-            .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
-            .andThen(new WaitCommand(0.2))
-            .andThen(new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
+    public static Command getNewReefCoralScoreSequence(ReefPosition position, boolean isBackingUp, Drive drive) {
+        return getNewAlignToReefCommand(position, true, drive).onlyIf(()->isBackingUp)
+            .andThen(DriveCommands.brakeDrive(drive))
+            .andThen(getNewAlignToReefCommand(position, false, drive));
     }
 
     /**

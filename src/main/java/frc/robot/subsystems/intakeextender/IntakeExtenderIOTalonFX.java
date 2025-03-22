@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -16,14 +17,14 @@ import frc.robot.util.Gains;
 import frc.robot.util.PhoenixUtil;
 
 public class IntakeExtenderIOTalonFX implements IntakeExtenderIO {
-  public MotionMagicVoltage Request;
+  public MotionMagicTorqueCurrentFOC Request;
   public TalonFX Motor;
 
   private Angle m_setPoint = Angle.ofBaseUnits(0, Degrees);
 
   public IntakeExtenderIOTalonFX(CanDef canbus) {
     Motor= new TalonFX(canbus.id(), canbus.bus());
-    Request = new MotionMagicVoltage(0);
+    Request = new MotionMagicTorqueCurrentFOC(0);
 
     configureTalons();
   }
@@ -38,7 +39,7 @@ public class IntakeExtenderIOTalonFX implements IntakeExtenderIO {
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
     cfg.Voltage.PeakReverseVoltage = 7;
     cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    cfg.Feedback.SensorToMechanismRatio = 37.5;
+    cfg.Feedback.SensorToMechanismRatio = 33.3333;
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }
 

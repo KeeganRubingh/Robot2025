@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "advancedPathPlanner.0"
+            "pathName": "shortAdvancedLeft.0"
           }
         },
         {
@@ -87,7 +87,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "advancedPathPlanner.1"
+            "pathName": "shortAdvancedLeft.1"
           }
         },
         {
@@ -112,7 +112,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "advancedPathPlanner.2"
+            "pathName": "shortAdvancedLeft.2"
           }
         },
         {
@@ -180,7 +180,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "advancedPathPlanner.3"
+            "pathName": "shortAdvancedLeft.3"
           }
         },
         {
@@ -205,168 +205,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "advancedPathPlanner.4"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "parallel",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "StowToL4"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "WaitUntilL4"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AutoAlignScoreRight"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ScoreL4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "BackupL4Right"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StopScoreL4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "L4ToStow"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "WaitUntilElevatorStow"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "advancedPathPlanner.5"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "StationIntake"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AutoAlignStationOutside"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "advancedPathPlanner.6"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "parallel",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "StowToL4"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "WaitUntilL4"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AutoAlignScoreRight"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ScoreL4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "BackupL4Right"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StopScoreL4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "L4ToStow"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "WaitUntilElevatorStow"
-                }
-              }
-            ]
+            "pathName": "shortAdvancedLeft.4"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "L4ToStow"
+            "name": "StationIntakeToStow"
           }
         }
       ]

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.drive.Drive;
@@ -22,10 +23,9 @@ import frc.robot.util.LoggedTunableNumber;
 public class StowToL4 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("MoveToL4Command/shoulder/StartingDegrees", 0)),
-        MidPoint(new LoggedTunableNumber("MoveToL4Command/shoulder/MidPointDegrees", 0)),
-        SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", -20)),
-        Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", -55));
+        Starting(new LoggedTunableNumber("MoveToL4Command/shoulder/StartingDegrees", 95.0)),
+        SafeToSwingElbow(new LoggedTunableNumber("MoveToL4Command/shoulder/SafeToSwingElbowDegrees", 60)),
+        Final(new LoggedTunableNumber("MoveToL4Command/shoulder/FinalDegrees", -57));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -98,8 +98,12 @@ public class StowToL4 extends SequentialCommandGroup {
         }
     }
 
+    /**
+     * Regular StowToL4 using both Elevator and Arm
+     */
     public StowToL4(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
         super(
+            new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.Starting.position)),
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position)
                 .alongWith(
@@ -112,23 +116,70 @@ public class StowToL4 extends SequentialCommandGroup {
                         .andThen(
                             elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
                         )
+                        .andThen(
+                            new WaitUntilCommand(elbow.getNewLessThanAngleTrigger(ElbowPositions.Final.position.getAsDouble() + 5.0))
+                        )
                 )
         );
         addRequirements(shoulder, elbow, wrist, elevator);
     }
 
+    /**
+     * {@summary StowToL4 with only Elevator motions}
+     * Typically used in autos, when the arm is already in position but the elevator isn't because Center Of Mass!
+     * @param shoulder Is only used for checking safezones
+     */
+    public StowToL4(Elevator elevator, ArmJoint shoulder) {
+        super(
+            new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.Starting.position)),
+            elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position)
+        );
+        addRequirements(elevator);
+    }
+
+    /**
+     * {@summary StowToL4 without Elevator motions, only arm motions}
+     * Typically used in autos, when we want to move while arm is ready for L4 because efficiency
+     */
+    public StowToL4(ArmJoint shoulder, ArmJoint elbow, Wrist wrist) {
+        super(
+            new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.Starting.position)),
+            wrist.getNewWristTurnCommand(WristPositions.Final.position),
+            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
+            elbow.getNewSetAngleCommand(ElbowPositions.MidPoint.position)
+                .andThen(
+                    new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position))
+                        .andThen(
+                            elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
+                        )
+                        .andThen(
+                            new WaitUntilCommand(elbow.getNewLessThanAngleTrigger(ElbowPositions.Final.position.getAsDouble() + 5.0))
+                        )
+                )
+        );
+        addRequirements(shoulder, elbow, wrist);
+    }
+
+    public static Trigger getNewAtL4Trigger(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
+        return shoulder.getNewAtAngleTrigger(Degrees.of(ShoulderPositions.Final.position.getAsDouble()), Degrees.of(6.0))
+            .and(elbow.getNewAtAngleTrigger(Degrees.of(ElbowPositions.Final.position.getAsDouble()), Degrees.of(5.0)))
+            .and(elevator.getNewAtDistanceTrigger(Inches.of(ElevatorPositions.Final.position.getAsDouble()), Inches.of(2.0)))
+            .and(wrist.getNewAtAngleTrigger(Degrees.of(WristPositions.Final.position.getAsDouble()), Degrees.of(5.0)));
+    }
+
     public static Command getNewScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
-        return(elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
-        .alongWith(wrist.getNewApplyCoastModeCommand())
-        .alongWith(new WaitCommand(0.5)).andThen(coralEndEffector.getNewSetVoltsCommand(-4)));
+        return(
+            elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
+            .alongWith(wrist.getNewApplyCoastModeCommand())
+            .alongWith(new WaitUntilCommand(elbow.getNewAtAngleTrigger(ElbowPositions.Confirm.angle(), Degrees.of(7.0))).withTimeout(1.0))
+        )
+        .andThen(coralEndEffector.getNewSetVoltsCommand(-4));
     }
 
     public static Command getNewStopScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector, Drive drive) {
-        return(coralEndEffector.getNewSetVoltsCommand(1)
-        .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
-        .alongWith(new WaitCommand(0.2))
-            .andThen(DriveCommands.joystickForwardDrive(drive, () -> 0.25, () -> 0.0, null).withTimeout(0.5))
-            .andThen(wrist.getNewWristTurnCommand(0)));
+        return wrist.getNewWristTurnCommand(0)
+                .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
+            .andThen(coralEndEffector.getNewSetVoltsCommand(-2.0));
     }
 
 }

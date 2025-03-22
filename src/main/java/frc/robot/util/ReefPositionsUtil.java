@@ -2,6 +2,8 @@ package frc.robot.util;
 
 import java.util.Map;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
@@ -29,6 +31,7 @@ public class ReefPositionsUtil {
     private ScoreLevel selectedScoreLevel = ScoreLevel.L1;
     private DeAlgaeLevel selectedDeAlgaeLevel = DeAlgaeLevel.Low;
     private AutoAlignSide selectedAutoAlignSide = AutoAlignSide.Left;
+
     private boolean isAutoAligning = true;
 
     private static ReefPositionsUtil instance;
@@ -166,7 +169,7 @@ public class ReefPositionsUtil {
     public boolean isSelected(AutoAlignSide side) {
         return (side.equals(selectedAutoAlignSide));
     }
-
+    
     public void setIsAutoAligning(boolean isAutoAligning) {
         this.isAutoAligning = isAutoAligning;
     }

@@ -19,193 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "advancedPathPlanner.0"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "parallel",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "StowToL4"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "WaitUntilL4"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AutoAlignScoreLeft"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ScoreL4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "BackupL4Left"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StopScoreL4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "L4ToStow"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "WaitUntilElevatorStow"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "advancedPathPlanner.1"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "StationIntake"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AutoAlignStationOutside"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "advancedPathPlanner.2"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "parallel",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "StowToL4"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "WaitUntilL4"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AutoAlignScoreLeft"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ScoreL4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "BackupL4Left"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StopScoreL4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "L4ToStow"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "WaitUntilElevatorStow"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "advancedPathPlanner.3"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "StationIntake"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AutoAlignStationOutside"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "advancedPathPlanner.4"
+            "pathName": "shortAdvancedRight.0"
           }
         },
         {
@@ -273,7 +87,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "advancedPathPlanner.5"
+            "pathName": "shortAdvancedRight.1"
           }
         },
         {
@@ -298,7 +112,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "advancedPathPlanner.6"
+            "pathName": "shortAdvancedRight.2"
           }
         },
         {
@@ -361,12 +175,43 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "shortAdvancedRight.3"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StationIntake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignStationOutside"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "shortAdvancedRight.4"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "L4ToStow"
+            "name": "StationIntakeToStow"
           }
         }
       ]

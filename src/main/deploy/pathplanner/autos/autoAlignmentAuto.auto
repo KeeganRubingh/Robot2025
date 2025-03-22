@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Stow"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "autoAlignmentAuto.0"
@@ -13,7 +19,7 @@
         {
           "type": "named",
           "data": {
-            "name": "SetL2"
+            "name": "SetL4"
           }
         },
         {
@@ -29,6 +35,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "AutoAlignStationOutside"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "AutoAlignmentAuto.2"
@@ -37,13 +49,49 @@
         {
           "type": "named",
           "data": {
-            "name": "SetL3"
+            "name": "SetL4"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "AutoAlignScoreLeft"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AutoAlignmentAuto.3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoAlignStationOutside"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AutoAlignmentAuto.4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetL4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoAlignScoreRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L4ToStow"
           }
         }
       ]

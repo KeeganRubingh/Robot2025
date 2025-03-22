@@ -36,8 +36,8 @@ public class ShoulderConstants extends ArmJointConstants {
         this.ReverseTorqueLimit = Amps.of(-80);
 
         this.NumMotors = 1;
-        this.SensorToMechanismGearing = 1;
-        this.MotorToSensorGearing = 100/38*34;//Greg moved a tooth on the gear
+        this.SensorToMechanismGearing = 1.0;
+        this.MotorToSensorGearing = 89.47368421052633;//Greg moved a tooth on the gear     100.0/38.0*34.0
         this.Length = Inches.of(18);
         this.Weight = Pounds.of(15);
         this.Motors = DCMotor.getKrakenX60(NumMotors);
@@ -48,7 +48,7 @@ public class ShoulderConstants extends ArmJointConstants {
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);
         this.ZPosition = Meters.of(0.377);
-        this.CanCoderOffset = Degrees.of(-2.2 + 16.5);
+        this.CanCoderOffset = Degrees.of(122.55);
         
         this.mechanismSimCallback = (d) -> {
             RobotState.instance().setShoulderSource(d);

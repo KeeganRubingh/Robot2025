@@ -21,14 +21,16 @@ import frc.robot.util.LoggedTunableNumber;
 
 public class IntakeExtender extends SubsystemBase {
   private IntakeExtenderIO m_intakeextenderIO;
+  double groundIntakeMinDeg = 0;
+  double groundIntakeMaxDeg = 90;
 
   IntakeExtenderInputsAutoLogged loggedintakeExtender = new IntakeExtenderInputsAutoLogged();
 
   public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
     "IntakeExtender", 
-    120.0, 0, 0, 
+    80.0, 0, 10, 
     0, 0, 0, 0, 
-    2.0, 1.0, 0, 0, 0
+    32.0, 2.5, 0, 0, 0
   );
   
   public IntakeExtender(IntakeExtenderIO intakeExtenderIO) {
@@ -48,28 +50,24 @@ public class IntakeExtender extends SubsystemBase {
     return ()->loggedintakeExtender.Angle;
   }
 
-  public void setAngle(Angle angle) {
+  private void setAngle(Angle angle) {
     m_intakeextenderIO.setTarget(angle);
   }
   
   public Command getNewIntakeExtenderTurnCommand(LoggedTunableNumber angle) {
-    return new InstantCommand(
-      () -> {
-        setAngle(Degrees.of((angle.get())));
-      },
-      this);
+    return new InstantCommand(() -> {
+      setAngle(Degrees.of((MathUtil.clamp(angle.get(), groundIntakeMinDeg, groundIntakeMaxDeg))));
+    }, this); 
   }
 
   public Command getNewIntakeExtenderTurnCommand(double i) {
-    return new InstantCommand(
-      () -> {
-        setAngle(Degrees.of(i));
-      },
-      this);
+    return new InstantCommand(() -> {
+      setAngle(Degrees.of(i));
+    }, this);
   }
 
   public Trigger getNewAtAngleTrigger(Angle angle,Angle tolerance) {
-     return new Trigger(() -> {
+    return new Trigger(() -> {
       return MathUtil.isNear(angle.baseUnitMagnitude(), loggedintakeExtender.Angle.baseUnitMagnitude(), tolerance.baseUnitMagnitude());
     });
   }

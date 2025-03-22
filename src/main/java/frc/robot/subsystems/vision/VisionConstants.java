@@ -47,11 +47,11 @@ public static Transform3d robotToCameraRight =
   new Transform3d(
     // 10.9.30.15
     //back right values on robot, 
-    // LL Forward -0.301(-11.844in), LL Right 0.269(10.6in), LL up 0.228(8.982in), LL Roll 0, LL Pitch 25, LL Yaw 165.
+    // LL Forward -0.301(-11.844in), LL Right 0.269(10.6in), LL up 0.241(8.982in + 0.5in (.013m)), LL Roll 0, LL Pitch 25, LL Yaw 165.
     //LL RIGHT IS -, IN CODE(y value) IT'S +
       -0.301,
       -0.269,
-      0.228,
+      0.241,
       //LL PITCH IS +, IN CODE IT'S -
       new Rotation3d(0.0, Math.toRadians(-25), Math.toRadians(165.0)));
 
