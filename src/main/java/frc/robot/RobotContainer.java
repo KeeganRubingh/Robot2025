@@ -326,12 +326,23 @@ public class RobotContainer {
         )
     );
     
-    // Conditional DeAlgae
+    // Conditional DeAlgae no auto align
     controller.leftTrigger()
+    .and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
     .and(algaeEndEffector.hasAlgaeTrigger().negate())
     .onTrue(new ConditionalCommand(
       new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator), 
       new TakeAlgaeL3(shoulder, elbow, wrist, algaeEndEffector, elevator), 
+      () -> reefPositions.isSelected(DeAlgaeLevel.Low)))
+    .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
+
+    //conditional DeAlgae auto align
+    controller.leftTrigger()
+    .and(()->ReefPositionsUtil.getInstance().getIsAutoAligning())
+    .and(algaeEndEffector.hasAlgaeTrigger().negate())
+    .onTrue(new ConditionalCommand(
+      ReefScoreCommandFactory.getNewAlgaePluckAutoAlignSequenceCommand(DeAlgaeLevel.Low, drive, shoulder, elbow, elevator, wrist, algaeEndEffector), 
+      ReefScoreCommandFactory.getNewAlgaePluckAutoAlignSequenceCommand(DeAlgaeLevel.Top, drive, shoulder, elbow, elevator, wrist, algaeEndEffector), 
       () -> reefPositions.isSelected(DeAlgaeLevel.Low)))
     .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
 
