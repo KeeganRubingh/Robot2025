@@ -18,14 +18,15 @@ import frc.robot.util.LoggedTunableGainsBuilder;
 public class ShoulderConstants extends ArmJointConstants {
     public ShoulderConstants() {
         this.LeaderProfile = CanDef.builder().id(9).bus(CanBus.CANivore).build();
-        this.FollowerProfile = CanDef.builder().id(25).bus(CanBus.CANivore).build(); //TODO: Set
+        this.FollowerProfile = CanDef.builder().id(25).bus(CanBus.CANivore).build();
         this.CanCoderProfile = CanDef.builder().id(22).bus(CanBus.CANivore).build();
 
         this.SimGains =
             Gains.builder().kS(0.0).kG(0.0).kV(0.0).kA(0.0).kP(0.1).kI(0.0).kD(0.0).build();
 
         this.LoggedName = "Shoulder";
-        this.TalonFXGains = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName, 50.0, 0, 0.0, 1.0, 0.0, 6.0, 0.3, 1.0, 2.0, 0, 0, 0);
+        this.TalonFXGains = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName+"/ShoulderSlot0Gains", 50.0, 0, 0.0, 1.0, 0.0, 6.0, 0.3, 1.0, 2.0, 0, 0, 0);
+        this.TalonFXGainsSlot1 = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName+"/ShoulderSlot1Gains", 50.0, 0, 0.0, 1.0, 0.0, 6.0, 0.3, 1.0, 2.0, 0, 0, 0);
 
         this.MaxVelocity = RotationsPerSecond.of(1);
         this.MaxAcceleration = RotationsPerSecondPerSecond.of(5);

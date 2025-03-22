@@ -66,12 +66,8 @@ public class ArmJoint extends SubsystemBase {
     m_armJointIO.setTarget(angle);
   }
 
-  public void setAngleSlot0(Angle angle) {
-    m_armJointIO.setTargetWithSlot(angle, 0);
-  }
-
-  public void setAngleSlot1(Angle angle) {
-    m_armJointIO.setTargetWithSlot(angle, 0);
+  public void setAngleWithSlot(Angle angle, int slot) {
+    m_armJointIO.setTargetWithSlot(angle, slot);
   }
   
   public Command getNewSetAngleCommand(DoubleSupplier degrees) {
@@ -86,6 +82,22 @@ public class ArmJoint extends SubsystemBase {
     return new InstantCommand(
         () -> {
           setAngle(Degrees.of(i));
+        },
+        this);
+  }
+
+  public Command getNewSetAngleWithSlotCommand(DoubleSupplier degrees, int slot) {
+    return new InstantCommand(
+        () -> {
+          setAngleWithSlot(Degrees.of((degrees.getAsDouble())), slot);
+        },
+        this);
+  }
+  /**Degrees*/
+  public Command getNewSetAngleWithSlotCommand(double i, int slot) {
+    return new InstantCommand(
+        () -> {
+          setAngleWithSlot(Degrees.of(i), slot);
         },
         this);
   }

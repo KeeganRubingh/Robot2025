@@ -106,9 +106,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
 
   @Override
   public void setTarget(Angle target) {
-    Request = Request.withPosition(target);
-    Motor.setControl(Request);
-    m_setPoint = target;
+    setTargetWithSlot(target, 0);
   }
 
   @Override
