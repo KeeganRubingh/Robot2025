@@ -525,7 +525,7 @@ public class RobotContainer {
     // testcontroller.povUp().whileTrue(new AutoAlignCommand((thisOneVariableWhichIDontReallyNeedSoIWillUseAnExtremelyConciseNameFor) -> {return new Pose2d(0, 0, Rotation2d.kZero);}, drive));
     // testcontroller.povDown().whileTrue(new AutoAlignCommand((p)->Drive.getBargeScorePose(p), drive));
     testcontroller.b().onTrue(
-        ReefScoreCommandFactory.getNewAutoReefAlgaeScoreSequenceCommand(drive, shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector))
+        ReefScoreCommandFactory.getNewAlgaePluckAutoAlignSequenceCommand(drive, shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector))
       .onFalse(
         new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector)  
       );
