@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -30,6 +31,7 @@ import frc.robot.subsystems.wrist.Wrist;
 import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
+import frc.robot.util.ReefPositionsUtil.DeAlgaeLevel;
 import frc.robot.util.ReefPositionsUtil.ScoreLevel;
 
 public class ReefScoreCommandFactory {
@@ -184,17 +186,27 @@ public class ReefScoreCommandFactory {
      * @param algaeEE
      * @return
      */
-    public static Command getNewAlgaePluckAutoAlignSequenceCommand( 
+    public static Command getNewAlgaePluckAutoAlignSequenceCommand(
+        DeAlgaeLevel level, 
         Drive drive,
         ArmJoint shoulder, 
         ArmJoint elbow, 
         Elevator elevator, 
         Wrist wrist, 
-        CoralEndEffector coralEE, 
         AlgaeEndEffector algaeEE
     ) {
         return getNewAlignToReefCommand(ReefPosition.Center, false, drive)
-            .alongWith(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator))
+            .alongWith(new ConditionalCommand(
+                new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator), 
+                new TakeAlgaeL3(shoulder, elbow, wrist, algaeEE, elevator), 
+                () -> ReefPositionsUtil.getInstance().isSelected(DeAlgaeLevel.Low)))
             .andThen(getNewAlignToReefCommand(ReefPosition.Center, true, drive));
+    }
+    
+    public static Command getNewAlgaePluckAutoAlignCommand(
+        Drive drive,
+        boolean isBackingUp
+    ) {
+        return getNewAlignToReefCommand(ReefPosition.Center, isBackingUp, drive);
     }
 }
