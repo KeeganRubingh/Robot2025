@@ -2,14 +2,17 @@
 package frc.robot.subsystems.climber;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
 
@@ -33,10 +36,16 @@ public class Climber extends SubsystemBase {
     loggedclimber.torqueCurrent = Amps.mutable(0);
     loggedclimber.voltageSetPoint = Volts.mutable(0);
     loggedclimber.voltage = Volts.mutable(0);
+    loggedclimber.servoTarget = Degrees.mutable(0);
+    loggedclimber.servoPos = Degrees.mutable(0);
   }
 
   public void setTarget(Voltage target) {
     m_ClimberIO.setTarget(target);
+  }
+
+  public void setServoTarget(Angle angle) {
+    m_ClimberIO.setServoTarget(angle);
   }
 
   public Command getNewSetVoltsCommand(LoggedTunableNumber volts) {
@@ -50,6 +59,13 @@ public class Climber extends SubsystemBase {
     return new InstantCommand(
         () -> {
           setTarget(Volts.of(i));
+        },
+        this);
+  }
+  public Command getNewSetServoAngleCommand(double angle) {
+    return new InstantCommand(
+        () -> {
+          setServoTarget(Degrees.of(angle));
         },
         this);
   }
