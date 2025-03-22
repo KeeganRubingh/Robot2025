@@ -184,7 +184,7 @@ public class ReefScoreCommandFactory {
      * @param algaeEE
      * @return
      */
-    public static Command getNewAutoReefAlgaeScoreSequenceCommand( 
+    public static Command getNewAlgaePluckAutoAlignSequenceCommand( 
         Drive drive,
         ArmJoint shoulder, 
         ArmJoint elbow, 
@@ -194,6 +194,7 @@ public class ReefScoreCommandFactory {
         AlgaeEndEffector algaeEE
     ) {
         return getNewAlignToReefCommand(ReefPosition.Center, false, drive)
-            .alongWith(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator));
+            .alongWith(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator))
+            .andThen(getNewAlignToReefCommand(ReefPosition.Center, true, drive));
     }
 }
