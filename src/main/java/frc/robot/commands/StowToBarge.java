@@ -44,7 +44,7 @@ public class StowToBarge extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Final(new LoggedTunableNumber("BargeScoreCommand/elbow/FinalDegrees", 192));
+        Final(new LoggedTunableNumber("BargeScoreCommand/elbow/FinalDegrees", 65));
 
         DoubleSupplier position;
         MutAngle distance;

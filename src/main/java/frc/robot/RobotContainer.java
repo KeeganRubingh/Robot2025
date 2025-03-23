@@ -371,13 +371,15 @@ public class RobotContainer {
       .whileTrue(
         new StowToBarge(shoulder,elbow,elevator,wrist)
           .andThen(new BargeAlignCommand(drive,()->controller.getLeftX()))
-          .andThen(new BargeScoreCommand(algaeEndEffector))
       )
       .onFalse(
-        new ConditionalCommand(
-          new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector), 
-          new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-          algaeEndEffector.hasAlgaeTrigger()
+        new BargeScoreCommand(algaeEndEffector)
+        .andThen(
+          new ConditionalCommand(
+            new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector), 
+            new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+            algaeEndEffector.hasAlgaeTrigger()
+          )
         )
       );
 

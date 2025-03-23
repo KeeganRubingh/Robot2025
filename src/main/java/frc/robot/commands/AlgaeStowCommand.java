@@ -35,7 +35,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Final(new LoggedTunableNumber("StowToAlgaeStow/elbow/FinalDegrees", 360-162.0));
+        Final(new LoggedTunableNumber("StowToAlgaeStow/elbow/FinalDegrees", 198));
 
         DoubleSupplier position;
         MutAngle distance;
