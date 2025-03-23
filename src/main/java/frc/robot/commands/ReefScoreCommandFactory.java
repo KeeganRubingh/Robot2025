@@ -199,7 +199,8 @@ public class ReefScoreCommandFactory {
                 () -> ReefPositionsUtil.getInstance().isSelected(DeAlgaeLevel.Low)))
             .until(algaeEE.hasAlgaeTrigger())
             .andThen(new WaitUntilCommand(algaeEE.hasAlgaeTrigger()))
-            .andThen(getNewAlignToReefCommand(ReefPosition.Center, true, drive));
+            .andThen(getNewAlignToReefCommand(ReefPosition.Center, true, drive))
+            .andThen(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE));
     }
     
     public static Command getNewAlgaePluckAutoAlignCommand(
