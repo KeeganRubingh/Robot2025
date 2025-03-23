@@ -8,7 +8,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDistance;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
@@ -108,10 +107,7 @@ public class StowCommand extends SequentialCommandGroup {
                     elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
                 ),
             coralEE.getNewSetVoltsCommand(1)
-                .alongWith(algaeEE.getNewSetVoltsCommand(0)),
-            new InstantCommand(() -> {
-                System.out.println("lol");
-            })
+                .alongWith(algaeEE.getNewSetVoltsCommand(0))
         );
         addRequirements(shoulder, elbow, wrist, elevator, coralEE, algaeEE);
     }
