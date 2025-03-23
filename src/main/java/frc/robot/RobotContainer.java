@@ -509,17 +509,10 @@ public class RobotContainer {
     .onTrue(new BargeScoreCommand(algaeEndEffector))
     .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
 
-    // Outtake Algae (Also processor score from stow pos)
+    // Outtake Algae
     controller.povLeft()
-      .onTrue(
-        new ReadyProcessorScore(shoulder, elbow, elevator, wrist, algaeEndEffector)
-        )
-      .onFalse(
-        new OutakeAlgae(algaeEndEffector)
-        .andThen(new WaitCommand(0.2))
-        .andThen(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector))
-        .andThen(algaeEndEffector.getNewSetVoltsCommand(0.0))
-      );
+      .onTrue(new OutakeAlgae(algaeEndEffector))
+      .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
 
     //Outtake Coral
     controller.povRight()
