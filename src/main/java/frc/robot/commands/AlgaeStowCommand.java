@@ -18,7 +18,7 @@ import frc.robot.util.LoggedTunableNumber;
 public class AlgaeStowCommand extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
-        Final(new LoggedTunableNumber("StowToAlgaeStow/shoulder/FinalDegrees", 65.0));
+        Final(new LoggedTunableNumber("StowToAlgaeStow/shoulder/FinalDegrees", 71.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -35,7 +35,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Final(new LoggedTunableNumber("StowToAlgaeStow/elbow/FinalDegrees", 65.0));
+        Final(new LoggedTunableNumber("StowToAlgaeStow/elbow/FinalDegrees", 360-162.0));
 
         DoubleSupplier position;
         MutAngle distance;
