@@ -1,9 +1,5 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
-
 import java.util.Map;
 import java.util.function.Function;
 
@@ -13,23 +9,22 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
-import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.wrist.Wrist;
-
 import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
+import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
+import frc.robot.util.ReefPositionsUtil.DeAlgaeLevel;
 import frc.robot.util.ReefPositionsUtil.ScoreLevel;
 
 public class ReefScoreCommandFactory {
@@ -56,6 +51,7 @@ public class ReefScoreCommandFactory {
     private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlign/offsetBBackingUp", 1.0);
     private static LoggedTunableNumber rightOffsetBFinal = new LoggedTunableNumber("AutoAlign/rightOffsetBFinal", 0.68);
     private static LoggedTunableNumber leftOffsetBFinal = new LoggedTunableNumber("AutoAlign/leftOffsetBFinal", 0.68);
+    private static LoggedTunableNumber algaeOffsetBFinal = new LoggedTunableNumber("AutoAlign/algaeOffsetBFinal", 0.55);
     private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlign/offsetL", 0.155);
     private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.2);
     //#endregion
@@ -106,6 +102,7 @@ public class ReefScoreCommandFactory {
                 case Center:
                 default:
                     appliedOffset = 0;
+                    backOffset = algaeOffsetBFinal.get();
                     break;
             }
             Transform2d offset = new Transform2d(isBackingUp ? offsetBBackingUp.getAsDouble() : backOffset, appliedOffset, Rotation2d.kZero);
@@ -184,16 +181,32 @@ public class ReefScoreCommandFactory {
      * @param algaeEE
      * @return
      */
-    public static Command getNewAutoReefAlgaeScoreSequenceCommand( 
+    public static Command getNewAlgaePluckAutoAlignSequenceCommand(
+        DeAlgaeLevel level, 
         Drive drive,
         ArmJoint shoulder, 
         ArmJoint elbow, 
         Elevator elevator, 
         Wrist wrist, 
-        CoralEndEffector coralEE, 
         AlgaeEndEffector algaeEE
     ) {
-        return getNewAlignToReefCommand(ReefPosition.Center, false, drive)
-            .alongWith(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator));
+        return getNewAlignToReefCommand(ReefPosition.Center, true, drive)
+            .andThen(new WaitCommand(0.5))
+            .andThen(getNewAlignToReefCommand(ReefPosition.Center, false, drive))
+            .alongWith(new ConditionalCommand(
+                new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator),
+                new TakeAlgaeL3(shoulder, elbow, wrist, algaeEE, elevator),
+                () -> ReefPositionsUtil.getInstance().isSelected(DeAlgaeLevel.Low)))
+            .until(algaeEE.hasAlgaeTrigger())
+            .andThen(new WaitUntilCommand(algaeEE.hasAlgaeTrigger()))
+            .andThen(getNewAlignToReefCommand(ReefPosition.Center, true, drive))
+            .andThen(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE));
+    }
+    
+    public static Command getNewAlgaePluckAutoAlignCommand(
+        Drive drive,
+        boolean isBackingUp
+    ) {
+        return getNewAlignToReefCommand(ReefPosition.Center, isBackingUp, drive);
     }
 }

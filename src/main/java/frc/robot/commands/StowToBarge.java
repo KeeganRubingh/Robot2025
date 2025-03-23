@@ -1,9 +1,9 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.*;
-
 import java.util.function.DoubleSupplier;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
@@ -44,8 +44,6 @@ public class StowToBarge extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber("BargeScoreCommand/elbow/StartingDegrees", 0)),
-        ShoulderSafeSwing(new LoggedTunableNumber("BargeScoreCommand/elbow/ShoulderSafeSwingDegrees", 45)),
         Final(new LoggedTunableNumber("BargeScoreCommand/elbow/FinalDegrees", 65));
 
         DoubleSupplier position;
@@ -106,7 +104,8 @@ public class StowToBarge extends SequentialCommandGroup {
                 .alongWith(
                     new WaitUntilCommand(elevator.getNewGreaterThanDistanceTrigger(ElevatorPositions.SafeToSwingShoulder.position))
                 ),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position) 
+            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
+            elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
         );
         addRequirements(shoulder, elbow, wrist, elevator);
     }

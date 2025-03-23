@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -21,16 +22,16 @@ import frc.robot.util.LoggedTunableNumber;
 
 public class IntakeExtender extends SubsystemBase {
   private IntakeExtenderIO m_intakeextenderIO;
-  double groundIntakeMinDeg = 0;
-  double groundIntakeMaxDeg = 90;
+  double groundIntakeMinDeg = -180;
+  double groundIntakeMaxDeg = 0;
 
   IntakeExtenderInputsAutoLogged loggedintakeExtender = new IntakeExtenderInputsAutoLogged();
 
   public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
     "IntakeExtender", 
-    80.0, 0, 10, 
+    150.0, 0, 10, 
     0, 0, 0, 0, 
-    32.0, 2.5, 0, 0, 0
+    32.0, 7.5, 0, 0, 0
   );
   
   public IntakeExtender(IntakeExtenderIO intakeExtenderIO) {
@@ -54,9 +55,9 @@ public class IntakeExtender extends SubsystemBase {
     m_intakeextenderIO.setTarget(angle);
   }
   
-  public Command getNewIntakeExtenderTurnCommand(LoggedTunableNumber angle) {
+  public Command getNewIntakeExtenderTurnCommand(DoubleSupplier angle) {
     return new InstantCommand(() -> {
-      setAngle(Degrees.of((MathUtil.clamp(angle.get(), groundIntakeMinDeg, groundIntakeMaxDeg))));
+      setAngle(Degrees.of(angle.getAsDouble()));
     }, this); 
   }
 
@@ -66,9 +67,15 @@ public class IntakeExtender extends SubsystemBase {
     }, this);
   }
 
-  public Trigger getNewAtAngleTrigger(Angle angle,Angle tolerance) {
+  // public Trigger getNewAtAngleTrigger(Angle angle,Angle tolerance) {
+  //   return new Trigger(() -> {
+  //     return MathUtil.isNear(angle.baseUnitMagnitude(), loggedintakeExtender.Angle.baseUnitMagnitude(), tolerance.baseUnitMagnitude());
+  //   });
+  // }
+
+  public Trigger getNewAtAngleTrigger(DoubleSupplier angle, Angle tolerance) {
     return new Trigger(() -> {
-      return MathUtil.isNear(angle.baseUnitMagnitude(), loggedintakeExtender.Angle.baseUnitMagnitude(), tolerance.baseUnitMagnitude());
+      return MathUtil.isNear(angle.getAsDouble(), loggedintakeExtender.Angle.in(Degrees), tolerance.in(Degrees));
     });
   }
 

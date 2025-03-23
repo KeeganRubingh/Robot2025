@@ -8,11 +8,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.commands.GroundIntakeToStow;
+import frc.robot.commands.AlgaeStowCommand;
 import frc.robot.commands.L4ToStow;
+import frc.robot.commands.OutakeAlgae;
 import frc.robot.commands.OutakeCoral;
 import frc.robot.commands.ReefScoreCommandFactory;
 import frc.robot.commands.ReefScoreCommandFactory.ReefPosition;
@@ -27,6 +26,8 @@ import frc.robot.commands.StowToL1;
 import frc.robot.commands.StowToL2;
 import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
+import frc.robot.commands.TakeAlgaeL2;
+import frc.robot.commands.TakeAlgaeL3;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
@@ -36,7 +37,6 @@ import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.ReefPositionsUtil;
 import frc.robot.util.ReefPositionsUtil.ScoreLevel;
-import frc.robot.util.SelectorCommandFactory;
 
 
 public class AutoCommandManager {
@@ -84,6 +84,7 @@ public class AutoCommandManager {
     //#region Stows
     NamedCommands.registerCommand("Stow", new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
     NamedCommands.registerCommand("L4ToStow", new L4ToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
+    NamedCommands.registerCommand("AlgaeStow", new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE));
     // Needed so not hit coral on elevator
     NamedCommands.registerCommand("StationIntakeToStow", new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE));
     // NamedCommands.registerCommand("GroundIntakeToStow",
@@ -94,6 +95,12 @@ public class AutoCommandManager {
     //#region Intakes
     NamedCommands.registerCommand("StationIntake", new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEE));
     NamedCommands.registerCommand("ReverseStationIntake", new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEE));
+    NamedCommands.registerCommand("TakeAlgaeL2",
+      new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator)
+    );
+    NamedCommands.registerCommand("TakeAlgaeL3",
+      new TakeAlgaeL3(shoulder, elbow, wrist, algaeEE, elevator)
+    );
     //#endregion
 
     //#region Prep Scores
@@ -135,7 +142,8 @@ public class AutoCommandManager {
     ));
     //#endregion
 
-    NamedCommands.registerCommand("CoralOuttake", new OutakeCoral(coralEE));
+    NamedCommands.registerCommand("OutakeCoral", new OutakeCoral(coralEE));
+    NamedCommands.registerCommand("OutakeAlgae", new OutakeAlgae(algaeEE));
     NamedCommands.registerCommand("StopDrivetrain", new StopDrivetrainCommand(drive));
     NamedCommands.registerCommand("StopUnlessL4", 
       new StopDrivetrainCommand(drive)
@@ -181,6 +189,13 @@ public class AutoCommandManager {
         ReefPosition.Right, 
         false,
         drive));
+    
+    NamedCommands.registerCommand("AutoAlignAlgaePluck",
+      ReefScoreCommandFactory.getNewAlgaePluckAutoAlignCommand(drive, false)
+    );
+    NamedCommands.registerCommand("AutoAlignAlgaePluckBackup",
+      ReefScoreCommandFactory.getNewAlgaePluckAutoAlignCommand(drive, true)
+    );
     //#endregion
   }
 }

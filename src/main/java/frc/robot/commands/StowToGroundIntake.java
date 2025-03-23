@@ -6,7 +6,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
@@ -56,7 +55,7 @@ public class StowToGroundIntake extends SequentialCommandGroup {
 
     private static enum WristPositions {
         Starting(new LoggedTunableNumber("StowToGroundIntake/Wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("StowToGroundIntake/Wrist/FinalDegrees", 90));
+        Final(new LoggedTunableNumber("StowToGroundIntake/Wrist/FinalDegrees", -90));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -73,8 +72,9 @@ public class StowToGroundIntake extends SequentialCommandGroup {
     }
 
     private static enum IntakeExtenderPositions {
-        Starting(new LoggedTunableNumber("StowToGroundIntake/Wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("StowToGroundIntake/Wrist/FinalDegrees", -144));
+        Stow(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/StowDegrees", -45)),
+        Transfer(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/TransferDegrees", 0)),
+        Final(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/FinalDegrees", -155));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -104,27 +104,26 @@ public class StowToGroundIntake extends SequentialCommandGroup {
         addCommands(
             elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
-            wrist.getNewWristTurnCommand(-90)
+            wrist.getNewWristTurnCommand(WristPositions.Final.position)
         );
     }
 
     /**
      * The second part of the ground intake. Spins up the ground intake.
      * If the ground intake has a coral, moves it to the ready pos.
-     * <i> This will run forever until interrupted, so make sure to add a kill to it </i>
      * @return
      */
     public static Command getRunGroundIntakeCommand(Intake intake, IntakeExtender extender) {
         return intake.getNewSetVoltsCommand(6)
-                .alongWith(extender.getNewIntakeExtenderTurnCommand(-144))
-                .alongWith(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(-144), Degrees.of(10))))
+                .alongWith(extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Final.position))
+                .alongWith(new WaitUntilCommand(extender.getNewAtAngleTrigger(IntakeExtenderPositions.Final.position, Degrees.of(10))))
                 .andThen(new WaitUntilCommand(intake.hasCoralTrigger()))
                 .andThen(intake.getNewSetVoltsCommand(0))
-                .andThen(extender.getNewIntakeExtenderTurnCommand(0));//TODO -25 this is the VALUE for STOW but currently is not getting there
+                .andThen(extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position));
     }
 
     /**
-     * The third part of the ground intake. Raises the ground intake, takes a coral from it, then moves it to the ready pos
+     * The third part of the ground intake. Raises the ground intake, takes a coral from it, then moves the extender to the intake pos
      * @return
      */
     public static Command getTakeCoralFromGroundIntakeCommand(Intake intake, IntakeExtender extender, ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
@@ -132,12 +131,12 @@ public class StowToGroundIntake extends SequentialCommandGroup {
         new WaitUntilCommand(wrist.getNewAtAngleTrigger(Degrees.of(-90), Degrees.of(1)))
         .andThen(coralEndEffector.getNewSetVoltsCommand(6))
             .alongWith(extender.getNewIntakeExtenderTurnCommand(0))
-        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(0), Degrees.of(3))))
+        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(IntakeExtenderPositions.Transfer.position, Degrees.of(3))))
         .andThen(intake.getNewSetVoltsCommand(-5))
         .andThen(new WaitUntilCommand(coralEndEffector.hasCoralTrigger())) 
         .andThen(intake.getNewSetVoltsCommand(0))
         .andThen(
-            extender.getNewIntakeExtenderTurnCommand(-40) //TODO -25 this is the VALUE for STOW but currently is not getting there
+            extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position)
             .alongWith(coralEndEffector.getNewSetVoltsCommand(1))
         );
     }
@@ -151,11 +150,11 @@ public class StowToGroundIntake extends SequentialCommandGroup {
      * @return
      */
     public static Command getReturnToStowCommand(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys, IntakeExtender extender, Intake intake) {
-        return extender.getNewIntakeExtenderTurnCommand(-45)
+        return extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position)
         .andThen(intake.getNewSetSpeedCommand(0))
-        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(Degrees.of(-45), Degrees.of(5))))
+        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(IntakeExtenderPositions.Stow.position, Degrees.of(5))))
         .andThen(wrist.getNewWristTurnCommand(WristPositions.Starting.position))
-        .andThen(new WaitUntilCommand(wrist.getNewAtAngleTrigger(Degrees.of(WristPositions.Starting.position.getAsDouble()), Degrees.of(1))))
+        .andThen(new WaitUntilCommand(wrist.getNewAtAngleTrigger(WristPositions.Starting.position, Degrees.of(1))))
         .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.Starting.position))
         .andThen(elbow.getNewSetAngleCommand(ElbowPositions.Starting.position));
     }

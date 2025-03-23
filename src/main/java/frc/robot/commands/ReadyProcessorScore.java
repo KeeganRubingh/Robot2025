@@ -4,21 +4,24 @@ import java.util.function.DoubleSupplier;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
-public class AlgaeStowCommand extends SequentialCommandGroup {
-
+public class ReadyProcessorScore extends SequentialCommandGroup {
+    
     private enum ShoulderPositions {
-        Final(new LoggedTunableNumber("StowToAlgaeStow/shoulder/FinalDegrees", 71.0));
+        Final(new LoggedTunableNumber("ReadyProcessorScore/shoulder/FinalDegrees", 20.0)),
+        Tolerance(new LoggedTunableNumber("ReadyProcessorScore/shoulder/Tolerance", 2.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -35,7 +38,8 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Final(new LoggedTunableNumber("StowToAlgaeStow/elbow/FinalDegrees", 198));
+        Final(new LoggedTunableNumber("ReadyProcessorScore/elbow/FinalDegrees", 70.0)),
+        Tolerance(new LoggedTunableNumber("ReadyProcessorScore/shoulder/Tolerance", 2.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -52,7 +56,8 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private enum ElevatorPositions {
-        Final(new LoggedTunableNumber("StowToAlgaeStow/elevator/FinalInches", 0));
+        Starting(new LoggedTunableNumber("ReadyProcessorScore/elevator/StartingInches", 0)),
+        Final(new LoggedTunableNumber("ReadyProcessorScore/elevator/FinalInches", 0));
 
         DoubleSupplier position;
         MutDistance distance;
@@ -69,7 +74,8 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Final(new LoggedTunableNumber("StowToAlgaeStow/wrist/FinalDegrees", 0));
+        Starting(new LoggedTunableNumber("ReadyProcessorScore/wrist/StartingDegrees", 0)),
+        Final(new LoggedTunableNumber("ReadyProcessorScore/wrist/FinalDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -85,14 +91,15 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
         }
     }
 
-    public AlgaeStowCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, AlgaeEndEffector algaeEE) {
+    public ReadyProcessorScore(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, AlgaeEndEffector algaeEE) {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
-            elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position),
-            algaeEE.getNewSetVoltsCommand(1.0)
+            new WaitUntilCommand(shoulder.getNewAtAngleTrigger(ShoulderPositions.Final.position,ShoulderPositions.Tolerance.position)),
+            new WaitUntilCommand(elbow.getNewAtAngleTrigger(ElbowPositions.Final.position,ElbowPositions.Tolerance.position)),
+            algaeEE.getNewSetVoltsCommand(4.0)
         );
-        addRequirements(shoulder, elbow,  elevator, wrist, algaeEE);
+        addRequirements(shoulder, elbow, elevator, wrist, algaeEE);
     }
 }

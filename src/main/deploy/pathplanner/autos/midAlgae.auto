@@ -1,0 +1,191 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Stow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midAlgae.0"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "StowToL4"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "WaitUntilL4"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignScoreLeft"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ScoreL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "BackupL4Left"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopScoreL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "L4ToStow"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "WaitUntilElevatorStow"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "TakeAlgaeL2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopDrivetrain"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignAlgaePluck"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignAlgaePluckBackup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "OutakeAlgae"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midAlgae.1"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "TakeAlgaeL3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopDrivetrain"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignAlgaePluck"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignAlgaePluckBackup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "OutakeAlgae"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AlgaeStow"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
