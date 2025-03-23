@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -54,9 +55,9 @@ public class IntakeExtender extends SubsystemBase {
     m_intakeextenderIO.setTarget(angle);
   }
   
-  public Command getNewIntakeExtenderTurnCommand(LoggedTunableNumber angle) {
+  public Command getNewIntakeExtenderTurnCommand(DoubleSupplier angle) {
     return new InstantCommand(() -> {
-      setAngle(Degrees.of((MathUtil.clamp(angle.get(), groundIntakeMinDeg, groundIntakeMaxDeg))));
+      setAngle(Degrees.of((MathUtil.clamp(angle.getAsDouble(), groundIntakeMinDeg, groundIntakeMaxDeg))));
     }, this); 
   }
 
@@ -66,9 +67,15 @@ public class IntakeExtender extends SubsystemBase {
     }, this);
   }
 
-  public Trigger getNewAtAngleTrigger(Angle angle,Angle tolerance) {
+  // public Trigger getNewAtAngleTrigger(Angle angle,Angle tolerance) {
+  //   return new Trigger(() -> {
+  //     return MathUtil.isNear(angle.baseUnitMagnitude(), loggedintakeExtender.Angle.baseUnitMagnitude(), tolerance.baseUnitMagnitude());
+  //   });
+  // }
+
+  public Trigger getNewAtAngleTrigger(DoubleSupplier angle, Angle tolerance) {
     return new Trigger(() -> {
-      return MathUtil.isNear(angle.baseUnitMagnitude(), loggedintakeExtender.Angle.baseUnitMagnitude(), tolerance.baseUnitMagnitude());
+      return MathUtil.isNear(angle.getAsDouble(), loggedintakeExtender.Angle.in(Degrees), tolerance.in(Degrees));
     });
   }
 

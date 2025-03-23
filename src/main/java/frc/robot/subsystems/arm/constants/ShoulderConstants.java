@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import frc.robot.RobotState;
@@ -49,7 +48,7 @@ public class ShoulderConstants extends ArmJointConstants {
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);
         this.ZPosition = Meters.of(0.377);
-        this.CanCoderOffset = Degrees.of(122.55);
+        this.CanCoderOffset = Degrees.of(125.55);
         
         this.mechanismSimCallback = (d) -> {
             RobotState.instance().setShoulderSource(d);

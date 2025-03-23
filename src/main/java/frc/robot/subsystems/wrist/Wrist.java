@@ -110,6 +110,12 @@ public class Wrist extends SubsystemBase {
     });
   }
 
+  public Trigger getNewAtAngleTrigger(DoubleSupplier angle, Angle tolerance) {
+    return new Trigger(() -> {
+      return MathUtil.isNear(angle.getAsDouble(), loggedwrist.wristAngle.in(Degrees), tolerance.in(Degrees));
+    });
+  }
+
   public Trigger getNewAtSetpointTrigger() {
     return new Trigger(() -> {
       return MathUtil.isNear(loggedwrist.wristSetPoint.baseUnitMagnitude(), loggedwrist.wristAngle.baseUnitMagnitude(), Degrees.of(0.25).baseUnitMagnitude());

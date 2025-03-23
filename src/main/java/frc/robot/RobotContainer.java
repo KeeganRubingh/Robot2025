@@ -22,15 +22,12 @@ package frc.robot;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.print.attribute.standard.OutputDeviceAssigned;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -38,8 +35,6 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,19 +45,17 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AlgaeStowCommand;
-import frc.robot.commands.AutoAlignCommand;
 import frc.robot.commands.BargeAlignCommand;
 import frc.robot.commands.BargeScoreCommand;
 import frc.robot.commands.DisengageClimber;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.EngageClimber;
-import frc.robot.commands.GroundIntakeToStow;
 import frc.robot.commands.L4ToStow;
 import frc.robot.commands.NeutralClimber;
 import frc.robot.commands.OutakeAlgae;
 import frc.robot.commands.OutakeCoral;
-import frc.robot.commands.ReadyProcessorScore;
 import frc.robot.commands.ProcessorAlignCommand;
+import frc.robot.commands.ReadyProcessorScore;
 import frc.robot.commands.ReefScoreCommandFactory;
 import frc.robot.commands.ReefScoreCommandFactory.ReefPosition;
 import frc.robot.commands.StationIntakeCommand;
@@ -103,7 +96,6 @@ import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIONova;
 import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOSim;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOTalonFX;
@@ -634,8 +626,8 @@ public class RobotContainer {
     
     // GROUND INTAKE PARTY
     testcontroller.a()
-      .and(coralEndEffector.hasCoralTrigger().negate())//todo and hascoral not
-      .onTrue(
+      // .and(coralEndEffector.hasCoralTrigger().negate())//todo and hascoral not
+      .whileTrue(
         new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
         .andThen(StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender))
         .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector))
