@@ -1,8 +1,5 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Meters;
-import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
-
 import java.util.Map;
 import java.util.function.Function;
 
