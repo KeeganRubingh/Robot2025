@@ -30,6 +30,7 @@ public class BargeAlignCommand extends AutoAlignCommand {
 
     public BargeAlignCommand(Drive drive, Supplier<Double> strafeControl) {
         super ((p)->getBargeScorePose(p),()->new Transform2d(0.0,strafeControl.get(),Rotation2d.kZero),drive);
+        this.withControlScheme(ControllerType.COMPLEX_DRIVESUPPRESS);
         addRequirements(drive);
     }
 

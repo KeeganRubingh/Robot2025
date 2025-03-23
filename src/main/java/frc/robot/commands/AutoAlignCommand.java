@@ -15,8 +15,12 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Radians;
+
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Timer;
@@ -42,6 +46,8 @@ public class AutoAlignCommand extends Command {
     private static LoggedTunableNumber maxAccelDistanceTune = new LoggedTunableNumber("AutoAlign/throttleGains/maxAccMetersPerSecond",10.0);
     private static LoggedTunableNumber toleranceB = new LoggedTunableNumber("AutoAlign/toleranceB", 0.01);
     private static LoggedTunableNumber toleranceR = new LoggedTunableNumber("AutoAlign/toleranceR", 0.02);
+
+    private static LoggedTunableNumber spinBound = new LoggedTunableNumber("AutoAlign/complexSpinBound", 10);
     //#endregion
 
     private LinearVelocity m_maxStrafe = MetersPerSecond.of(maxStrafeTune.getAsDouble()); 
@@ -64,6 +70,14 @@ public class AutoAlignCommand extends Command {
 
     private Supplier<Transform2d> speedModSupplier;
     private double lastTimestamp = 0.0;
+
+    private ControllerType controlscheme = ControllerType.SIMPLE;
+
+    enum ControllerType {
+        SIMPLE, // Behaves the same as the command we've used so far
+        COMPLEX_DRIVESUPPRESS //Supresses lateral movement until the spin is within a certain range
+        ;
+    }
 
     /**
      * This command utilitzes the swerve drive while it isn't field relative.
@@ -135,6 +149,11 @@ public class AutoAlignCommand extends Command {
         return drivetrain.getAutoAlignPose();
     }
 
+    public AutoAlignCommand withControlScheme(ControllerType controlScheme) {
+        this.controlscheme = controlScheme;
+        return this;
+    }
+
     @Override
     public void initialize() {
         resetGains();
@@ -172,6 +191,13 @@ public class AutoAlignCommand extends Command {
         m_strafe = m_strafePID.calculate(m_tx, 0.0); 
         m_throttle = m_throttlePID.calculate(m_ty, 0.0);
         m_spin = MathUtil.clamp(spinPID.calculate(m_tr, 0.0),-MAX_SPIN,MAX_SPIN);
+
+        if(controlscheme == ControllerType.COMPLEX_DRIVESUPPRESS) {
+            double coef = MathUtil.clamp(1.0-Math.abs((Degrees.convertFrom(m_tr, Radians)/spinBound.getAsDouble())), 0, 1);
+            Logger.recordOutput("AutoAlign/coef", coef);
+            m_throttle *= coef;
+            m_strafe *= coef;
+        }
 
         ChassisSpeeds speeds =
         new ChassisSpeeds(
