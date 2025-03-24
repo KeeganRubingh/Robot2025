@@ -9,7 +9,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Volts;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Servo;
@@ -23,15 +22,15 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   private Voltage m_setPoint = Voltage.ofBaseUnits(0, Volts);
 
-  public ClimberIOTalonFX(CanDef canbus) {
+  public ClimberIOTalonFX(CanDef canbus, boolean invertTalon) {
     Motor = new TalonFX(canbus.id(),canbus.bus());
     Request = new VoltageOut(0.0);
     m_servo = new Servo(0);
     
-    configureTalons();
+    configureTalons(invertTalon);
   }
 
-  private void configureTalons() {
+  private void configureTalons(boolean invert) {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
     cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.CurrentLimits.StatorCurrentLimit = 80.0;
@@ -40,7 +39,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
     cfg.Voltage.PeakForwardVoltage = 16.0;
     cfg.Voltage.PeakReverseVoltage = 16.0;
-    cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    cfg.MotorOutput.Inverted = invert ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }
 

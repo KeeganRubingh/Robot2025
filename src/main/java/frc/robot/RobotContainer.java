@@ -136,6 +136,7 @@ public class RobotContainer {
 
   private final double DRIVE_SPEED = 1.0;
   private final double ANGULAR_SPEED = 0.75;
+  private final boolean INVERT_ENDGAME = true;
   private final Wrist wrist;
 
   private final ArmJoint shoulder;
@@ -276,7 +277,7 @@ public class RobotContainer {
         algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIOTalonFX(canivoreCanBuilder.id(15).build(), canivoreCanBuilder.id(24).build()));
         // algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIONova(rioCanBuilder.id(15).build(), canivoreCanBuilder.id(24).build()));
 
-        climber = new Climber(new ClimberIOTalonFX(rioCanBuilder.id(19).build()));
+        climber = new Climber(new ClimberIOTalonFX(rioCanBuilder.id(19).build(), INVERT_ENDGAME));
 
         // Real robot, instantiate hardware IO implementations
         break;
