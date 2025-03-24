@@ -375,7 +375,7 @@ public class RobotContainer {
         new ConditionalCommand(
           new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
           .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector))
-          .andThen(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender))
+          .andThen(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender, intake))
           , 
           StationIntakeCommandFactory.getNewStationIntakeSequence(
             () -> {
