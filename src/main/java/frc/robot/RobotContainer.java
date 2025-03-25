@@ -352,43 +352,28 @@ public class RobotContainer {
       () -> reefPositions.isSelected(DeAlgaeLevel.Low)))
     .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
 
-    // Coral Station Intake No Auto Align
-    controller.leftBumper()
-      .and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
-      .and(coralEndEffector.hasCoralTrigger().negate())
-      .and(algaeEndEffector.hasAlgaeTrigger().negate()) 
-      .onTrue(
-        new ConditionalCommand(
-          new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
-          .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector)), 
-          new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector),
-          intake.hasCoralTrigger()
-        )
-      )
-      .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
-
     // Coral Station Intake Auto Align Sequence†
-    controller.leftBumper()
-      .and(() -> ReefPositionsUtil.getInstance().getIsAutoAligning())
-      .and(coralEndEffector.hasCoralTrigger().negate())
-      .and(algaeEndEffector.hasAlgaeTrigger().negate()) 
-      .onTrue(
-        new ConditionalCommand(
-          new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
-          .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector))
-          .andThen(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender, intake))
-          , 
-          StationIntakeCommandFactory.getNewStationIntakeSequence(
-            () -> {
-            IntakePosition pos = intakePosChooser.get();
-            return pos == null ? IntakePosition.Inside : pos;
-          },
-            shoulder, elbow, elevator, wrist, coralEndEffector, drive
-          ), 
-          intake.hasCoralTrigger()
-        )
-      )
-      .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    // controller.leftBumper()
+    //   .and(() -> ReefPositionsUtil.getInstance().getIsAutoAligning())
+    //   .and(coralEndEffector.hasCoralTrigger().negate())
+    //   .and(algaeEndEffector.hasAlgaeTrigger().negate()) 
+    //   .onTrue(
+    //     new ConditionalCommand(
+    //       new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
+    //       .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector))
+    //       .andThen(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender, intake))
+    //       , 
+    //       StationIntakeCommandFactory.getNewStationIntakeSequence(
+    //         () -> {
+    //         IntakePosition pos = intakePosChooser.get();
+    //         return pos == null ? IntakePosition.Inside : pos;
+    //       },
+    //         shoulder, elbow, elevator, wrist, coralEndEffector, drive
+    //       ), 
+    //       intake.hasCoralTrigger()
+    //     )
+    //   )
+    //.onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
     // Go to barge auto align
     controller.y()
@@ -576,6 +561,21 @@ public class RobotContainer {
 
     //#endregion
     //#region Co-Controller
+
+    // Coral Station Intake No Auto Align
+    co_controller.leftBumper()
+      .and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
+      .and(coralEndEffector.hasCoralTrigger().negate())
+      .and(algaeEndEffector.hasAlgaeTrigger().negate()) 
+      .onTrue(
+        new ConditionalCommand(
+          new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
+          .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector)), 
+          new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector),
+          intake.hasCoralTrigger()
+        )
+      )
+      .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
     // Select L4
     co_controller.y().and(controller.rightBumper().negate())
