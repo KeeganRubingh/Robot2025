@@ -114,11 +114,11 @@ public class StowToGroundIntake extends SequentialCommandGroup {
      * @return
      */
     public static Command getRunGroundIntakeCommand(Intake intake, IntakeExtender extender) {
-        return intake.getNewSetVoltsCommand(6)
+        return intake.getNewSetVoltsCommand(4)
                 .alongWith(extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Final.position))
                 .alongWith(new WaitUntilCommand(extender.getNewAtAngleTrigger(IntakeExtenderPositions.Final.position, Degrees.of(10))))
                 .andThen(new WaitUntilCommand(intake.hasCoralTrigger()))
-                .andThen(intake.getNewSetVoltsCommand(0))
+                .andThen(intake.getNewSetVoltsCommand(0.5))
                 .andThen(extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position));
     }
 

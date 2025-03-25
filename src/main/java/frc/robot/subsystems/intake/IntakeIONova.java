@@ -38,8 +38,8 @@ public class IntakeIONova implements IntakeIO {
   }
 
   private void configureTalons() {
-    Motor.setMaxCurrent(CurrentType.STATOR, 80);
-    Motor.setMaxCurrent(CurrentType.SUPPLY,30);
+    Motor.setMaxCurrent(CurrentType.STATOR, 40);
+    Motor.setMaxCurrent(CurrentType.SUPPLY,5);
     Motor.setInversion(true);
     Motor.setBrakeMode(true);
   }
