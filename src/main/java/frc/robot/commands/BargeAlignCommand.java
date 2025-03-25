@@ -23,35 +23,44 @@ public class BargeAlignCommand extends AutoAlignCommand {
     private static final LoggedTunableNumber offsetB = new LoggedTunableNumber("BargeAlignCommand/offsetB",0.5);
     private static final LoggedTunableNumber maxHorziontalOffset = new LoggedTunableNumber("BargeAlignCommand/maxHorizontalOffset", 1.5);
 
-    private static final LoggedTunableNumber adjustSpeed = new LoggedTunableNumber("BargeAlignCommand/adjustSpeed", 10.5);
+    private static final LoggedTunableNumber adjustSpeed = new LoggedTunableNumber("BargeAlignCommand/adjustSpeed", 1.0);
 
-    private static Pose2d originPose;
-    private static Alliance alliance;
+    private Pose2d originPose;
+    private Alliance alliance;
+    private Drive drivetrain;
 
     public BargeAlignCommand(Drive drive, Supplier<Double> strafeControl) {
-        super ((p)->getBargeScorePose(p),()->new Transform2d(0.0,strafeControl.get(),Rotation2d.kZero),drive);
+        super (
+          (p)->p,
+          ()->new Transform2d(0.0,strafeControl.get() * adjustSpeed.get(),Rotation2d.kZero),
+          drive
+        );
+        
+        this.drivetrain = drive;
         this.withControlScheme(ControllerType.COMPLEX_DRIVESUPPRESS);
         addRequirements(drive);
     }
 
-    private static Pose2d getBargeScorePose(Pose2d robotPose) {
-        alliance = DriverStation.getAlliance().orElse(Alliance.Red);
-        double xOffset = alliance == Alliance.Red ? offsetB.get() : -offsetB.get();
+    @Override
+    public void initialize() {
+      this.alliance = DriverStation.getAlliance().orElse(Alliance.Red);
+      originPose = alliance.equals(Alliance.Red) ? aprilTagLayout.getTagPose(5).orElse(Pose3d.kZero).toPose2d() : aprilTagLayout.getTagPose(14).orElse(Pose3d.kZero).toPose2d();
+      super.setTargetPoseFn((p) -> getBargeScorePose(p));
+      super.initialize();
+    }
+
+    private Pose2d getBargeScorePose(Pose2d robotPose) {
+        Pose2d robo = drivetrain.getAutoAlignPose();
+        double xOffset = (alliance == Alliance.Red) ? offsetB.get() : -offsetB.get();
 
         Pose2d newPose = new Pose2d(
           originPose.getX() + xOffset, 
-          MathUtil.clamp(robotPose.getY(), originPose.getY()-maxHorziontalOffset.get(), originPose.getY()+maxHorziontalOffset.get()),
+          MathUtil.clamp(robo.getY(), originPose.getY()-maxHorziontalOffset.get(), originPose.getY()+maxHorziontalOffset.get()),
           originPose.getRotation()
         );
 
         Logger.recordOutput("BargeAlignCommand/targetPose", newPose);
-        return newPose != null ? newPose : robotPose;
-  }
-
-  @Override
-  public void initialize() {
-    originPose = alliance == Alliance.Red ? aprilTagLayout.getTagPose(5).orElse(Pose3d.kZero).toPose2d() : aprilTagLayout.getTagPose(14).orElse(Pose3d.kZero).toPose2d();
-    super.initialize();
+        return newPose ;
   }
 
   //Must be killed manually

@@ -35,7 +35,7 @@ public class AutoAlignCommand extends Command {
 
     private Pose2d targetPose;
 
-    private final Function<Pose2d, Pose2d> getTargetPoseFn;
+    private Function<Pose2d, Pose2d> getTargetPoseFn;
 
     //#region TODO get accurate values
     private static LoggedTunableGainsBuilder throttleGains = new LoggedTunableGainsBuilder("AutoAlign/strafeGains/", 6.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -152,6 +152,10 @@ public class AutoAlignCommand extends Command {
     public AutoAlignCommand withControlScheme(ControllerType controlScheme) {
         this.controlscheme = controlScheme;
         return this;
+    }
+
+    public void setTargetPoseFn(Function<Pose2d, Pose2d> newFunc) {
+        this.getTargetPoseFn = newFunc;
     }
 
     @Override
