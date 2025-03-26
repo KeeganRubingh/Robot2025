@@ -398,7 +398,7 @@ public class Drive extends SubsystemBase {
   }
 
   public Distance getDistanceTo(Pose2d other) {
-    return Meters.of(this.getPose().getTranslation().getDistance(other.getTranslation()));
+    return Meters.of(this.getAutoAlignPose().getTranslation().getDistance(other.getTranslation()));
   }
 
   /** Resets the current odometry pose. */
