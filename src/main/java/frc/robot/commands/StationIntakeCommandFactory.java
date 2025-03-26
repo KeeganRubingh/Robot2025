@@ -160,7 +160,7 @@ public class StationIntakeCommandFactory {
         Command returnedCommand = new AutoAlignCommand(getGetTargetPositionFunction(position, isBackingUp), drive);
         //If we're backing up, add a condition to kill when we're farther away than the backup distance
         if(isBackingUp) {
-            returnedCommand = returnedCommand.until(() -> (drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) > offsetBBackingUp.getAsDouble()));
+            returnedCommand = returnedCommand.until(() -> (drive.getDistanceTo(positionFunction.apply(drive.getAutoAlignPose())).in(Meters) > offsetBBackingUp.getAsDouble()));
         }
         return returnedCommand;
     }

@@ -398,6 +398,11 @@ public class Drive extends SubsystemBase {
   }
 
   public Distance getDistanceTo(Pose2d other) {
+    Logger.recordOutput("AutoAlign/RegPose",this.getPose().getTranslation().getDistance(other.getTranslation()));
+    
+    Logger.recordOutput("AutoAlign/RoboPose",this.getAutoAlignPose());
+    Logger.recordOutput("AutoAlign/TargPose",other);
+
     return Meters.of(this.getAutoAlignPose().getTranslation().getDistance(other.getTranslation()));
   }
 
