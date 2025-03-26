@@ -20,12 +20,23 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.arm.constants.ArmJointConstants;
 import frc.robot.util.LoggedTunableGainsBuilder;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.anode.AnodeInstanceName;
+import frc.robot.util.anode.AnodeManager;
+import frc.robot.util.anode.AnodeObject;
+import frc.robot.util.anode.AnodeTunableParameter;
 
+@AnodeObject(Key = "ArmJoint")
 public class ArmJoint extends SubsystemBase {
 
   private ArmJointIO m_armJointIO;
 
   private final ArmJointConstants m_constants;
+
+  @AnodeInstanceName
+  public String instanceName = "";
+
+  @AnodeTunableParameter(Key = "TestValue")
+  public Angle testDouble = Degrees.of(10);
 
   ArmInputsAutoLogged m_loggedArm = new ArmInputsAutoLogged();
 
@@ -53,6 +64,8 @@ public class ArmJoint extends SubsystemBase {
     m_constants.mechanismSimCallback.accept(m_loggedArm.angle);
     tunableGains = m_constants.TalonFXGains;
     m_loggedArm.angle.mut_replace(m_constants.StartingAngle);
+    instanceName = m_constants.LoggedName;
+    AnodeManager.getInstance().AddObjects(this);
   }
 
   public Supplier<Angle> getAngleSupplier() {
@@ -141,5 +154,7 @@ public class ArmJoint extends SubsystemBase {
     tunableGains.ifGainsHaveChanged((gains) -> this.m_armJointIO.setGains(gains));
     m_armJointIO.updateInputs(m_loggedArm);
     Logger.processInputs("RobotState/" + m_constants.LoggedName, m_loggedArm);
+    Logger.recordOutput("TESTDOUBLE/" + m_constants.LoggedName,testDouble);
+    AnodeManager.getInstance().updateObject(this);
   }
 }

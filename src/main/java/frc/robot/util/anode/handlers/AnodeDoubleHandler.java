@@ -18,7 +18,7 @@ public class AnodeDoubleHandler extends AnodeObjectHandler<Double> {
      * @param path
      * @param hardcodedValue
      */
-    private AnodeDoubleHandler(String name, String path,Double hardcodedValue) {
+    private AnodeDoubleHandler(String name, String path, Double hardcodedValue) {
         //Start a loggedTunableNumber and default to the hardcoded value.
         tunableNumber = new LoggedTunableNumber(path + "/" + name, hardcodedValue);
     }
@@ -46,10 +46,6 @@ public class AnodeDoubleHandler extends AnodeObjectHandler<Double> {
     @Override
     public Double refresh(Object currentVal) {
         //If the number changed, update it. Otherwise, keep it the same.
-        if(tunableNumber.hasChanged(this.hashCode())) {
-            return tunableNumber.getAsDouble();
-        } else {
-            return (Double)currentVal;
-        }
+        return tunableNumber.getAsDouble();
     }
 }

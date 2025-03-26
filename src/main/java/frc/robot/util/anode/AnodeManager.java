@@ -3,12 +3,19 @@ package frc.robot.util.anode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.anode.handlers.AnodeDoubleHandler;
+import frc.robot.util.anode.handlers.AnodeMeasureHandler;
 import frc.robot.util.anode.handlers.AnodeObjectHandler;
+import frc.robot.util.anode.handlers.AnodePIDControllerHandler;
 
 public class AnodeManager {
     private static AnodeManager instance;
@@ -41,11 +48,18 @@ public class AnodeManager {
             String instanceName = null;
             ArrayList<Anode> returnedAnodes = new ArrayList<>();
             boolean isStaticObject = false;
-            
+            AnodeObject pathsource = target.getClass().getAnnotation(AnodeObject.class);
+
+            if(pathsource == null) {
+                System.err.println("Could not find path source!!!");
+                return null;
+            }
+
             //Flag if our object is static
             if(lParent.getClass().getAnnotation(AnodeStaticObjectFlag.class) != null) {
                 isStaticObject = true;
             }
+            
 
             //Check all of our declared fields to find necessary annotations
             for (Field f : lParent.getClass().getDeclaredFields()) {
@@ -60,7 +74,8 @@ public class AnodeManager {
                     }
                 }
                 //If this field is a tunable parameter that we have a handler for, add it to our params so we can handle it later.
-                if(f.getAnnotation(AnodeTunableParameter.class) != null && AnodeManager.getInstance().m_objectHandlers.containsKey(f.getType())) {
+                if(f.getAnnotation(AnodeTunableParameter.class) != null && 
+                AnodeManager.getInstance().m_objectHandlers.containsKey(f.getType())) {
                     f.trySetAccessible();
                     params.add(f);
                     continue;
@@ -70,7 +85,7 @@ public class AnodeManager {
             if((!isStaticObject) && instanceName == null) {
                 instanceName = "" + target.hashCode();
             }
-            AnodeObject pathsource = target.getClass().getAnnotation(AnodeObject.class);
+
             //Setting our path. If we're static we do current path and object name. If we aren't we add on instance name
             lName = isStaticObject 
                 ? currentPath + "/" + pathsource.Key() 
@@ -124,6 +139,7 @@ public class AnodeManager {
     public static AnodeManager getInstance() {
         if(instance == null) {
             instance = new AnodeManager();
+            instance.addDefaultTypes();
         }
         return instance;
     }
@@ -137,7 +153,7 @@ public class AnodeManager {
 
         for(Anode a : anodes) {
             try{
-                a.handler.refresh(a.target.get(a.parent));
+                a.target.set(a.parent,a.handler.refresh(a.target.get(a.parent)));
             } catch (Exception e) {
                 System.err.println(e);
                 continue;
@@ -152,6 +168,14 @@ public class AnodeManager {
     }
 
     public void addTypeHandler(AnodeObjectHandler<?> handler) {
-        m_objectHandlers.put(handler.getHandledType(), handler);
+        for (Type t : handler.getHandledTypes()) {
+            m_objectHandlers.put(t, handler);
+        }
+    }
+
+    public void addDefaultTypes() {
+        addTypeHandler(new AnodeDoubleHandler());
+        addTypeHandler(new AnodePIDControllerHandler());
+        addTypeHandler(new AnodeMeasureHandler<AngleUnit>());
     }
 }
