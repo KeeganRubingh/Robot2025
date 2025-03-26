@@ -20,7 +20,7 @@ public class CoralEndEffectorIOTalonFX implements CoralEndEffectorIO {
   private VoltageOut request;
   private TalonFX motor;
   private CANrange m_sensor;
-  private LinearFilter filter = LinearFilter.movingAverage(5);
+  private LinearFilter filter = LinearFilter.movingAverage(10);
   private Voltage m_setPoint = Volts.of(0);
 
   public CoralEndEffectorIOTalonFX(CanDef canbus, CanDef sensorCanDef) {

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -7,11 +8,14 @@ import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.UpdateModeValue;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.units.DimensionlessUnit;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.CanDef;
 import frc.robot.util.PhoenixUtil;
@@ -20,7 +24,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   private VoltageOut request;
   private TalonFX motor;
   private CANrange rangeSensor;
-  private LinearFilter filter = LinearFilter.movingAverage(5);
+  private LinearFilter filter = LinearFilter.movingAverage(100);
   private Voltage m_setPoint = Volts.of(0);
 
   public IntakeIOTalonFX(CanDef motorCanDef) {
@@ -39,6 +43,10 @@ public class IntakeIOTalonFX implements IntakeIO {
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
     cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     PhoenixUtil.tryUntilOk(5, () -> motor.getConfigurator().apply(cfg));
+
+    CANrangeConfiguration cr_cfg = new CANrangeConfiguration();
+    cr_cfg.ToFParams.UpdateMode = UpdateModeValue.ShortRange100Hz;
+    PhoenixUtil.tryUntilOk(5, () -> rangeSensor.getConfigurator().apply(cr_cfg));
   }
 
   @Override
@@ -49,6 +57,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.supplyCurrent.mut_replace(motor.getSupplyCurrent().getValue());
     inputs.statorCurrent.mut_replace(motor.getStatorCurrent().getValue());
     inputs.coralDistance.mut_replace(filter.calculate(rangeSensor.getDistance().getValue().in(Inches)), Inches);
+    // inputs.signalHealth.mut_replace(rangeSensor.getMeasurementHealth().getValueAsDouble(),Dimensionless);
   }
 
   @Override

@@ -99,7 +99,6 @@ public class ReefScoreCommandFactory {
                     appliedOffset = -offsetL.getAsDouble();
                     backOffset = leftOffsetBFinal.get();
                     break;
-                case Center:
                 default:
                     appliedOffset = 0;
                     backOffset = algaeOffsetBFinal.get();

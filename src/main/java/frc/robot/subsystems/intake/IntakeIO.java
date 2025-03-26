@@ -6,6 +6,7 @@ import org.littletonrobotics.junction.AutoLog;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutCurrent;
+import edu.wpi.first.units.measure.MutDimensionless;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
@@ -20,6 +21,7 @@ public interface IntakeIO {
     public MutCurrent supplyCurrent;
     public MutCurrent statorCurrent;
     public MutDistance coralDistance;
+    // public MutDimensionless signalHealth;
   }
 
   public void setTarget(Voltage setpoint);

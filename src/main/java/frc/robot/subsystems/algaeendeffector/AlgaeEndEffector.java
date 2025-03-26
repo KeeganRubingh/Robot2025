@@ -23,7 +23,7 @@ import frc.robot.util.LoggedTunableNumber;
  * </ul>
  */
 public class AlgaeEndEffector extends SubsystemBase {
-  public static LoggedTunableNumber ALGAE_DISTANCE_THRESHOLD = new LoggedTunableNumber("Algae End Effector/SENSORTHRESHOLD", 4.5);
+  public static LoggedTunableNumber ALGAE_DISTANCE_THRESHOLD = new LoggedTunableNumber("Algae End Effector/SENSORTHRESHOLD", 5.0);
   private AlgaeEndEffectorIO m_IO;
 
   AlgaeEndEffectorInputsAutoLogged logged = new AlgaeEndEffectorInputsAutoLogged();
