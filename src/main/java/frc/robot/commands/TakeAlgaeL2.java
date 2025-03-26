@@ -92,11 +92,11 @@ public class TakeAlgaeL2 extends SequentialCommandGroup {
         }
     }
 
-    public TakeAlgaeL2(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, AlgaeEndEffector toesies, Elevator elevator) {
+    public TakeAlgaeL2(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, AlgaeEndEffector algaeEE, Elevator elevator) {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position)
             .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position)),
-            toesies.getNewSetVoltsCommand(8)
+            algaeEE.getNewSetVoltsCommand(8)
             .alongWith(shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position))
             .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position))
 
@@ -111,6 +111,6 @@ public class TakeAlgaeL2 extends SequentialCommandGroup {
             // ),
             // shoulder.getNewSetAngleCommand(ShoulderPositions.Final.angle().in(Degrees))
         );
-        addRequirements(shoulder, elbow, wrist, toesies, elevator);
+        addRequirements(shoulder, elbow, wrist, algaeEE, elevator);
     }
 }

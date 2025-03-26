@@ -130,10 +130,10 @@ public class TunerConstants {
     private static final double kDriveGearRatio = 5.8909090909090915;
     private static final double kSteerGearRatio = 12.1;
     // ********** Wheel Radius Characterization Results **********
-    // Wheel Delta: 68.586 radians
-    // Gyro Delta: 7.749 radians
-    // Wheel Radius: 0.049 meters, 1.941 inches
-    private static final Distance kWheelRadius = Inches.of(1.941);
+    // Wheel Delta: 55.955 radians
+    // Gyro Delta: 6.461 radians
+    // Wheel Radius: 0.050 meters, 1.984 inches
+    private static final Distance kWheelRadius = Inches.of(1.984);
 
     private static final boolean kInvertLeftSide = false;
     private static final boolean kInvertRightSide = true;

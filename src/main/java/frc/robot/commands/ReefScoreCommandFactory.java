@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
@@ -99,7 +101,6 @@ public class ReefScoreCommandFactory {
                     appliedOffset = -offsetL.getAsDouble();
                     backOffset = leftOffsetBFinal.get();
                     break;
-                case Center:
                 default:
                     appliedOffset = 0;
                     backOffset = algaeOffsetBFinal.get();
@@ -130,14 +131,19 @@ public class ReefScoreCommandFactory {
     public static Command getNewAlignToReefCommand(ReefPosition position, boolean isBackingUp, Drive drive) {
         Function<Pose2d, Pose2d> positionFunction = getGetTargetPositionFunction(position, isBackingUp);
         //Base command
-        Command returnedCommand = new AutoAlignCommand(getGetTargetPositionFunction(position, isBackingUp), drive);
+        Command returnedCommand = new AutoAlignCommand(getGetTargetPositionFunction(position, isBackingUp), drive)
+        .raceWith(new RunCommand(() -> Logger.recordOutput("AutoAlign/DistanceMeters",drive.getDistanceTo(positionFunction.apply(drive.getAutoAlignPose())).in(Meters))));
         //If we're backing up, add kill conditions
         if(isBackingUp) {
             returnedCommand = returnedCommand
                 // Kill when we are out of the distance (not necessary since we kill)
                 // .until(() -> (drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) > offsetBBackingUp.getAsDouble()))
                 // Don't run the backup if we are out of the distance
-                .unless(() -> (drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) > offsetBBackingUp.getAsDouble()));
+                .unless(() -> {
+                    double dist = drive.getDistanceTo(positionFunction.apply(drive.getAutoAlignPose())).in(Meters);
+                    Logger.recordOutput("AutoAlign/DistanceMeters",dist);
+                    return dist > offsetBBackingUp.getAsDouble();
+                });
         }
         return returnedCommand;
     }

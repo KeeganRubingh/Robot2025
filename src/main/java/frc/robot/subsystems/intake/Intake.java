@@ -7,6 +7,8 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -15,10 +17,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.LoggedTunableNumber;
 
 public class Intake extends SubsystemBase{
-  public static LoggedTunableNumber CORAL_DISTANCE_THRESHOLD = new LoggedTunableNumber("Intake/CoralSensorDistanceInches", 3.75);
+  public static LoggedTunableNumber CORAL_DISTANCE_THRESHOLD = new LoggedTunableNumber("Intake/SENSORTHRESHOLD", 3.75);
 
   private IntakeIO m_intakeIO;
   private IntakeInputsAutoLogged loggedIntake = new IntakeInputsAutoLogged();
+  private Debouncer debouncer = new Debouncer(0.1,DebounceType.kBoth);
+
 
   public Intake(IntakeIO intakeIO) {
     m_intakeIO = intakeIO;
@@ -54,7 +58,9 @@ public class Intake extends SubsystemBase{
   }
 
   public Trigger hasCoralTrigger() {
-    return new Trigger(() -> loggedIntake.coralDistance.lt(Inches.of(CORAL_DISTANCE_THRESHOLD.get())));
+    return new Trigger(() -> 
+      loggedIntake.coralDistance.gt(Inches.of(2.5)) && loggedIntake.coralDistance.lt(Inches.of(3.5))
+    ).debounce(0.1);
   }
 
   @Override

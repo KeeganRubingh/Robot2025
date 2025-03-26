@@ -31,7 +31,7 @@ public class IntakeExtender extends SubsystemBase {
     "IntakeExtender", 
     150.0, 0, 10, 
     0, 0, 0, 0, 
-    32.0, 7.5, 0, 0, 0
+    32.0, 2.0, 0, 0, 0
   );
   
   public IntakeExtender(IntakeExtenderIO intakeExtenderIO) {
@@ -51,6 +51,7 @@ public class IntakeExtender extends SubsystemBase {
     return ()->loggedintakeExtender.Angle;
   }
 
+  
   private void setAngle(Angle angle) {
     m_intakeextenderIO.setTarget(angle);
   }
@@ -76,6 +77,12 @@ public class IntakeExtender extends SubsystemBase {
   public Trigger getNewAtAngleTrigger(DoubleSupplier angle, Angle tolerance) {
     return new Trigger(() -> {
       return MathUtil.isNear(angle.getAsDouble(), loggedintakeExtender.Angle.in(Degrees), tolerance.in(Degrees));
+    });
+  }
+
+  public Trigger getNewAtAngleTrigger(Supplier<Angle> angle, Angle tolerance) {
+    return new Trigger(() -> {
+      return MathUtil.isNear(angle.get().in(Degrees), loggedintakeExtender.Angle.in(Degrees), tolerance.in(Degrees));
     });
   }
 
