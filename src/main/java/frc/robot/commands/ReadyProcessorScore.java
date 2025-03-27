@@ -20,7 +20,7 @@ import frc.robot.util.LoggedTunableNumber;
 public class ReadyProcessorScore extends SequentialCommandGroup {
     
     private enum ShoulderPositions {
-        Final(new LoggedTunableNumber("ReadyProcessorScore/shoulder/FinalDegrees", 20.0)),
+        Final(new LoggedTunableNumber("ReadyProcessorScore/shoulder/FinalDegrees", 50.0)),
         Tolerance(new LoggedTunableNumber("ReadyProcessorScore/shoulder/Tolerance", 2.0));
 
         DoubleSupplier position;
@@ -38,7 +38,7 @@ public class ReadyProcessorScore extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Final(new LoggedTunableNumber("ReadyProcessorScore/elbow/FinalDegrees", 70.0)),
+        Final(new LoggedTunableNumber("ReadyProcessorScore/elbow/FinalDegrees", 120.0)),
         Tolerance(new LoggedTunableNumber("ReadyProcessorScore/elbow/Tolerance", 2.0));
 
         DoubleSupplier position;
