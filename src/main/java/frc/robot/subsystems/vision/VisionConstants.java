@@ -59,7 +59,7 @@ public static Transform3d robotToCameraRight =
   // Standard deviation baselines(0.01), for 1 meter distance and 1 tag
   // (Adjusted automatically based on distance and # of tags)
   public static double linearStdDevBaseline = 1.0; // Meters, 0.01 was original value was hyper sensitive.
-  public static double angularStdDevBaseline = Double.POSITIVE_INFINITY;
+  public static double angularStdDevBaseline = 0.06;
 
   // Standard deviation multipliers for each camera
   // (Adjust to trust some cameras more than others)
