@@ -56,7 +56,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
 
   private void configureTalons(InvertedValue motorInversion, SensorDirectionValue cancoderSensorDirection) {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
-    cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     cfg.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     cfg.CurrentLimits.SupplyCurrentLimit = m_Constants.SupplyCurrentLimit.in(Amp);
     cfg.CurrentLimits.StatorCurrentLimit = m_Constants.TorqueCurrentLimit.in(Amp);
