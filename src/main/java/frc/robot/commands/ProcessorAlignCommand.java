@@ -29,7 +29,7 @@ public class ProcessorAlignCommand extends AutoAlignCommand {
         target = aprilTagLayout.getTagPose(3).get().toPose2d();
             break;
         case Blue: 
-        target = aprilTagLayout.getTagPose(18).get().toPose2d();
+        target = aprilTagLayout.getTagPose(16).get().toPose2d();
             break;
         }
 
