@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.mutable.MutableMeasureBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -85,6 +86,27 @@ public class IntakeExtender extends SubsystemBase {
       return MathUtil.isNear(angle.get().in(Degrees), loggedintakeExtender.Angle.in(Degrees), tolerance.in(Degrees));
     });
   }
+
+  public Trigger getNewLessThanAngleTrigger(Supplier<Angle> angle) {
+    return new Trigger(() -> 
+      loggedintakeExtender.Angle.lt(angle.get())
+    );
+  }
+
+  public Trigger getNewLessThanAngleTrigger(DoubleSupplier degrees) {
+    return getNewLessThanAngleTrigger(()->Degrees.of(degrees.getAsDouble()));
+  }
+
+  public Trigger getNewGreaterThanAngleTrigger(Supplier<Angle> angle) {
+    return new Trigger(() -> 
+      loggedintakeExtender.Angle.gt(angle.get())
+    );
+  }
+
+  public Trigger getNewGreaterThanAngleTrigger(DoubleSupplier degrees) {
+    return getNewGreaterThanAngleTrigger(()->Degrees.of(degrees.getAsDouble()));
+  }
+
 
   @Override
   public void periodic() {

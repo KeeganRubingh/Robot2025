@@ -71,10 +71,14 @@ public class StowToGroundIntake extends SequentialCommandGroup {
         }
     }
 
+    public static final Angle intakeExtenderStow = Degrees.of(-45.0);
+    public static final Angle intakeExtenderTransfer = Degrees.of(0.0);
+    public static final Angle intakeExtenderFinal = Degrees.of(-155.0);
+    
     private static enum IntakeExtenderPositions {
-        Stow(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/StowDegrees", -45)),
-        Transfer(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/TransferDegrees", 0)),
-        Final(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/FinalDegrees", -155));
+        Stow(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/StowDegrees",intakeExtenderStow.in(Degrees))),
+        Transfer(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/TransferDegrees", intakeExtenderTransfer.in(Degrees))),
+        Final(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/FinalDegrees", intakeExtenderFinal.in(Degrees)));
 
         DoubleSupplier position;
         MutAngle distance;
