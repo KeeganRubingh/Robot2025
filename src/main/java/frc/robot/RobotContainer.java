@@ -534,12 +534,7 @@ public class RobotContainer {
     // Outtake Algae
     controller.povLeft()
       .onTrue(
-        new ReadyProcessorScore(shoulder, elbow, elevator, wrist, algaeEndEffector)
-        )
-      .onFalse(
         new OutakeAlgae(algaeEndEffector)
-        .andThen(new WaitCommand(0.2))
-        .andThen(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector))
         .andThen(algaeEndEffector.getNewSetVoltsCommand(0.0))
       );
 
@@ -591,6 +586,7 @@ public class RobotContainer {
 
     // Back Coral Station Intake
     co_controller.povUp()
+      .and(algaeEndEffector.hasAlgaeTrigger().negate())
       .onTrue(new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
       .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender));
 
