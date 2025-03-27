@@ -59,7 +59,7 @@ public class Intake extends SubsystemBase{
 
   public Trigger hasCoralTrigger() {
     return new Trigger(() -> 
-      loggedIntake.coralDistance.gt(Inches.of(2.5)) && loggedIntake.coralDistance.lt(Inches.of(3.5))
+      loggedIntake.coralDistance.gt(Inches.of(3.0)) && loggedIntake.coralDistance.lt(Inches.of(3.3))
     ).debounce(0.1);
   }
 
