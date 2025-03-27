@@ -3,8 +3,12 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
+import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -73,13 +77,32 @@ public class StowToL3 extends SequentialCommandGroup {
         }
     }
 
+    private enum ElevatorPositions {
+        Starting(new LoggedTunableNumber("StowToL3Command/elevator/StartingInches", 0)),
+        SafeToSwingShoulder(new LoggedTunableNumber("StowToL3Command/elevator/SafeToSwingShoulderInches", 5.0)),
+        Final(new LoggedTunableNumber("StowToL3Command/elevator/FinalInches", 15));
+
+        DoubleSupplier position;
+        MutDistance distance;
+
+        ElevatorPositions(DoubleSupplier position) {
+            this.position = position;
+            this.distance = Inches.mutable(0.0);
+        }
+
+        public Distance distance() {
+            this.distance.mut_replace(this.position.getAsDouble(), Inches);
+            return this.distance;
+        }
+    }
+
     public StowToL3(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, Elevator elevator) {
         super(
             new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.Starting.position)),
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
             .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
-            .alongWith(elevator.getNewSetDistanceCommand(16))
+            .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position))
         );
         addRequirements(shoulder, elbow, wrist, elevator);
     }
