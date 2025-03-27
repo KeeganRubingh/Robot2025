@@ -197,13 +197,12 @@ public class ReefScoreCommandFactory {
         AlgaeEndEffector algaeEE
     ) {
         return getNewAlignToReefCommand(ReefPosition.Center, true, drive)
-            .andThen(new WaitCommand(0.5))
-            .andThen(getNewAlignToReefCommand(ReefPosition.Center, false, drive))
-            .alongWith(new ConditionalCommand(
+            .andThen(new ConditionalCommand(
                 new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator),
                 new TakeAlgaeL3(shoulder, elbow, wrist, algaeEE, elevator),
                 () -> ReefPositionsUtil.getInstance().isSelected(DeAlgaeLevel.Low)))
-            .until(algaeEE.hasAlgaeTrigger())
+            .andThen(getNewAlignToReefCommand(ReefPosition.Center, false, drive))
+            .until(algaeEE.hasAlgaeTrigger().debounce(0.5))
             .andThen(new WaitUntilCommand(algaeEE.hasAlgaeTrigger()))
             .andThen(getNewAlignToReefCommand(ReefPosition.Center, true, drive))
             .andThen(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE));
