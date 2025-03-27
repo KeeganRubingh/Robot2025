@@ -535,7 +535,8 @@ public class RobotContainer {
     controller.povLeft()
       .onTrue(
         new OutakeAlgae(algaeEndEffector)
-        .andThen(algaeEndEffector.getNewSetVoltsCommand(0.0))
+      ).onFalse(
+        algaeEndEffector.getNewSetVoltsCommand(0.0)
       );
 
     //Outtake Coral
