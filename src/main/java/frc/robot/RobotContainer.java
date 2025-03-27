@@ -22,8 +22,6 @@ package frc.robot;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.print.attribute.standard.OutputDeviceAssigned;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -49,12 +47,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AlgaeStowCommand;
 import frc.robot.commands.BargeAlignCommand;
-import frc.robot.commands.AutoAlignCommand;
-import frc.robot.commands.BargeAlignCommand;
 import frc.robot.commands.BargeScoreCommand;
 import frc.robot.commands.DisengageClimber;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.GroundIntakeToStow;
 import frc.robot.commands.EngageClimber;
 import frc.robot.commands.L4ToStow;
 import frc.robot.commands.NeutralClimber;
@@ -62,11 +57,9 @@ import frc.robot.commands.OutakeAlgae;
 import frc.robot.commands.OutakeCoral;
 import frc.robot.commands.ProcessorAlignCommand;
 import frc.robot.commands.ReadyProcessorScore;
-import frc.robot.commands.ProcessorAlignCommand;
 import frc.robot.commands.ReefScoreCommandFactory;
 import frc.robot.commands.ReefScoreCommandFactory.ReefPosition;
 import frc.robot.commands.StationIntakeCommand;
-import frc.robot.commands.StationIntakeCommandFactory;
 import frc.robot.commands.StationIntakeCommandFactory.IntakePosition;
 import frc.robot.commands.StationIntakeReverseCommand;
 import frc.robot.commands.StationIntakeToStow;
