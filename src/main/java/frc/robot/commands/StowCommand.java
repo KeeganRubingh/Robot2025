@@ -131,7 +131,7 @@ public class StowCommand extends SequentialCommandGroup {
             ),
             coralEE.getNewSetVoltsCommand(1)
                 .alongWith(algaeEE.getNewSetVoltsCommand(0)),
-            new WaitUntilCommand(getNewAtStowTrigger(shoulder, elbow, elevator, wrist)),
+            new WaitUntilCommand(getNewAtStowTrigger(shoulder, elbow, elevator, wrist)).withTimeout(0.5),
             extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position)
         );
         addRequirements(shoulder, elbow, wrist, elevator, coralEE, algaeEE);
