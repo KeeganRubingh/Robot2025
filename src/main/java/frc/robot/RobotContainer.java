@@ -556,12 +556,7 @@ public class RobotContainer {
       .and(coralEndEffector.hasCoralTrigger().negate())
       .and(algaeEndEffector.hasAlgaeTrigger().negate())
       .onTrue(
-        new ConditionalCommand(
-          new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
-          .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector)), 
-          new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector, intakeExtender),
-          intake.hasCoralTrigger()
-        )
+        new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector, intakeExtender)
       )
       .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender));
 

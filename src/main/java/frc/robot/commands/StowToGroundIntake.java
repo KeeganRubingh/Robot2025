@@ -144,8 +144,10 @@ public class StowToGroundIntake extends SequentialCommandGroup {
         .andThen(intake.getNewSetVoltsCommand(-5))
         .andThen(new WaitUntilCommand(coralEndEffector.hasCoralTrigger())) 
         .andThen(intake.getNewSetVoltsCommand(0))
-        .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.ExtendSafe.position))
-        .andThen(new WaitUntilCommand(shoulder.getNewAtAngleTrigger(ShoulderPositions.ExtendSafe.position, ()->5.0)))
+        .andThen(
+            shoulder.getNewSetAngleCommand(ShoulderPositions.ExtendSafe.position)
+            .alongWith(new WaitUntilCommand(shoulder.getNewAtAngleTrigger(ShoulderPositions.ExtendSafe.position, ()->5.0)))
+        )
         .andThen(
             extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position)
             .alongWith(coralEndEffector.getNewSetVoltsCommand(1))
