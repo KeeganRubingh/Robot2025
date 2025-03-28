@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import java.io.Console;
+import java.util.HashMap;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -20,7 +21,7 @@ import frc.robot.util.LoggedTunableNumber;
 public class BargeAlignCommand extends AutoAlignCommand {
     private static final AprilTagFieldLayout aprilTagLayout = Drive.getAprilTagLayout();
 
-    private static final LoggedTunableNumber offsetB = new LoggedTunableNumber("BargeAlignCommand/offsetB",0.5);
+    private static final LoggedTunableNumber offsetB = new LoggedTunableNumber("BargeAlignCommand/offsetB",0.45);
     private static final LoggedTunableNumber maxHorziontalOffset = new LoggedTunableNumber("BargeAlignCommand/maxHorizontalOffset", 1.5);
 
     private static final LoggedTunableNumber adjustSpeed = new LoggedTunableNumber("BargeAlignCommand/adjustSpeed", 1.0);

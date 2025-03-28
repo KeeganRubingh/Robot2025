@@ -58,6 +58,14 @@ public class ReefScoreCommandFactory {
     private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.2);
     //#endregion
 
+    //Overrides
+    private static LoggedTunableNumber offsetLL3 = new LoggedTunableNumber("AutoAlign/offsetLL3", 0.155);
+    private static LoggedTunableNumber offsetRL3 = new LoggedTunableNumber("AutoAlign/offsetRL3", 0.2);
+    private static LoggedTunableNumber offsetLL2 = new LoggedTunableNumber("AutoAlign/offsetLL2", 0.155);
+    private static LoggedTunableNumber offsetRL2 = new LoggedTunableNumber("AutoAlign/offsetRL2", 0.2);
+    private static LoggedTunableNumber offsetBFinalL2 = new LoggedTunableNumber("AutoAlign/offsetBFinalL2", 0.63);
+    private static LoggedTunableNumber offsetBFinalL3 = new LoggedTunableNumber("AutoAlign/offsetBFinalL3", 0.63);
+
     /**
      * Finds the closest april tag to a position.
      * 
@@ -92,20 +100,52 @@ public class ReefScoreCommandFactory {
         return (Pose2d pose) -> {
             double backOffset = leftOffsetBFinal.get();
             double appliedOffset = 0;
+
+            double offsetRForLevel = offsetR.getAsDouble();
+            double offsetLForLevel = offsetL.getAsDouble();
             switch (pos) {
                 case Right:
-                    appliedOffset = offsetR.getAsDouble();
-                    backOffset = rightOffsetBFinal.get();
+                    switch (ReefPositionsUtil.getInstance().getScoreLevel()) {
+                        case L2:
+                            offsetRForLevel = offsetRL2.getAsDouble();
+                            offsetLForLevel = offsetLL2.getAsDouble();
+                            backOffset = offsetBFinalL2.getAsDouble();
+                            break;
+                        case L3:
+                            offsetRForLevel = offsetRL3.getAsDouble();
+                            offsetLForLevel = offsetLL3.getAsDouble();
+                            backOffset = offsetBFinalL3.getAsDouble();
+                            break;
+                        default:
+                            backOffset = rightOffsetBFinal.get();
+                            break;
+                    }
+                    appliedOffset = offsetRForLevel;
                     break;
                 case Left:
-                    appliedOffset = -offsetL.getAsDouble();
-                    backOffset = leftOffsetBFinal.get();
+                    switch (ReefPositionsUtil.getInstance().getScoreLevel()) {
+                        case L2:
+                            offsetRForLevel = offsetRL2.getAsDouble();
+                            offsetLForLevel = offsetLL2.getAsDouble();
+                            backOffset = offsetBFinalL2.getAsDouble();
+                            break;
+                        case L3:
+                            offsetRForLevel = offsetRL3.getAsDouble();
+                            offsetLForLevel = offsetLL3.getAsDouble();
+                            backOffset = offsetBFinalL3.getAsDouble();
+                            break;
+                        default:
+                            backOffset = leftOffsetBFinal.get();
+                            break;
+                    }
+                    appliedOffset = -offsetLForLevel;
                     break;
                 default:
                     appliedOffset = 0;
                     backOffset = algaeOffsetBFinal.get();
                     break;
             }
+            
             Transform2d offset = new Transform2d(isBackingUp ? offsetBBackingUp.getAsDouble() : backOffset, appliedOffset, Rotation2d.kZero);
             Pose2d closestTarget = findClosestPose(pose);
 

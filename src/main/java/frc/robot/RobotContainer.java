@@ -557,7 +557,6 @@ public class RobotContainer {
 
     // Coral Station Intake No Auto Align
     co_controller.leftBumper()
-      .and(coralEndEffector.hasCoralTrigger().negate())
       .and(algaeEndEffector.hasAlgaeTrigger().negate())
       .onTrue(
         new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector, intakeExtender)
