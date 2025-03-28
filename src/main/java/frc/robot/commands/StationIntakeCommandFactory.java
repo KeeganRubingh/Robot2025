@@ -23,6 +23,7 @@ import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
@@ -173,8 +174,8 @@ public class StationIntakeCommandFactory {
      * @param drive
      * @return
      */
-    public static Command getNewStationIntakeSequence(Supplier<IntakePosition> position, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, Drive drive) {
-        return new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEE)
+    public static Command getNewStationIntakeSequence(Supplier<IntakePosition> position, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, Drive drive, IntakeExtender extender) {
+        return new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEE, extender)
             .andThen(
                 getNewAlignToStationCommand(position, false, drive)
             );

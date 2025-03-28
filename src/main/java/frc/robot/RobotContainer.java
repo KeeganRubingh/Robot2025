@@ -559,7 +559,7 @@ public class RobotContainer {
         new ConditionalCommand(
           new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
           .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector)), 
-          new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector),
+          new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector, intakeExtender),
           intake.hasCoralTrigger()
         )
       )

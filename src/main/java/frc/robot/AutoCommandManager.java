@@ -93,7 +93,7 @@ public class AutoCommandManager {
     //#endregion
 
     //#region Intakes
-    NamedCommands.registerCommand("StationIntake", new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEE));
+    NamedCommands.registerCommand("StationIntake", new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEE, intakeExtender));
     NamedCommands.registerCommand("ReverseStationIntake", new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEE));
     NamedCommands.registerCommand("TakeAlgaeL2",
       new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator)
