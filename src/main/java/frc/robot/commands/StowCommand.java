@@ -98,7 +98,8 @@ public class StowCommand extends SequentialCommandGroup {
 
     private static enum IntakeExtenderPositions{
         Stow(new LoggedTunableNumber("StowCommand/IntakeExtender/StowDegrees",StowToGroundIntake.intakeExtenderStow.in(Degrees))),
-        ArmSafeZone(new LoggedTunableNumber("StowCommand/IntakeExtender/SafeZoneDegrees",StowToGroundIntake.intakeExtenderStow.in(Degrees) - 2.0));
+        OutOfTheWay(new LoggedTunableNumber("StowCommand/IntakeExtender/OutOfTheWay",-75.0)),
+        StowSafeZone(new LoggedTunableNumber("StowCommand/IntakeExtender/StowSafeZoneDegrees",StowToGroundIntake.intakeExtenderStow.in(Degrees) - 2.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -116,8 +117,8 @@ public class StowCommand extends SequentialCommandGroup {
 
     public StowCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE,IntakeExtender extender) {
         super(
-            extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position)
-                .raceWith(new WaitUntilCommand(extender.getNewGreaterThanAngleTrigger(IntakeExtenderPositions.ArmSafeZone.position)))
+            extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.OutOfTheWay.position)
+                .alongWith(new WaitUntilCommand(extender.getNewAtAngleTrigger(IntakeExtenderPositions.OutOfTheWay.position,Degrees.of(5.0))))
                 .withTimeout(1.0),
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
@@ -126,11 +127,14 @@ public class StowCommand extends SequentialCommandGroup {
                     new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.SafeToSwingElbow.position)),
                     new WaitUntilCommand(shoulder.getNewGreaterThanAngleTrigger(ShoulderPositions.SafeToSwingElbowHigh.position))
                 )
-                .andThen(
-                    elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
-                ),
+            .andThen(
+                elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
+            ),
             coralEE.getNewSetVoltsCommand(1)
-                .alongWith(algaeEE.getNewSetVoltsCommand(0))
+                .alongWith(algaeEE.getNewSetVoltsCommand(0)),
+            extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position)
+                .alongWith(new WaitUntilCommand(extender.getNewAtAngleTrigger(IntakeExtenderPositions.StowSafeZone.position,Degrees.of(5))))
+                .withTimeout(1.0)
         );
         addRequirements(shoulder, elbow, wrist, elevator, coralEE, algaeEE);
     }
