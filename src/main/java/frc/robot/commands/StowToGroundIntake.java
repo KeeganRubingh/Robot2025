@@ -19,6 +19,7 @@ import frc.robot.util.LoggedTunableNumber;
 public class StowToGroundIntake extends SequentialCommandGroup {
     private static enum ShoulderPositions {
         Starting(new LoggedTunableNumber("StowToGroundIntake/Shoulder/StartingDegrees", 90)),
+        ExtendSafe(new LoggedTunableNumber("StowToGroundIntake/Shoulder/ExtendSafeDegrees", 45.5)),
         Final(new LoggedTunableNumber("StowToGroundIntake/Shoulder/FinalDegrees", 55.5));
         
 
@@ -143,6 +144,8 @@ public class StowToGroundIntake extends SequentialCommandGroup {
         .andThen(intake.getNewSetVoltsCommand(-5))
         .andThen(new WaitUntilCommand(coralEndEffector.hasCoralTrigger())) 
         .andThen(intake.getNewSetVoltsCommand(0))
+        .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.ExtendSafe.position))
+        .andThen(new WaitUntilCommand(shoulder.getNewAtAngleTrigger(ShoulderPositions.ExtendSafe.position, ()->5.0)))
         .andThen(
             extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position)
             .alongWith(coralEndEffector.getNewSetVoltsCommand(1))
