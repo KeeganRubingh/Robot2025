@@ -20,7 +20,7 @@ public class StowToGroundIntake extends SequentialCommandGroup {
     private static enum ShoulderPositions {
         Starting(new LoggedTunableNumber("StowToGroundIntake/Shoulder/StartingDegrees", 90)),
         ExtendSafe(new LoggedTunableNumber("StowToGroundIntake/Shoulder/ExtendSafeDegrees", 45.5)),
-        Final(new LoggedTunableNumber("StowToGroundIntake/Shoulder/FinalDegrees", 55.5));
+        Final(new LoggedTunableNumber("StowToGroundIntake/Shoulder/FinalDegrees", 51));
         
 
         DoubleSupplier position;
@@ -165,9 +165,9 @@ public class StowToGroundIntake extends SequentialCommandGroup {
     public static Command getReturnToStowCommand(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys, IntakeExtender extender, Intake intake) {
         return extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position)
         .andThen(intake.getNewSetSpeedCommand(0))
-        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(IntakeExtenderPositions.Stow.position, Degrees.of(5))))
+        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(IntakeExtenderPositions.Stow.position, Degrees.of(12.5))))
         .andThen(wrist.getNewWristTurnCommand(WristPositions.Starting.position))
-        .andThen(new WaitUntilCommand(wrist.getNewAtAngleTrigger(WristPositions.Starting.position, Degrees.of(2))))
+        .andThen(new WaitUntilCommand(wrist.getNewAtAngleTrigger(WristPositions.Starting.position, Degrees.of(10))))
         .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.Starting.position))
         .andThen(elbow.getNewSetAngleCommand(ElbowPositions.Starting.position));
     }
