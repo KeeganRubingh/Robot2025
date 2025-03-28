@@ -51,6 +51,7 @@ import frc.robot.commands.BargeScoreCommand;
 import frc.robot.commands.DisengageClimber;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.EngageClimber;
+import frc.robot.commands.GroundOuttakeCoral;
 import frc.robot.commands.L4ToStow;
 import frc.robot.commands.NeutralClimber;
 import frc.robot.commands.OutakeAlgae;
@@ -451,6 +452,10 @@ public class RobotContainer {
         .unless(coralEndEffector.hasCoralTrigger())
       ).onFalse(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender, intake));
 
+      //Ground Outtake
+      controller.povDown()
+        .onTrue(new GroundOuttakeCoral(intake, intakeExtender))
+        .onFalse(GroundOuttakeCoral.GroundOuttakeToStow(intake, intakeExtender));
     //#region reef scoring
 
     // Hashmaps for Coral level commands
