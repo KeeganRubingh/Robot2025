@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.LoggedTunableGainsBuilder;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.ReefPositionsUtil;
 
 public class AutoAlignCommand extends Command {
 
@@ -228,7 +229,7 @@ public class AutoAlignCommand extends Command {
      */
     @Override
     public boolean isFinished() {
-        return MathUtil.isNear(m_tx, 0.0,toleranceR.getAsDouble()) && MathUtil.isNear(m_ty, 0.0,toleranceB.getAsDouble()) && MathUtil.isNear(m_tr, 0.0,(toleranceB.getAsDouble()+toleranceR.getAsDouble())/2.0);
+        return MathUtil.isNear(m_tx, 0.0,toleranceR.getAsDouble()) && MathUtil.isNear(m_ty, 0.0,toleranceB.getAsDouble()) && MathUtil.isNear(m_tr, 0.0,(toleranceB.getAsDouble()+toleranceR.getAsDouble())/2.0) || !ReefPositionsUtil.getInstance().getIsAutoAligning();
     }
 
     @Override

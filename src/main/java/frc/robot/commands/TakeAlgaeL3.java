@@ -9,6 +9,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.elevator.Elevator;
@@ -98,7 +99,8 @@ public class TakeAlgaeL3 extends SequentialCommandGroup {
             .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position)),
             algaeEE.getNewSetVoltsCommand(8)
             .alongWith(shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position))
-            .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position))
+            .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position)),
+            new WaitUntilCommand(shoulder.getNewAtAngleTrigger(ShoulderPositions.Final.position, ()->(3))).withTimeout(0.5)
 
             // LOGIC NEEDED FOR INTAKE TO STOW
             // .alongWith(
