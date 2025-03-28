@@ -434,8 +434,6 @@ public class RobotContainer {
     
     //ground intake 
     controller.leftBumper()
-    .and(coralEndEffector.hasCoralTrigger().negate())
-    .and(coralEndEffector.hasCoralTrigger().and(algaeEndEffector.hasAlgaeTrigger()).negate())
       .whileTrue(
         new ConditionalCommand(
           StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender), 
@@ -450,6 +448,7 @@ public class RobotContainer {
           ), 
         algaeEndEffector.hasAlgaeTrigger()
         )
+        .unless(coralEndEffector.hasCoralTrigger())
       ).onFalse(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender, intake));
 
     //#region reef scoring
