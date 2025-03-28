@@ -27,7 +27,7 @@ public class StowToBarge extends SequentialCommandGroup {
         Starting(new LoggedTunableNumber("BargeScoreCommand/shoulder/StartingDegrees", 0)),
         MidPoint(new LoggedTunableNumber("BargeScoreCommand/shoulder/MidPointDegrees", 0)),
         SafeToSwingElbow(new LoggedTunableNumber("BargeScoreCommand/shoulder/SafeToSwingElbowDegrees", 40)),
-        Final(new LoggedTunableNumber("BargeScoreCommand/shoulder/FinalDegrees", -80)),
+        Final(new LoggedTunableNumber("BargeScoreCommand/shoulder/FinalDegrees", -85)),
         SafeToMoveElevator(new LoggedTunableNumber("BargeScoreCommand/shoulder/SafeToMoveElevatorDegrees", -70));
 
         DoubleSupplier position;
