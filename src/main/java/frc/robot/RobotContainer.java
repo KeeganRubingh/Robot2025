@@ -27,6 +27,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.MathUtil;
@@ -259,8 +260,8 @@ public class RobotContainer {
 
         elevator = new Elevator(new ElevatorIOTalonFX(rioCanBuilder.id(13).build(),rioCanBuilder.id(14).build()));
 
-        shoulder = new ArmJoint(new ArmJointIOTalonFX(new ShoulderConstants(), InvertedValue.CounterClockwise_Positive, SensorDirectionValue.Clockwise_Positive), Optional.empty());
-        elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants(), InvertedValue.Clockwise_Positive, SensorDirectionValue.Clockwise_Positive), Optional.of(shoulder));
+        shoulder = new ArmJoint(new ArmJointIOTalonFX(new ShoulderConstants(), InvertedValue.CounterClockwise_Positive, SensorDirectionValue.Clockwise_Positive, NeutralModeValue.Coast), Optional.empty());
+        elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants(), InvertedValue.Clockwise_Positive, SensorDirectionValue.Clockwise_Positive, NeutralModeValue.Brake), Optional.of(shoulder));
 
         coralEndEffector = new CoralEndEffector(new CoralEndEffectorIOTalonFX(canivoreCanBuilder.id(12).build(), canivoreCanBuilder.id(17).build()));
         // coralEndEffector = new CoralEndEffector(new CoralEndEffectorIONova(rioCanBuilder.id(12).build(), canivoreCanBuilder.id(17).build()));
