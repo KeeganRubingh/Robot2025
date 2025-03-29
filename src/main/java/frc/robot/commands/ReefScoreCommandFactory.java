@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -54,15 +56,15 @@ public class ReefScoreCommandFactory {
     private static LoggedTunableNumber rightOffsetBFinal = new LoggedTunableNumber("AutoAlign/rightOffsetBFinal", 0.68);
     private static LoggedTunableNumber leftOffsetBFinal = new LoggedTunableNumber("AutoAlign/leftOffsetBFinal", 0.68);
     private static LoggedTunableNumber algaeOffsetBFinal = new LoggedTunableNumber("AutoAlign/algaeOffsetBFinal", 0.55);
-    private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlign/offsetL", 0.155);
-    private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.2);
+    private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlign/offsetL", 0.155 + Inches.of(1).in(Meters));
+    private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.2 - Inches.of(3).in(Meters));
     //#endregion
 
     //Overrides
-    private static LoggedTunableNumber offsetLL3 = new LoggedTunableNumber("AutoAlign/offsetLL3", 0.155);
-    private static LoggedTunableNumber offsetRL3 = new LoggedTunableNumber("AutoAlign/offsetRL3", 0.2);
-    private static LoggedTunableNumber offsetLL2 = new LoggedTunableNumber("AutoAlign/offsetLL2", 0.155);
-    private static LoggedTunableNumber offsetRL2 = new LoggedTunableNumber("AutoAlign/offsetRL2", 0.2);
+    private static LoggedTunableNumber offsetLL3 = new LoggedTunableNumber("AutoAlign/offsetLL3", 0.155 + Inches.of(1).in(Meters));
+    private static LoggedTunableNumber offsetRL3 = new LoggedTunableNumber("AutoAlign/offsetRL3", 0.2 - Inches.of(3).in(Meters));
+    private static LoggedTunableNumber offsetLL2 = new LoggedTunableNumber("AutoAlign/offsetLL2", 0.155 + Inches.of(1).in(Meters));
+    private static LoggedTunableNumber offsetRL2 = new LoggedTunableNumber("AutoAlign/offsetRL2", 0.2 - Inches.of(3).in(Meters));
     private static LoggedTunableNumber offsetBFinalL2 = new LoggedTunableNumber("AutoAlign/offsetBFinalL2", 0.63);
     private static LoggedTunableNumber offsetBFinalL3 = new LoggedTunableNumber("AutoAlign/offsetBFinalL3", 0.63);
 

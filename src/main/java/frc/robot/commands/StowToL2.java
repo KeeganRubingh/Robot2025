@@ -18,7 +18,7 @@ public class StowToL2 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("StowToL2/shoulder/StartingDegrees", 10)),
-        Final(new LoggedTunableNumber("StowToL2/shoulder/FinalDegrees", 46.5)),
+        Final(new LoggedTunableNumber("StowToL2/shoulder/FinalDegrees", 31.5)),
         Confirm(new LoggedTunableNumber("StowToL2/shoulder/Confirm", 70));
 
         DoubleSupplier position;
