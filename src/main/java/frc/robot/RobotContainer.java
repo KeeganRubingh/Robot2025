@@ -67,6 +67,7 @@ import frc.robot.commands.StationIntakeReverseCommand;
 import frc.robot.commands.StationIntakeToStow;
 import frc.robot.commands.StowCommand;
 import frc.robot.commands.StowToBarge;
+import frc.robot.commands.BargeScoreThrowCommand;
 import frc.robot.commands.StowToGroundIntake;
 import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
@@ -102,6 +103,8 @@ import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOSim;
 import frc.robot.subsystems.intakeextender.IntakeExtenderIOTalonFX;
 import frc.robot.subsystems.vision.AprilTagVision;
+
+import static frc.robot.subsystems.vision.VisionConstants.angularStdDevBaseline;
 import static frc.robot.subsystems.vision.VisionConstants.limelightLeftName;
 import static frc.robot.subsystems.vision.VisionConstants.limelightRightName;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCameraLeft;
@@ -375,7 +378,8 @@ public class RobotContainer {
     controller.y()
       .and(()->ReefPositionsUtil.getInstance().getIsAutoAligning())
       .whileTrue(
-        new StowToBarge(shoulder,elbow,elevator,wrist)
+        DriveCommands.brakeDrive(drive)
+          .alongWith(new StowToBarge(shoulder, elbow, wrist))
           .andThen(new BargeAlignCommand(drive,()->MathUtil.applyDeadband(controller.getLeftX(),0.1)))
       )
       .onFalse(
@@ -390,7 +394,7 @@ public class RobotContainer {
     controller.y()
       .and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
       .onTrue(
-        new StowToBarge(shoulder, elbow, elevator, wrist)
+        new StowToBarge(shoulder, elbow, wrist)
       )
       .onFalse(
         new ConditionalCommand(
@@ -533,8 +537,18 @@ public class RobotContainer {
 
     // Confirm Barge
     controller.rightTrigger().and(controller.y())
-    .onTrue(new BargeScoreCommand(algaeEndEffector))
-    .onFalse(algaeEndEffector.getNewSetVoltsCommand(0.0));
+    .onTrue(new BargeScoreThrowCommand(elevator, wrist, algaeEndEffector))
+    .onFalse(
+      algaeEndEffector.getNewSetVoltsCommand(0.0)
+      .andThen(elevator.getNewSetDistanceCommand(0.0))
+      .andThen(
+        new ConditionalCommand(
+          new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector, intakeExtender), 
+          new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender),
+          algaeEndEffector.hasAlgaeTrigger()
+        ).onlyIf(controller.y().negate())
+      )
+    );
 
     // Outtake Algae
     controller.povLeft()
@@ -558,7 +572,6 @@ public class RobotContainer {
 
     // Coral Station Intake No Auto Align
     co_controller.leftBumper()
-      .and(algaeEndEffector.hasAlgaeTrigger().negate())
       .onTrue(
         new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector, intakeExtender)
       )
@@ -632,13 +645,13 @@ public class RobotContainer {
     // testcontroller.povLeft().whileTrue(new AutoAlignCommand((thisOneVariableWhichIDontReallyNeedSoIWillUseAnExtremelyConciseNameFor) -> {return new Pose2d(-1, 0, Rotation2d.kCCW_90deg);}, drive));
     // testcontroller.povRight().whileTrue(new AutoAlignCommand((thisOneVariableWhichIDontReallyNeedSoIWillUseAnExtremelyConciseNameFor) -> {return new Pose2d(-1, 0, Rotation2d.kCW_90deg);}, drive));
     // testcontroller.povUp().whileTrue(new AutoAlignCommand((thisOneVariableWhichIDontReallyNeedSoIWillUseAnExtremelyConciseNameFor) -> {return new Pose2d(0, 0, Rotation2d.kZero);}, drive));
-    testcontroller.povDown().whileTrue(
-      new StowToBarge(shoulder,elbow,elevator,wrist)
-      .andThen(new BargeAlignCommand(drive,()->testcontroller.getLeftX()))
-      .andThen(new BargeScoreCommand(algaeEndEffector))
-    ).onFalse(
-      new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender)
-    );
+    // testcontroller.povDown().whileTrue(
+    //   new StowToBarge(shoulder,elbow,elevator,wrist)
+    //   .andThen(new BargeAlignCommand(drive,()->testcontroller.getLeftX()))
+    //   .andThen(new BargeScoreCommand(algaeEndEffector))
+    // ).onFalse(
+    //   new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender)
+    // );
 
     testcontroller.povUp().onTrue(
       (new AlgaeStowCommand(shoulder,elbow,elevator,wrist,algaeEndEffector, intakeExtender)
