@@ -114,7 +114,7 @@ public class StowToL3 extends SequentialCommandGroup {
             new WaitCommand(0.25))
             .andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
         // .andThen(new WaitCommand(0.25))
-        .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.Confirm.position))
+        // .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.Confirm.position))
         .andThen(new WaitCommand(0.25));
     }
 
