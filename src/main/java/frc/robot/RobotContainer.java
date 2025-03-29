@@ -439,28 +439,28 @@ public class RobotContainer {
       );
     
     //ground intake 
-    controller.leftBumper()
-      .whileTrue(
-        new ConditionalCommand(
-          StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender), 
-          new ConditionalCommand(
-            new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
-            .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector)), 
-            new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
-            .andThen(StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender))
-            .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector))
-            .andThen(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender, intake)), 
-            intake.hasCoralTrigger()
-          ), 
-        algaeEndEffector.hasAlgaeTrigger()
-        )
-        .unless(coralEndEffector.hasCoralTrigger())
-      ).onFalse(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender, intake));
+    // controller.leftBumper()
+    //   .whileTrue(
+    //     new ConditionalCommand(
+    //       StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender), 
+    //       new ConditionalCommand(
+    //         new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
+    //         .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector)), 
+    //         new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
+    //         .andThen(StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender))
+    //         .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector))
+    //         .andThen(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender, intake)), 
+    //         intake.hasCoralTrigger()
+    //       ), 
+    //     algaeEndEffector.hasAlgaeTrigger()
+    //     )
+    //     .unless(coralEndEffector.hasCoralTrigger())
+    //   ).onFalse(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender, intake));
 
-      //Ground Outtake
-      controller.povDown()
-        .onTrue(new GroundOuttakeCoral(intake, intakeExtender))
-        .onFalse(GroundOuttakeCoral.GroundOuttakeToStow(intake, intakeExtender));
+    //   //Ground Outtake
+    //   controller.povDown()
+    //     .onTrue(new GroundOuttakeCoral(intake, intakeExtender))
+    //     .onFalse(GroundOuttakeCoral.GroundOuttakeToStow(intake, intakeExtender));
     //#region reef scoring
 
     // Hashmaps for Coral level commands
@@ -598,10 +598,10 @@ public class RobotContainer {
       .onTrue(reefPositions.getNewSetDeAlgaeLevelCommand(DeAlgaeLevel.Low));
 
     // Back Coral Station Intake
-    co_controller.povUp()
-      .and(algaeEndEffector.hasAlgaeTrigger().negate())
-      .onTrue(new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
-      .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender));
+    // co_controller.povUp()
+    //   .and(algaeEndEffector.hasAlgaeTrigger().negate())
+    //   .onTrue(new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
+    //   .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender));
 
     // Select Left Auto Aligning
     co_controller.povLeft()
