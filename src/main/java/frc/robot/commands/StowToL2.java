@@ -8,6 +8,7 @@ import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.elevator.Elevator;
@@ -18,7 +19,7 @@ public class StowToL2 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("StowToL2/shoulder/StartingDegrees", 10)),
-        Final(new LoggedTunableNumber("StowToL2/shoulder/FinalDegrees", 31.5)),
+        Final(new LoggedTunableNumber("StowToL2/shoulder/FinalDegrees", 35)),
         Confirm(new LoggedTunableNumber("StowToL2/shoulder/Confirm", 70));
 
         DoubleSupplier position;
@@ -98,14 +99,12 @@ public class StowToL2 extends SequentialCommandGroup {
     }
 
     public static Command getNewScoreCommand(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
-        return(elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
-        .alongWith(wrist.getNewApplyCoastModeCommand())
-        .alongWith(
-            new WaitCommand(0.25))
-            .andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
-        // .andThen(new WaitCommand(0.25))
-        .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.Confirm.position))
-        .andThen(new WaitCommand(0.25));
+        return elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
+            .alongWith(wrist.getNewApplyCoastModeCommand())
+            .alongWith(new WaitUntilCommand(elbow.getNewAtAngleTrigger(ElbowPositions.Confirm.angle(), Degrees.of(7.0))).withTimeout(1.0))
+            .andThen(coralEndEffector.getNewSetVoltsCommand(-4))
+            .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.Confirm.position))
+            .andThen(new WaitCommand(0.25));
     }
 
     public static Command getNewStopScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {

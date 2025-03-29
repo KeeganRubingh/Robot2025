@@ -22,7 +22,7 @@ public class TakeAlgaeL3 extends SequentialCommandGroup {
         Starting(new LoggedTunableNumber("TakeAlgaeL3/shoulder/StartingDegrees", 10)),
         // MidPoint(new LoggedTunableNumber("StowToL3Command/shoulder/MidPointDegrees", 110)),
         // SafeToSwingElbow(new LoggedTunableNumber("StowToL3Command/shoulder/SafeToSwingElbowDegrees", 100)),
-        Final(new LoggedTunableNumber("TakeAlgaeL3/shoulder/FinalDegrees", -30));
+        Final(new LoggedTunableNumber("TakeAlgaeL3/shoulder/FinalDegrees", -35));
 
         DoubleSupplier position;
         MutAngle distance;

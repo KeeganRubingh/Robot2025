@@ -24,7 +24,7 @@ public class StowToL3 extends SequentialCommandGroup {
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("StowToL3/shoulder/StartingDegrees", 95.0)),
         Final(new LoggedTunableNumber("StowToL3/shoulder/FinalDegrees", 32.5)),
-        Confirm(new LoggedTunableNumber("StowToL3/shoulder/Confirm", 65));
+        Confirm(new LoggedTunableNumber("StowToL3/shoulder/Confirm", 35.5));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -43,7 +43,7 @@ public class StowToL3 extends SequentialCommandGroup {
     private enum ElbowPositions {
         Starting(new LoggedTunableNumber("StowToL3/elbow/StartingDegrees", 10)),
         Final(new LoggedTunableNumber("StowToL3/elbow/FinalDegrees", 20)),
-        Confirm(new LoggedTunableNumber("StowToL3/elbow/ConfirmDegrees", -20));
+        Confirm(new LoggedTunableNumber("StowToL3/elbow/ConfirmDegrees", -50));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -108,23 +108,18 @@ public class StowToL3 extends SequentialCommandGroup {
     }
 
     public static Command getNewScoreCommand(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
-        return(elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
-        .alongWith(wrist.getNewApplyCoastModeCommand())
-        .alongWith(
-            new WaitCommand(0.25))
-            .andThen(coralEndEffector.getNewSetVoltsCommand(-4)))
-        // .andThen(new WaitCommand(0.25))
-        // .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.Confirm.position))
-        .andThen(new WaitCommand(0.25));
+        return elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
+            .alongWith(wrist.getNewApplyCoastModeCommand())
+            .alongWith(new WaitUntilCommand(elbow.getNewAtAngleTrigger(ElbowPositions.Confirm.angle(), Degrees.of(7.0))).withTimeout(1.0))
+            .andThen(coralEndEffector.getNewSetVoltsCommand(-4))
+            .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.Confirm.position))
+            .andThen(new WaitCommand(0.25));
     }
 
+
     public static Command getNewStopScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
-        return(elbow.getNewSetAngleCommand(ElbowPositions.Final.position))
-        .alongWith(
-            new WaitCommand(0.2)
-            .andThen(wrist.getNewWristTurnCommand(0))
-        )
-        .andThen(coralEndEffector.getNewSetVoltsCommand(1));
+        return new WaitCommand(0.2)
+            .andThen(coralEndEffector.getNewSetVoltsCommand(1));
     }
 
 }

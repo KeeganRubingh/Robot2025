@@ -84,7 +84,7 @@ public class AutoCommandManager {
     //#region Stows
     NamedCommands.registerCommand("Stow", new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE, intakeExtender));
     NamedCommands.registerCommand("L4ToStow", new L4ToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE, intakeExtender));
-    NamedCommands.registerCommand("AlgaeStow", new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE));
+    NamedCommands.registerCommand("AlgaeStow", new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE, intakeExtender));
     // Needed so not hit coral on elevator
     NamedCommands.registerCommand("StationIntakeToStow", new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE, intakeExtender));
     NamedCommands.registerCommand("GroundIntakeToStow",

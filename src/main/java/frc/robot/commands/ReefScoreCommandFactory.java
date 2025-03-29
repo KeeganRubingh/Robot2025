@@ -24,6 +24,8 @@ import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.intakeextender.IntakeExtender;
+
 import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
@@ -236,7 +238,8 @@ public class ReefScoreCommandFactory {
         ArmJoint elbow, 
         Elevator elevator, 
         Wrist wrist, 
-        AlgaeEndEffector algaeEE
+        AlgaeEndEffector algaeEE,
+        IntakeExtender extender
     ) {
         return getNewAlignToReefCommand(ReefPosition.Center, true, drive)
             .andThen(new ConditionalCommand(
@@ -247,7 +250,7 @@ public class ReefScoreCommandFactory {
             .until(algaeEE.hasAlgaeTrigger().debounce(0.5))
             .andThen(new WaitUntilCommand(algaeEE.hasAlgaeTrigger()))
             .andThen(getNewAlignToReefCommand(ReefPosition.Center, true, drive))
-            .andThen(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE));
+            .andThen(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE, extender));
     }
     
     public static Command getNewAlgaePluckAutoAlignCommand(

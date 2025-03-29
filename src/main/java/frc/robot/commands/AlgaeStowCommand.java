@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
@@ -85,14 +86,34 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
         }
     }
 
-    public AlgaeStowCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, AlgaeEndEffector algaeEE) {
+    private static enum IntakeExtenderPositions{
+        Stow(new LoggedTunableNumber("StowToAlgaeStow/IntakeExtender/StowDegrees",StowToGroundIntake.intakeExtenderStow.in(Degrees))),
+        OutOfTheWay(new LoggedTunableNumber("StowToAlgaeStow/IntakeExtender/OutOfTheWay",-75.0)),
+        StowSafeZone(new LoggedTunableNumber("StowToAlgaeStow/IntakeExtender/StowSafeZoneDegrees",StowToGroundIntake.intakeExtenderStow.in(Degrees) - 2.0));
+
+        DoubleSupplier position;
+        MutAngle distance;
+
+        IntakeExtenderPositions(DoubleSupplier position) {
+            this.position = position;
+            this.distance = Degrees.mutable(0.0);
+        }
+
+        public Angle angle() {
+            this.distance.mut_replace(this.position.getAsDouble(), Degrees);
+            return this.distance;
+        }
+    }
+
+    public AlgaeStowCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, AlgaeEndEffector algaeEE, IntakeExtender extender) {
         super(
+            extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.OutOfTheWay.position),
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
             elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position),
             algaeEE.getNewSetVoltsCommand(1.0)
         );
-        addRequirements(shoulder, elbow,  elevator, wrist, algaeEE);
+        addRequirements(shoulder, elbow,  elevator, wrist, algaeEE, extender);
     }
 }
