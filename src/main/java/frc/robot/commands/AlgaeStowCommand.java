@@ -107,7 +107,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
 
     public AlgaeStowCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, AlgaeEndEffector algaeEE, IntakeExtender extender) {
         super(
-            extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.OutOfTheWay.position),
+            extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position),
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),

@@ -1,5 +1,9 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
+
 import java.util.Map;
 import java.util.function.Function;
 
@@ -9,24 +13,17 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.intakeextender.IntakeExtender;
-
-import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
@@ -60,6 +57,7 @@ public class ReefScoreCommandFactory {
     private static LoggedTunableNumber algaeOffsetBFinal = new LoggedTunableNumber("AutoAlign/algaeOffsetBFinal", 0.55);
     private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlign/offsetL", 0.155 + Inches.of(1).in(Meters));
     private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.2 - Inches.of(3).in(Meters));
+    private static LoggedTunableNumber offsetCL = new LoggedTunableNumber("AutoAlign/offsetCL", Inches.of(6).in(Meters));
     //#endregion
 
     //Overrides
@@ -107,6 +105,7 @@ public class ReefScoreCommandFactory {
 
             double offsetRForLevel = offsetR.getAsDouble();
             double offsetLForLevel = offsetL.getAsDouble();
+            double offsetCForLevel = offsetCL.getAsDouble();
             switch (pos) {
                 case Right:
                     switch (ReefPositionsUtil.getInstance().getScoreLevel()) {
@@ -145,7 +144,7 @@ public class ReefScoreCommandFactory {
                     appliedOffset = -offsetLForLevel;
                     break;
                 default:
-                    appliedOffset = 0;
+                    appliedOffset = -offsetCForLevel;
                     backOffset = algaeOffsetBFinal.get();
                     break;
             }
