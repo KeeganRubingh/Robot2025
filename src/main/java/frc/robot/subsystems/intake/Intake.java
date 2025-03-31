@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -24,6 +25,10 @@ public class Intake extends SubsystemBase{
   private Debouncer debouncer = new Debouncer(0.1,DebounceType.kBoth);
 
 
+  private static final Distance LOWER_SENSOR_BOUND = Inches.of(3.0);
+  private static final Distance UPPER_SENSOR_BOUND = Inches.of(3.3);
+
+
   public Intake(IntakeIO intakeIO) {
     m_intakeIO = intakeIO;
     loggedIntake.angularVelocity = DegreesPerSecond.mutable(0);
@@ -32,6 +37,9 @@ public class Intake extends SubsystemBase{
     loggedIntake.voltage = Volts.mutable(0);
     loggedIntake.voltageSetPoint = Volts.mutable(0);
     loggedIntake.coralDistance = Inches.mutable(100);
+
+    Logger.recordOutput("RobotState/Intake/LowerSensorBound",LOWER_SENSOR_BOUND);
+    Logger.recordOutput("RobotState/Intake/UpperSensorBound",UPPER_SENSOR_BOUND);
   }
 
   private void setTarget(Voltage target) {
@@ -59,7 +67,7 @@ public class Intake extends SubsystemBase{
 
   public Trigger hasCoralTrigger() {
     return new Trigger(() -> 
-      loggedIntake.coralDistance.gt(Inches.of(2.5)) && loggedIntake.coralDistance.lt(Inches.of(3.5))
+      loggedIntake.coralDistance.gt(LOWER_SENSOR_BOUND) && loggedIntake.coralDistance.lt(UPPER_SENSOR_BOUND)
     ).debounce(0.1);
   }
 

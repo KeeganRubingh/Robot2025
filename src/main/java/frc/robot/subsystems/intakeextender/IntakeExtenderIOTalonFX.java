@@ -31,7 +31,7 @@ public class IntakeExtenderIOTalonFX implements IntakeExtenderIO {
 
   private void configureTalons() {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
-    cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     cfg.Voltage.PeakForwardVoltage = 7;
     cfg.CurrentLimits.StatorCurrentLimit = 80;
     cfg.CurrentLimits.StatorCurrentLimitEnable = true;

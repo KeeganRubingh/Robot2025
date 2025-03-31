@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.arm.ArmJoint;
@@ -18,7 +19,8 @@ import frc.robot.util.LoggedTunableNumber;
 public class StowToGroundIntake extends SequentialCommandGroup {
     private static enum ShoulderPositions {
         Starting(new LoggedTunableNumber("StowToGroundIntake/Shoulder/StartingDegrees", 90)),
-        Final(new LoggedTunableNumber("StowToGroundIntake/Shoulder/FinalDegrees", 55.5));
+        ExtendSafe(new LoggedTunableNumber("StowToGroundIntake/Shoulder/ExtendSafeDegrees", 45.5)),
+        Final(new LoggedTunableNumber("StowToGroundIntake/Shoulder/FinalDegrees", 51));
         
 
         DoubleSupplier position;
@@ -71,10 +73,14 @@ public class StowToGroundIntake extends SequentialCommandGroup {
         }
     }
 
+    public static final Angle intakeExtenderStow = Degrees.of(-45.0);
+    public static final Angle intakeExtenderTransfer = Degrees.of(0.0);
+    public static final Angle intakeExtenderFinal = Degrees.of(-155.0);
+    
     private static enum IntakeExtenderPositions {
-        Stow(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/StowDegrees", -45)),
-        Transfer(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/TransferDegrees", 0)),
-        Final(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/FinalDegrees", -155));
+        Stow(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/StowDegrees",intakeExtenderStow.in(Degrees))),
+        Transfer(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/TransferDegrees", intakeExtenderTransfer.in(Degrees))),
+        Final(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/FinalDegrees", intakeExtenderFinal.in(Degrees)));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -118,7 +124,7 @@ public class StowToGroundIntake extends SequentialCommandGroup {
                 .alongWith(extender.getNewIntakeExtenderTurnCommand(-155.0))
                 .alongWith(new WaitUntilCommand(extender.getNewAtAngleTrigger(()->-155.0, Degrees.of(10))))
                 .andThen(new WaitUntilCommand(intake.hasCoralTrigger()))
-                .andThen(intake.getNewSetVoltsCommand(0.5))
+                .andThen(intake.getNewSetVoltsCommand(2.0))
                 .andThen(extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position));
     }
 
@@ -139,6 +145,10 @@ public class StowToGroundIntake extends SequentialCommandGroup {
         .andThen(new WaitUntilCommand(coralEndEffector.hasCoralTrigger())) 
         .andThen(intake.getNewSetVoltsCommand(0))
         .andThen(
+            shoulder.getNewSetAngleCommand(ShoulderPositions.ExtendSafe.position)
+            .alongWith(new WaitUntilCommand(shoulder.getNewAtAngleTrigger(ShoulderPositions.ExtendSafe.position, ()->5.0)))
+        )
+        .andThen(
             extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position)
             .alongWith(coralEndEffector.getNewSetVoltsCommand(1))
         );
@@ -155,9 +165,9 @@ public class StowToGroundIntake extends SequentialCommandGroup {
     public static Command getReturnToStowCommand(ArmJoint shoulder, ArmJoint elbow, Wrist wrist, CoralEndEffector fingeys, IntakeExtender extender, Intake intake) {
         return extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position)
         .andThen(intake.getNewSetSpeedCommand(0))
-        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(IntakeExtenderPositions.Stow.position, Degrees.of(5))))
+        .andThen(new WaitUntilCommand(extender.getNewAtAngleTrigger(IntakeExtenderPositions.Stow.position, Degrees.of(12.5))))
         .andThen(wrist.getNewWristTurnCommand(WristPositions.Starting.position))
-        .andThen(new WaitUntilCommand(wrist.getNewAtAngleTrigger(WristPositions.Starting.position, Degrees.of(2))))
+        .andThen(new WaitUntilCommand(wrist.getNewAtAngleTrigger(WristPositions.Starting.position, Degrees.of(10))))
         .andThen(shoulder.getNewSetAngleCommand(ShoulderPositions.Starting.position))
         .andThen(elbow.getNewSetAngleCommand(ElbowPositions.Starting.position));
     }

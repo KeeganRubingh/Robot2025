@@ -17,7 +17,7 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
-public class StowToBarge extends SequentialCommandGroup {
+public class BargeScoreThrowCommand extends SequentialCommandGroup {
     public ArmJoint shoulder;
     public ArmJoint elbow;
     public Elevator elevator;
@@ -86,7 +86,7 @@ public class StowToBarge extends SequentialCommandGroup {
         Starting(new LoggedTunableNumber("BargeScoreCommand/elevator/StartingInches", 0)),
         SafeToSwingShoulder(new LoggedTunableNumber("BargeScoreCommand/elevator/SafeToSwingShoulderInches", 5.0)),
         Final(new LoggedTunableNumber("BargeScoreCommand/elevator/FinalInches", 26.0)),
-        Launch(new LoggedTunableNumber("BargeScoreCommand/elevator/FinalInches", 20.0)),
+        Launch(new LoggedTunableNumber("BargeScoreCommand/elevator/LaunchInches", 18.0)),
         Tolerance(new LoggedTunableNumber("BargeScoreCommand/elevator/ToleranceInches", 1.0));
 
         DoubleSupplier position;
@@ -103,14 +103,16 @@ public class StowToBarge extends SequentialCommandGroup {
         }
     }
 
-    public StowToBarge(ArmJoint shoulder, ArmJoint elbow, Wrist wrist) {
+    public BargeScoreThrowCommand(Elevator elevator, Wrist wrist, AlgaeEndEffector algaeEE) {
         super( 
-            wrist.getNewWristTurnCommand(WristPositions.Final.position),
-            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
-            elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
-            new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.SafeToMoveElevator.position)),
-            new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.SafeToMoveElevator.position))
+            elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position)
+            .alongWith(
+                new WaitUntilCommand(elevator.getNewGreaterThanDistanceTrigger(ElevatorPositions.SafeToSwingShoulder.position))
+            ),
+            new WaitUntilCommand(elevator.getNewGreaterThanDistanceTrigger(ElevatorPositions.Launch.position)),
+            new BargeScoreCommand(algaeEE),
+            new WaitUntilCommand(elevator.getNewAtDistanceTrigger(ElevatorPositions.Final.position, ElevatorPositions.Tolerance.position))
         );
-        addRequirements(shoulder, elbow, wrist);
+        addRequirements(wrist, elevator, algaeEE);
     }
 }

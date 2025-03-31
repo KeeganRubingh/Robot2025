@@ -1,5 +1,9 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
+
 import java.util.Map;
 import java.util.function.Function;
 
@@ -9,20 +13,17 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
-import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
+import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
@@ -53,10 +54,19 @@ public class ReefScoreCommandFactory {
     private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlign/offsetBBackingUp", 1.0);
     private static LoggedTunableNumber rightOffsetBFinal = new LoggedTunableNumber("AutoAlign/rightOffsetBFinal", 0.68);
     private static LoggedTunableNumber leftOffsetBFinal = new LoggedTunableNumber("AutoAlign/leftOffsetBFinal", 0.68);
-    private static LoggedTunableNumber algaeOffsetBFinal = new LoggedTunableNumber("AutoAlign/algaeOffsetBFinal", 0.55);
-    private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlign/offsetL", 0.155);
-    private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.2);
+    private static LoggedTunableNumber algaeOffsetBFinal = new LoggedTunableNumber("AutoAlign/algaeOffsetBFinal", 0.53);
+    private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlign/offsetL", 0.155 + Inches.of(1).in(Meters));
+    private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.2 - Inches.of(3).in(Meters));
+    private static LoggedTunableNumber offsetCL = new LoggedTunableNumber("AutoAlign/offsetCL", Inches.of(0).in(Meters));
     //#endregion
+
+    //Overrides
+    private static LoggedTunableNumber offsetLL3 = new LoggedTunableNumber("AutoAlign/offsetLL3", 0.155 + Inches.of(1).in(Meters));
+    private static LoggedTunableNumber offsetRL3 = new LoggedTunableNumber("AutoAlign/offsetRL3", 0.2 - Inches.of(3).in(Meters));
+    private static LoggedTunableNumber offsetLL2 = new LoggedTunableNumber("AutoAlign/offsetLL2", 0.155 + Inches.of(1).in(Meters));
+    private static LoggedTunableNumber offsetRL2 = new LoggedTunableNumber("AutoAlign/offsetRL2", 0.2 - Inches.of(3).in(Meters));
+    private static LoggedTunableNumber offsetBFinalL2 = new LoggedTunableNumber("AutoAlign/offsetBFinalL2", 0.63);
+    private static LoggedTunableNumber offsetBFinalL3 = new LoggedTunableNumber("AutoAlign/offsetBFinalL3", 0.63);
 
     /**
      * Finds the closest april tag to a position.
@@ -92,20 +102,53 @@ public class ReefScoreCommandFactory {
         return (Pose2d pose) -> {
             double backOffset = leftOffsetBFinal.get();
             double appliedOffset = 0;
+
+            double offsetRForLevel = offsetR.getAsDouble();
+            double offsetLForLevel = offsetL.getAsDouble();
+            double offsetCForLevel = offsetCL.getAsDouble();
             switch (pos) {
                 case Right:
-                    appliedOffset = offsetR.getAsDouble();
-                    backOffset = rightOffsetBFinal.get();
+                    switch (ReefPositionsUtil.getInstance().getScoreLevel()) {
+                        case L2:
+                            offsetRForLevel = offsetRL2.getAsDouble();
+                            offsetLForLevel = offsetLL2.getAsDouble();
+                            backOffset = offsetBFinalL2.getAsDouble();
+                            break;
+                        case L3:
+                            offsetRForLevel = offsetRL3.getAsDouble();
+                            offsetLForLevel = offsetLL3.getAsDouble();
+                            backOffset = offsetBFinalL3.getAsDouble();
+                            break;
+                        default:
+                            backOffset = rightOffsetBFinal.get();
+                            break;
+                    }
+                    appliedOffset = offsetRForLevel;
                     break;
                 case Left:
-                    appliedOffset = -offsetL.getAsDouble();
-                    backOffset = leftOffsetBFinal.get();
+                    switch (ReefPositionsUtil.getInstance().getScoreLevel()) {
+                        case L2:
+                            offsetRForLevel = offsetRL2.getAsDouble();
+                            offsetLForLevel = offsetLL2.getAsDouble();
+                            backOffset = offsetBFinalL2.getAsDouble();
+                            break;
+                        case L3:
+                            offsetRForLevel = offsetRL3.getAsDouble();
+                            offsetLForLevel = offsetLL3.getAsDouble();
+                            backOffset = offsetBFinalL3.getAsDouble();
+                            break;
+                        default:
+                            backOffset = leftOffsetBFinal.get();
+                            break;
+                    }
+                    appliedOffset = -offsetLForLevel;
                     break;
                 default:
-                    appliedOffset = 0;
+                    appliedOffset = -offsetCForLevel;
                     backOffset = algaeOffsetBFinal.get();
                     break;
             }
+            
             Transform2d offset = new Transform2d(isBackingUp ? offsetBBackingUp.getAsDouble() : backOffset, appliedOffset, Rotation2d.kZero);
             Pose2d closestTarget = findClosestPose(pose);
 
@@ -194,19 +237,19 @@ public class ReefScoreCommandFactory {
         ArmJoint elbow, 
         Elevator elevator, 
         Wrist wrist, 
-        AlgaeEndEffector algaeEE
+        AlgaeEndEffector algaeEE,
+        IntakeExtender extender
     ) {
         return getNewAlignToReefCommand(ReefPosition.Center, true, drive)
-            .andThen(new WaitCommand(0.5))
-            .andThen(getNewAlignToReefCommand(ReefPosition.Center, false, drive))
-            .alongWith(new ConditionalCommand(
+            .andThen(new ConditionalCommand(
                 new TakeAlgaeL2(shoulder, elbow, wrist, algaeEE, elevator),
                 new TakeAlgaeL3(shoulder, elbow, wrist, algaeEE, elevator),
                 () -> ReefPositionsUtil.getInstance().isSelected(DeAlgaeLevel.Low)))
-            .until(algaeEE.hasAlgaeTrigger())
+            .andThen(getNewAlignToReefCommand(ReefPosition.Center, false, drive))
+            .until(algaeEE.hasAlgaeTrigger().debounce(0.5))
             .andThen(new WaitUntilCommand(algaeEE.hasAlgaeTrigger()))
             .andThen(getNewAlignToReefCommand(ReefPosition.Center, true, drive))
-            .andThen(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE));
+            .andThen(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE, extender));
     }
     
     public static Command getNewAlgaePluckAutoAlignCommand(

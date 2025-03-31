@@ -1,8 +1,12 @@
 package frc.robot.commands;
 
-import java.util.concurrent.TransferQueue;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Radians;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -10,17 +14,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Radians;
-
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Timer;
@@ -28,10 +24,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.LoggedTunableGainsBuilder;
 import frc.robot.util.LoggedTunableNumber;
-import frc.robot.util.ReefPositionsUtil;
 
-public class AutoAlignCommand extends Command {
-
+public class AutoAlignCommandNoDrive extends Command{
+    
     private Drive drivetrain;
 
     private Pose2d targetPose;
@@ -39,23 +34,23 @@ public class AutoAlignCommand extends Command {
     private Function<Pose2d, Pose2d> getTargetPoseFn;
 
     //#region TODO get accurate values
-    public static LoggedTunableGainsBuilder throttleGains = new LoggedTunableGainsBuilder("AutoAlign/strafeGains/", 6.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    public static LoggedTunableGainsBuilder strafeGains = new LoggedTunableGainsBuilder("AutoAlign/throttleGains/", 4.0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0);
-    public static LoggedTunableNumber maxStrafeTune = new LoggedTunableNumber("AutoAlign/strafeGains/maxVelMetersPerSecond",1.0);
-    public static LoggedTunableNumber maxThrottleTune = new LoggedTunableNumber("AutoAlign/throttleGains/maxVelMetersPerSecond",1.0);
-    public static LoggedTunableNumber maxAccelStrafeTune = new LoggedTunableNumber("AutoAlign/strafeGains/maxAccMetersPerSecond",10.0);
-    public static LoggedTunableNumber maxAccelDistanceTune = new LoggedTunableNumber("AutoAlign/throttleGains/maxAccMetersPerSecond",10.0);
-    public static LoggedTunableNumber toleranceB = new LoggedTunableNumber("AutoAlign/toleranceB", 0.01);
-    public static LoggedTunableNumber toleranceR = new LoggedTunableNumber("AutoAlign/toleranceR", 0.02);
+    private static LoggedTunableGainsBuilder throttleGains = AutoAlignCommand.throttleGains; 
+    private static LoggedTunableGainsBuilder strafeGains = AutoAlignCommand.strafeGains; 
+    private static LoggedTunableNumber maxStrafeTune = AutoAlignCommand.maxStrafeTune; 
+    private static LoggedTunableNumber maxThrottleTune = AutoAlignCommand.maxThrottleTune; 
+    private static LoggedTunableNumber maxAccelStrafeTune = AutoAlignCommand.maxAccelStrafeTune; 
+    private static LoggedTunableNumber maxAccelDistanceTune = AutoAlignCommand.maxAccelDistanceTune; 
+    private static LoggedTunableNumber toleranceB = AutoAlignCommand.toleranceB; 
+    private static LoggedTunableNumber toleranceR = AutoAlignCommand.toleranceR; 
 
-    public static LoggedTunableNumber spinBound = new LoggedTunableNumber("AutoAlign/complexSpinBound", 10);
+    private static LoggedTunableNumber spinBound = AutoAlignCommand.spinBound;
     //#endregion
 
-    public static LinearVelocity m_maxStrafe = MetersPerSecond.of(maxStrafeTune.getAsDouble()); 
-    public static LinearVelocity m_maxThrottle = MetersPerSecond.of(maxThrottleTune.getAsDouble());
-    public static LinearAcceleration m_maxAccelStrafe = MetersPerSecondPerSecond.of(maxAccelStrafeTune.getAsDouble());
-    public static LinearAcceleration m_maxAccelThrottle = MetersPerSecondPerSecond.of(maxAccelStrafeTune.getAsDouble());
-    public static final double MAX_SPIN = Math.toRadians(180.0);
+    private LinearVelocity m_maxStrafe = AutoAlignCommand.m_maxStrafe; 
+    private LinearVelocity m_maxThrottle = AutoAlignCommand.m_maxThrottle;
+    private LinearAcceleration m_maxAccelStrafe = AutoAlignCommand.m_maxAccelStrafe;
+    private LinearAcceleration m_maxAccelThrottle = AutoAlignCommand.m_maxAccelThrottle;
+    private static final double MAX_SPIN = AutoAlignCommand.MAX_SPIN;
 
     private double m_strafe;
     private double m_throttle;
@@ -87,11 +82,11 @@ public class AutoAlignCommand extends Command {
      * @param drivetrain The Drive class to get the current pose from.
      * @param name The LoggedTunableNumber's (should be) exclusive name
      */
-    public AutoAlignCommand(Function<Pose2d, Pose2d> getTargetPoseFunction, Drive drivetrain, String name) {
+    public AutoAlignCommandNoDrive(Function<Pose2d, Pose2d> getTargetPoseFunction, Drive drivetrain, String name) {
         this(getTargetPoseFunction, ()->Transform2d.kZero, drivetrain, name);
     }
 
-    public AutoAlignCommand(Function<Pose2d, Pose2d> getTargetPoseFunction, Supplier<Transform2d> speedOffset, Drive drivetrain, String name) {
+    public AutoAlignCommandNoDrive(Function<Pose2d, Pose2d> getTargetPoseFunction, Supplier<Transform2d> speedOffset, Drive drivetrain, String name) {
         this.getTargetPoseFn = getTargetPoseFunction;
         this.drivetrain = drivetrain;
         this.speedModSupplier = speedOffset;
@@ -103,7 +98,7 @@ public class AutoAlignCommand extends Command {
      * @param getDrivePoseFunction A function that takes a current drivetrain pose and returns a target position.
      * @param drivetrain The Drive class to get the current pose from.
      */
-    public AutoAlignCommand(Function<Pose2d, Pose2d> getTargetPoseFunction, Supplier<Transform2d> speedOffset, Drive drivetrain) {
+    public AutoAlignCommandNoDrive(Function<Pose2d, Pose2d> getTargetPoseFunction, Supplier<Transform2d> speedOffset, Drive drivetrain) {
         this(getTargetPoseFunction, speedOffset, drivetrain, "AutoAlign");
     }
 
@@ -113,7 +108,7 @@ public class AutoAlignCommand extends Command {
      * @param getDrivePoseFunction A function that takes a current drivetrain pose and returns a target position.
      * @param drivetrain The Drive class to get the current pose from.
      */
-    public AutoAlignCommand(Function<Pose2d, Pose2d> getTargetPoseFunction, Drive drivetrain) {
+    public AutoAlignCommandNoDrive(Function<Pose2d, Pose2d> getTargetPoseFunction, Drive drivetrain) {
         this(getTargetPoseFunction, drivetrain, "AutoAlign");
     }
 
@@ -150,7 +145,7 @@ public class AutoAlignCommand extends Command {
         return drivetrain.getAutoAlignPose();
     }
 
-    public AutoAlignCommand withControlScheme(ControllerType controlScheme) {
+    public AutoAlignCommandNoDrive withControlScheme(ControllerType controlScheme) {
         this.controlscheme = controlScheme;
         return this;
     }
@@ -204,13 +199,6 @@ public class AutoAlignCommand extends Command {
             m_strafe *= coef;
         }
 
-        ChassisSpeeds speeds =
-        new ChassisSpeeds(
-            m_throttle,
-            m_strafe,
-            m_spin);
-        drivetrain.runVelocity(speeds);
-
         Logger.recordOutput("AutoAlign/TX", m_tx);
         Logger.recordOutput("AutoAlign/TZ", m_ty);
         Logger.recordOutput("AutoAlign/TR", m_tr);
@@ -220,7 +208,6 @@ public class AutoAlignCommand extends Command {
         Logger.recordOutput("AutoAlign/TargetPose",targetPose);
         Logger.recordOutput("AutoAlign/distance", distance);
 
-
         lastTimestamp = Timer.getFPGATimestamp();
     }
 
@@ -229,7 +216,7 @@ public class AutoAlignCommand extends Command {
      */
     @Override
     public boolean isFinished() {
-        return MathUtil.isNear(m_tx, 0.0,toleranceR.getAsDouble()) && MathUtil.isNear(m_ty, 0.0,toleranceB.getAsDouble()) && MathUtil.isNear(m_tr, 0.0,(toleranceB.getAsDouble()+toleranceR.getAsDouble())/2.0) || !ReefPositionsUtil.getInstance().getIsAutoAligning();
+        return false;
     }
 
     @Override

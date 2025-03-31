@@ -41,7 +41,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
 
   private Angle m_setPoint = Angle.ofRelativeUnits(0, Rotations);
 
-  public ArmJointIOTalonFX(ArmJointConstants constants, InvertedValue motorInversion, SensorDirectionValue sensorDirection) {
+  public ArmJointIOTalonFX(ArmJointConstants constants, InvertedValue motorInversion, SensorDirectionValue sensorDirection, NeutralModeValue neutralMode) {
       m_Constants = constants;
       if(constants.CanCoderProfile != null) {
         this.cancoder = new CANcoder(constants.CanCoderProfile.id(),constants.CanCoderProfile.bus());
@@ -51,12 +51,12 @@ public class ArmJointIOTalonFX implements ArmJointIO {
         FollowerMotor = new TalonFX(constants.FollowerProfile.id(),constants.FollowerProfile.bus());
       }
       Request = new MotionMagicVoltage(constants.StartingAngle);
-      configureTalons(motorInversion, sensorDirection);
+      configureTalons(motorInversion, sensorDirection, neutralMode);
   }
 
-  private void configureTalons(InvertedValue motorInversion, SensorDirectionValue cancoderSensorDirection) {
+  private void configureTalons(InvertedValue motorInversion, SensorDirectionValue cancoderSensorDirection, NeutralModeValue neutralMode) {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
-    cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    cfg.MotorOutput.NeutralMode = neutralMode;
     cfg.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     cfg.CurrentLimits.SupplyCurrentLimit = m_Constants.SupplyCurrentLimit.in(Amp);
     cfg.CurrentLimits.StatorCurrentLimit = m_Constants.TorqueCurrentLimit.in(Amp);
