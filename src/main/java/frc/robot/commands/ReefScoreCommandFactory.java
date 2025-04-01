@@ -51,34 +51,43 @@ public class ReefScoreCommandFactory {
     private static int[] targetIds;
 
     //#region Coral Alignment
-    private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetBBackingUp", 1.0);
-    private static LoggedTunableNumber rightOffsetBFinal = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/rightOffsetBFinal", 0.68);
-    private static LoggedTunableNumber leftOffsetBFinal = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/leftOffsetBFinal", 0.68);
-    private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetL", 0.155 + Inches.of(1).in(Meters));
-    private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetR", 0.2 - Inches.of(3).in(Meters));
+    private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Back/BackingUp", 1.0);
+    private static LoggedTunableNumber offsetBDefault = new LoggedTunableNumber("AAutoAlignCommands/ReefAlignCommand/Offsets/Back/default", 0.68);
+
+    private static LoggedTunableNumber defaultOffsetL = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Left/default", 0.155 + Inches.of(1).in(Meters));
+    private static LoggedTunableNumber defaultOffsetR = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Right/default", 0.2 - Inches.of(3).in(Meters));
     //#endregion
 
     //#region Algae Alignment
-    private static LoggedTunableNumber algaeOffsetBFinal = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Algae/algaeOffsetBFinal", 0.53);
-    private static LoggedTunableNumber offsetCL = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Algae/offsetCL", Inches.of(0).in(Meters));
+    private static LoggedTunableNumber algaeOffsetBFinal = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Algae/BackOffset", 0.53);
+    private static LoggedTunableNumber offsetCR = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Algae/RightOffset", Inches.of(0).in(Meters));
     //#endregion
 
     //Overrides
-    private static LoggedTunableNumber offsetLL3 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetLL3", 0.155 + Inches.of(1).in(Meters));
-    private static LoggedTunableNumber offsetRL3 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetRL3", 0.2 - Inches.of(3).in(Meters));
-    private static LoggedTunableNumber offsetLL2 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetLL2", 0.155 + Inches.of(1).in(Meters));
-    private static LoggedTunableNumber offsetRL2 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetRL2", 0.2 - Inches.of(3).in(Meters));
-    private static LoggedTunableNumber offsetBFinalL2 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetBFinalL2", 0.63);
-    private static LoggedTunableNumber offsetBFinalL3 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetBFinalL3", 0.63);
+        //Left level overrides
+    private static LoggedTunableNumber offsetLL1 = defaultOffsetL;//new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Left/L1", 0.155 + Inches.of(1).in(Meters));
+    private static LoggedTunableNumber offsetLL2 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Left/L2", 0.155 + Inches.of(1).in(Meters));
+    private static LoggedTunableNumber offsetLL3 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Left/L3", 0.155 + Inches.of(1).in(Meters));
+    private static LoggedTunableNumber offsetLL4 = defaultOffsetL;//new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Left/L4", 0.155 + Inches.of(1).in(Meters));
+        //Right level overrides
+    private static LoggedTunableNumber offsetRL1 = defaultOffsetR;//new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Right/L1", 0.155 + Inches.of(1).in(Meters));
+    private static LoggedTunableNumber offsetRL2 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Right/L2", 0.2 - Inches.of(3).in(Meters));
+    private static LoggedTunableNumber offsetRL3 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Right/L3", 0.2 - Inches.of(3).in(Meters));
+    private static LoggedTunableNumber offsetRL4 = defaultOffsetR;//new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Right/L4", 0.155 + Inches.of(1).in(Meters));
+        //Back level overrides (Overrides on how far back each level will be scored)
+    private static LoggedTunableNumber offsetBFinalL1 = offsetBDefault;//new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Back/L1", 0.63);
+    private static LoggedTunableNumber offsetBFinalL2 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Back/L2", 0.63);
+    private static LoggedTunableNumber offsetBFinalL3 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Back/L3", 0.63);
+    private static LoggedTunableNumber offsetBFinalL4 = offsetBDefault;//new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Back/L4", 0.63);
 
     /**
-     * Finds the closest april tag to a position.
+     * Finds the closest reef april tag (from the list of this alliance's apriltags) to a position.
      * 
      * @param pos The Pose2d to find the closest relative tag.
      * @param targets The list of AprilTag IDs to check for.
      * @return The pose of the closest april tag in "targets" to "pos"
      */
-    private static Pose2d findClosestPose(Pose2d pos) {
+    private static Pose2d findClosestTag(Pose2d pos) {
         int[] targets = targetIds;
         double minDistance = Double.MAX_VALUE;
         Pose2d target = Pose2d.kZero;
@@ -103,70 +112,91 @@ public class ReefScoreCommandFactory {
     public static Function<Pose2d, Pose2d> getGetTargetPositionFunction(ReefPosition pos, boolean isBackingUp) {
         refreshAlliance();
         return (Pose2d pose) -> {
-            double backOffset = leftOffsetBFinal.get();
-            double appliedOffset = 0;
+            // Set default offsets
+            double backOffset = offsetBDefault.getAsDouble();
+            double sideOffset = 0;
+            // Select between different alignments for different levels
+            double offsetRForLevel = defaultOffsetR.getAsDouble();
+            double offsetLForLevel = defaultOffsetL.getAsDouble();
+            double offsetCForLevel = offsetCR.getAsDouble();
 
-            double offsetRForLevel = offsetR.getAsDouble();
-            double offsetLForLevel = offsetL.getAsDouble();
-            double offsetCForLevel = offsetCL.getAsDouble();
-            switch (pos) {
-                case Right:
-                    switch (ReefPositionsUtil.getInstance().getScoreLevel()) {
-                        case L2:
-                            offsetRForLevel = offsetRL2.getAsDouble();
-                            offsetLForLevel = offsetLL2.getAsDouble();
-                            backOffset = offsetBFinalL2.getAsDouble();
-                            break;
-                        case L3:
-                            offsetRForLevel = offsetRL3.getAsDouble();
-                            offsetLForLevel = offsetLL3.getAsDouble();
-                            backOffset = offsetBFinalL3.getAsDouble();
-                            break;
-                        default:
-                            backOffset = rightOffsetBFinal.get();
-                            break;
-                    }
-                    appliedOffset = offsetRForLevel;
+            switch(ReefPositionsUtil.getInstance().getScoreLevel()) {
+                case L1:
+                    offsetRForLevel = offsetRL1.getAsDouble();
+                    offsetLForLevel = offsetLL1.getAsDouble();
+                    backOffset = offsetBFinalL1.getAsDouble();
                     break;
-                case Left:
-                    switch (ReefPositionsUtil.getInstance().getScoreLevel()) {
-                        case L2:
-                            offsetRForLevel = offsetRL2.getAsDouble();
-                            offsetLForLevel = offsetLL2.getAsDouble();
-                            backOffset = offsetBFinalL2.getAsDouble();
-                            break;
-                        case L3:
-                            offsetRForLevel = offsetRL3.getAsDouble();
-                            offsetLForLevel = offsetLL3.getAsDouble();
-                            backOffset = offsetBFinalL3.getAsDouble();
-                            break;
-                        default:
-                            backOffset = leftOffsetBFinal.get();
-                            break;
-                    }
-                    appliedOffset = -offsetLForLevel;
+                case L2:
+                    offsetRForLevel = offsetRL2.getAsDouble();
+                    offsetLForLevel = offsetLL2.getAsDouble();
+                    backOffset = offsetBFinalL2.getAsDouble();
+                    break;
+                case L3:
+                    offsetRForLevel = offsetRL3.getAsDouble();
+                    offsetLForLevel = offsetLL3.getAsDouble();
+                    backOffset = offsetBFinalL3.getAsDouble();
+                    break;
+                case L4:
+                    offsetRForLevel = offsetRL4.getAsDouble();
+                    offsetLForLevel = offsetLL4.getAsDouble();
+                    backOffset = offsetBFinalL4.getAsDouble();
                     break;
                 default:
-                    appliedOffset = -offsetCForLevel;
+                    offsetRForLevel = defaultOffsetR.getAsDouble();
+                    offsetLForLevel = defaultOffsetL.getAsDouble();
+                    backOffset      = offsetBDefault.getAsDouble();
+                    break;
+            }
+            // Select between different alignments for different sides
+            switch (pos) {
+                case Right:
+                    sideOffset = offsetRForLevel;
+                    break;
+                case Left:
+                    sideOffset = -offsetLForLevel;
+                    break;
+                case Center:
+                    sideOffset = offsetCR.getAsDouble();
+                default:
+                    sideOffset = -offsetCForLevel;
                     backOffset = algaeOffsetBFinal.get();
                     break;
             }
-            
-            Transform2d offset = new Transform2d(isBackingUp ? offsetBBackingUp.getAsDouble() : backOffset, appliedOffset, Rotation2d.kZero);
-            Pose2d closestTarget = findClosestPose(pose);
 
+            // If we're backing up override our back offset
+            if(isBackingUp) {
+                backOffset = offsetBBackingUp.getAsDouble();
+            }
+            
+            //Get our closest tag
+            Pose2d closestTarget = findClosestTag(pose);
+            //Build a transformation for our offset from that tag
+            Transform2d offset = new Transform2d(backOffset, sideOffset, Rotation2d.kZero);
+
+            //Transform our tag to get our final target pose and log it
             Pose2d target = closestTarget.transformBy(offset);
             Logger.recordOutput("TargetPose",target);
+
+            //Return the target pose
             return target;
         };
     }
 
-    public static void initialize() {
-        refreshAlliance();
+    /**
+     * Sets our alliance to the one returned by getalliance, defaulting to red.
+     */
+    public static void refreshAlliance() {
+        alliance = DriverStation.getAlliance().orElse(null);
+        if(alliance == null) {
+            alliance = Alliance.Red;
+            //TODO: Add safety kill for if we didn't get an alliance from the DS
+        }
+        targetIds = alliance == Alliance.Blue ? targetIdsBlue : targetIdsRed;
     }
 
-    public static void refreshAlliance() {
-        targetIds = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue ? targetIdsBlue : targetIdsRed;
+    public static void initialize() {
+        //Refresh our alliance every time we init this command
+        refreshAlliance();
     }
 
     /**
