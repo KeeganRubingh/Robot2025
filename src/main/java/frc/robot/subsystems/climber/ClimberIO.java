@@ -4,6 +4,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutCurrent;
+import edu.wpi.first.units.measure.MutEnergy;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
@@ -12,6 +13,7 @@ public interface ClimberIO {
 
   @AutoLog
   public static class ClimberInputs {
+    public MutAngle angle;
     public MutAngularVelocity angularVelocity;
     public MutVoltage voltage;
     public MutVoltage voltageSetPoint;

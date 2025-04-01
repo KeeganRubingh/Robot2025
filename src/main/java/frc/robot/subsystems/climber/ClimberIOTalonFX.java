@@ -32,6 +32,7 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   private void configureTalons(boolean invert) {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
+    cfg.Feedback.RotorToSensorRatio = 125.0*32.0/12.0;
     cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.CurrentLimits.StatorCurrentLimit = 80.0;
     cfg.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -45,6 +46,7 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void updateInputs(ClimberInputs inputs) {
+    inputs.angle.mut_replace(Motor.getPosition().getValue());
     inputs.angularVelocity.mut_replace(Motor.getVelocity().getValue());
     inputs.voltageSetPoint.mut_replace(m_setPoint);
     inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());

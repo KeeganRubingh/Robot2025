@@ -31,6 +31,7 @@ public class Climber extends SubsystemBase {
 
   public Climber(ClimberIO ClimberIO) {
     m_ClimberIO = ClimberIO;
+    loggedclimber.angle = Degrees.mutable(0);
     loggedclimber.angularVelocity = DegreesPerSecond.mutable(0);
     loggedclimber.supplyCurrent = Amps.mutable(0);
     loggedclimber.torqueCurrent = Amps.mutable(0);
