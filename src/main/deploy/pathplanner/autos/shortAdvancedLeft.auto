@@ -45,7 +45,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "WaitUntilL4"
+                        "name": "WaitUntilArmAtL4"
                       }
                     }
                   ]
@@ -64,21 +64,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "deadline",
                 "data": {
-                  "name": "BackupL4Left"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StopScoreL4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "L4ToStow"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "BackupL4Left"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "L4ToStow"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -138,7 +139,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "WaitUntilL4"
+                        "name": "WaitUntilArmAtL4"
                       }
                     }
                   ]
@@ -157,21 +158,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "deadline",
                 "data": {
-                  "name": "BackupL4Left"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StopScoreL4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "L4ToStow"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "BackupL4Left"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "L4ToStow"
+                      }
+                    }
+                  ]
                 }
               },
               {

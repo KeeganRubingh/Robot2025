@@ -169,6 +169,12 @@ public class StowToL4 extends SequentialCommandGroup {
             .and(wrist.getNewAtAngleTrigger(Degrees.of(WristPositions.Final.position.getAsDouble()), Degrees.of(5.0)));
     }
 
+    public static Trigger getNewArmAtL4Trigger(ArmJoint shoulder, ArmJoint elbow, Wrist wrist) {
+        return shoulder.getNewAtAngleTrigger(Degrees.of(ShoulderPositions.Final.position.getAsDouble()), Degrees.of(6.0))
+            .and(elbow.getNewAtAngleTrigger(Degrees.of(ElbowPositions.Final.position.getAsDouble()), Degrees.of(5.0)))
+            .and(wrist.getNewAtAngleTrigger(Degrees.of(WristPositions.Final.position.getAsDouble()), Degrees.of(5.0)));
+    }
+
     public static Command getNewScoreCommand(ArmJoint elbow, Wrist wrist, CoralEndEffector coralEndEffector) {
         return(
             elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)

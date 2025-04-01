@@ -20,7 +20,7 @@
         "y": 5.7811987704918035
       },
       "prevControl": {
-        "x": 2.757172131147541,
+        "x": 2.7571721311475414,
         "y": 6.5244364754098365
       },
       "nextControl": null,
@@ -58,7 +58,7 @@
     },
     {
       "name": "StowToL4Elevator",
-      "waypointRelativePos": 0.9,
+      "waypointRelativePos": 0.7962962962962984,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

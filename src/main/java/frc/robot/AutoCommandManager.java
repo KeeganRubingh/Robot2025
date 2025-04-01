@@ -83,6 +83,7 @@ public class AutoCommandManager {
   private void configureNamedCommands(Drive drive, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE, IntakeExtender intakeExtender) {
     //#region Stows
     NamedCommands.registerCommand("Stow", new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE, intakeExtender));
+    NamedCommands.registerCommand("ElevatorStow", L4ToStow.getNewElevatorToStowCommand(elevator));
     NamedCommands.registerCommand("L4ToStow", new L4ToStow(shoulder, elbow, elevator, wrist, coralEE, algaeEE, intakeExtender));
     NamedCommands.registerCommand("AlgaeStow", new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE, intakeExtender));
     // Needed so not hit coral on elevator
@@ -114,6 +115,11 @@ public class AutoCommandManager {
       new StopDrivetrainCommand(drive)
         .unless(StowToL4.getNewAtL4Trigger(shoulder, elbow, elevator, wrist))
         .andThen(new WaitUntilCommand(StowToL4.getNewAtL4Trigger(shoulder, elbow, elevator, wrist))));
+
+      NamedCommands.registerCommand("WaitUntilArmAtL4", 
+      new StopDrivetrainCommand(drive)
+        .unless(StowToL4.getNewArmAtL4Trigger(shoulder, elbow, wrist))
+        .andThen(new WaitUntilCommand(StowToL4.getNewArmAtL4Trigger(shoulder, elbow, wrist))));
     //#endregion
 
     //#region Confirm Scores
