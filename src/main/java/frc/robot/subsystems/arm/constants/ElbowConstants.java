@@ -33,7 +33,7 @@ public class ElbowConstants extends ArmJointConstants {
                 .kP(0.1).kI(0.0).kD(0.0).build();
         
         this.LoggedName = "Elbow";
-        this.TalonFXGains = new LoggedTunableGainsBuilder("Gains/"+LoggedName+"/Slot0/", 30.0, 0, 0, 0, 0, 0, 0, 2.0, 5.0, 0, 0, 0);
+        this.TalonFXGainsSlot0 = new LoggedTunableGainsBuilder("Gains/"+LoggedName+"/Slot0/", 30.0, 0, 0, 0, 0, 0, 0, 2.0, 5.0, 0, 0, 0);
         this.TalonFXGainsSlot1 = new LoggedTunableGainsBuilder("Gains/"+LoggedName+"/Slot1/", 30.0, 0, 0, 0, 0, 0, 0, 2.0, 5.0, 0, 0, 0);
 
 

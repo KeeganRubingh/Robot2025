@@ -24,7 +24,7 @@ public class ShoulderConstants extends ArmJointConstants {
             Gains.builder().kS(0.0).kG(0.0).kV(0.0).kA(0.0).kP(0.1).kI(0.0).kD(0.0).build();
 
         this.LoggedName = "Shoulder";
-        this.TalonFXGains = new LoggedTunableGainsBuilder("Gains/"+LoggedName+"/Slot0/", 50.0, 0, 0.0, 1.0, 0.0, 6.0, 0.3, 1.0, 2.0, 0, 0, 0);
+        this.TalonFXGainsSlot0 = new LoggedTunableGainsBuilder("Gains/"+LoggedName+"/Slot0/", 50.0, 0, 0.0, 1.0, 0.0, 6.0, 0.3, 1.0, 2.0, 0, 0, 0);
         this.TalonFXGainsSlot1 = new LoggedTunableGainsBuilder("Gains/"+LoggedName+"/Slot1/", 50.0, 0, 0.0, 1.0, 0.0, 6.0, 0.3, 1.0, 2.0, 0, 0, 0);
 
         this.MaxVelocity = RotationsPerSecond.of(1);
