@@ -612,7 +612,7 @@ public class RobotContainer {
       .onTrue(new InstantCommand(() ->ReefPositionsUtil.getInstance().setAutoAlignSide(ReefPositionsUtil.AutoAlignSide.Right)));
     // Engage climber
     co_controller.start().and(co_controller.back().negate())
-    .whileTrue(new EngageClimber(climber))
+    .whileTrue(new EngageClimber(climber, shoulder, elbow))
     .onFalse(new NeutralClimber(climber));
 
     // Disengage climber
