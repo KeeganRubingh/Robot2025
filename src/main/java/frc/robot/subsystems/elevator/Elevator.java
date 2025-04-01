@@ -30,7 +30,7 @@ public class Elevator extends SubsystemBase {
 
   public static final double INCHES_PER_ROT = (2.0 * Math.PI * SPOOL_RADIUS);
   
-  public static final double REDUCTION = (3.0/1.0);
+  public static final double REDUCTION = (4.0/1.0);
 
   public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
     "Gains/Elevator/", 

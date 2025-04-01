@@ -175,7 +175,7 @@ public class RobotContainer {
   final LoggedTunableNumber setIntakeVolts = new LoggedTunableNumber("RobotState/Intake/setVolts", 4);
   final LoggedTunableNumber setShoulderAngle = new LoggedTunableNumber("RobotState/Shoulder/setAngle", 0);
   final LoggedTunableNumber setElbowAngle = new LoggedTunableNumber("RobotState/Elbow/setAngle", 0);
-  final LoggedTunableNumber setClimberVolts = new LoggedTunableNumber("dashboardKey:RobotState/Climber/setVolts", 4);
+  final LoggedTunableNumber setClimberVolts = new LoggedTunableNumber("RobotState/Climber/setVolts", 4);
 
   private LoggedDashboardChooser<IntakePosition> intakePosChooser = new LoggedDashboardChooser<>("Intake Position");
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -264,7 +264,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOTalonFX(rioCanBuilder.id(13).build(),rioCanBuilder.id(14).build()));
 
         shoulder = new ArmJoint(new ArmJointIOTalonFX(new ShoulderConstants(), InvertedValue.CounterClockwise_Positive, SensorDirectionValue.Clockwise_Positive, NeutralModeValue.Coast), Optional.empty());
-        elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants(), InvertedValue.Clockwise_Positive, SensorDirectionValue.Clockwise_Positive, NeutralModeValue.Brake), Optional.of(shoulder));
+        elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants(), InvertedValue.CounterClockwise_Positive, SensorDirectionValue.Clockwise_Positive, NeutralModeValue.Brake), Optional.of(shoulder));
 
         coralEndEffector = new CoralEndEffector(new CoralEndEffectorIOTalonFX(canivoreCanBuilder.id(12).build(), canivoreCanBuilder.id(17).build()));
         // coralEndEffector = new CoralEndEffector(new CoralEndEffectorIONova(rioCanBuilder.id(12).build(), canivoreCanBuilder.id(17).build()));
@@ -612,7 +612,7 @@ public class RobotContainer {
       .onTrue(new InstantCommand(() ->ReefPositionsUtil.getInstance().setAutoAlignSide(ReefPositionsUtil.AutoAlignSide.Right)));
     // Engage climber
     co_controller.start().and(co_controller.back().negate())
-    .whileTrue(new EngageClimber(climber))
+    .whileTrue(new EngageClimber(climber, shoulder, elbow))
     .onFalse(new NeutralClimber(climber));
 
     // Disengage climber

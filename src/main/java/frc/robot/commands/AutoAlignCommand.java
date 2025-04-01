@@ -39,16 +39,15 @@ public class AutoAlignCommand extends Command {
     private Function<Pose2d, Pose2d> getTargetPoseFn;
 
     //#region TODO get accurate values
-    public static LoggedTunableGainsBuilder throttleGains = new LoggedTunableGainsBuilder("AutoAlign/strafeGains/", 6.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    public static LoggedTunableGainsBuilder strafeGains = new LoggedTunableGainsBuilder("AutoAlign/throttleGains/", 4.0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0);
-    public static LoggedTunableNumber maxStrafeTune = new LoggedTunableNumber("AutoAlign/strafeGains/maxVelMetersPerSecond",1.0);
-    public static LoggedTunableNumber maxThrottleTune = new LoggedTunableNumber("AutoAlign/throttleGains/maxVelMetersPerSecond",1.0);
-    public static LoggedTunableNumber maxAccelStrafeTune = new LoggedTunableNumber("AutoAlign/strafeGains/maxAccMetersPerSecond",10.0);
-    public static LoggedTunableNumber maxAccelDistanceTune = new LoggedTunableNumber("AutoAlign/throttleGains/maxAccMetersPerSecond",10.0);
-    public static LoggedTunableNumber toleranceB = new LoggedTunableNumber("AutoAlign/toleranceB", 0.01);
-    public static LoggedTunableNumber toleranceR = new LoggedTunableNumber("AutoAlign/toleranceR", 0.02);
-
-    public static LoggedTunableNumber spinBound = new LoggedTunableNumber("AutoAlign/complexSpinBound", 10);
+    public static LoggedTunableGainsBuilder throttleGains = new LoggedTunableGainsBuilder("AutoAlignCommands/Shared/strafeGains/", 6.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    public static LoggedTunableGainsBuilder strafeGains = new LoggedTunableGainsBuilder("AutoAlignCommands/Shared/throttleGains/", 4.0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0);
+    public static LoggedTunableNumber maxStrafeTune = new LoggedTunableNumber("AutoAlignCommands/Shared/strafeGains/maxVelMetersPerSecond",1.0);
+    public static LoggedTunableNumber maxThrottleTune = new LoggedTunableNumber("AutoAlignCommands/Shared/throttleGains/maxVelMetersPerSecond",1.0);
+    public static LoggedTunableNumber maxAccelStrafeTune = new LoggedTunableNumber("AutoAlignCommands/Shared/strafeGains/maxAccMetersPerSecond",10.0);
+    public static LoggedTunableNumber maxAccelDistanceTune = new LoggedTunableNumber("AutoAlignCommands/Shared/throttleGains/maxAccMetersPerSecond",10.0);
+    public static LoggedTunableNumber toleranceB = new LoggedTunableNumber("AutoAlignCommands/Shared/toleranceB", 0.01);
+    public static LoggedTunableNumber toleranceR = new LoggedTunableNumber("AutoAlignCommands/Shared/toleranceR", 0.02);
+    public static LoggedTunableNumber spinBound = new LoggedTunableNumber("AutoAlignCommands/Shared/complexSpinBound", 10);
     //#endregion
 
     public static LinearVelocity m_maxStrafe = MetersPerSecond.of(maxStrafeTune.getAsDouble()); 

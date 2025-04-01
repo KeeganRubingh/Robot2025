@@ -12,8 +12,8 @@ import frc.robot.util.LoggedTunableNumber;
 public class ProcessorAlignCommand extends AutoAlignCommand {
     private static final AprilTagFieldLayout aprilTagLayout = Drive.getAprilTagLayout();
 
-    private static final LoggedTunableNumber offsetB = new LoggedTunableNumber("Positions/ProcessorAlignCommand/offsetB",0.68);
-    private static final LoggedTunableNumber offsetR = new LoggedTunableNumber("Positions/ProcessorAlignCommand/offsetR",0.0);
+    private static final LoggedTunableNumber offsetB = new LoggedTunableNumber("AutoAlignCommands/ProcessorAlignCommand/offsetB",0.68);
+    private static final LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlignCommands/ProcessorAlignCommand/offsetR",0.0);
 
     public ProcessorAlignCommand(Drive drive) {
         super((p)->getProcessorScorePose(p),drive);

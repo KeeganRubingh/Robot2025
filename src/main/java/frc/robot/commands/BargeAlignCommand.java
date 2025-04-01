@@ -21,10 +21,10 @@ import frc.robot.util.LoggedTunableNumber;
 public class BargeAlignCommand extends AutoAlignCommand {
     private static final AprilTagFieldLayout aprilTagLayout = Drive.getAprilTagLayout();
 
-    private static final LoggedTunableNumber offsetB = new LoggedTunableNumber("Positions/BargeAlignCommand/offsetB",0.7);
-    private static final LoggedTunableNumber maxHorziontalOffset = new LoggedTunableNumber("Positions/BargeAlignCommand/maxHorizontalOffset", 1.5);
+    private static final LoggedTunableNumber offsetB = new LoggedTunableNumber("AutoAlignCommands/BargeAlignCommand/offsetB",0.7);
+    private static final LoggedTunableNumber maxHorziontalOffset = new LoggedTunableNumber("AutoAlignCommands/BargeAlignCommand/maxHorizontalOffset", 1.5);
 
-    private static final LoggedTunableNumber adjustSpeed = new LoggedTunableNumber("Positions/BargeAlignCommand/adjustSpeed", 1.0);
+    private static final LoggedTunableNumber adjustSpeed = new LoggedTunableNumber("AutoAlignCommands/BargeAlignCommand/adjustSpeed", 1.0);
 
     private Pose2d originPose;
     private Alliance alliance;

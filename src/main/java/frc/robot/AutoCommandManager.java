@@ -1,15 +1,16 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Inches;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import static edu.wpi.first.units.Units.Inches;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.AlgaeStowCommand;
+import frc.robot.commands.BargeScoreThrowCommand;
 import frc.robot.commands.L4ToStow;
 import frc.robot.commands.OutakeAlgae;
 import frc.robot.commands.OutakeCoral;
@@ -22,6 +23,7 @@ import frc.robot.commands.StationIntakeReverseCommand;
 import frc.robot.commands.StationIntakeToStow;
 import frc.robot.commands.StopDrivetrainCommand;
 import frc.robot.commands.StowCommand;
+import frc.robot.commands.StowToBarge;
 import frc.robot.commands.StowToL1;
 import frc.robot.commands.StowToL2;
 import frc.robot.commands.StowToL3;
@@ -45,7 +47,7 @@ public class AutoCommandManager {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   public AutoCommandManager(Drive drive, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE, IntakeExtender intakeExtender) {
-    configureNamedCommands(drive, shoulder, elbow, elevator, wrist, coralEE, algaeEE, intakeExtender);;
+    configureNamedCommands(drive, shoulder, elbow, elevator, wrist, coralEE, algaeEE, intakeExtender);
     
 
     // PathPlannerAuto CharacterizationTest = new PathPlannerAuto("CharacterizeAuto");
@@ -201,8 +203,28 @@ public class AutoCommandManager {
     NamedCommands.registerCommand("AutoAlignAlgaePluck",
       ReefScoreCommandFactory.getNewAlgaePluckAutoAlignCommand(drive, false)
     );
+
     NamedCommands.registerCommand("AutoAlignAlgaePluckBackup",
       ReefScoreCommandFactory.getNewAlgaePluckAutoAlignCommand(drive, true)
+    );
+
+    NamedCommands.registerCommand("BargeScore",
+      new BargeScoreThrowCommand(elevator, wrist, algaeEE)
+      .andThen(new WaitUntilCommand(algaeEE.hasAlgaeTrigger().negate()).withTimeout(3))
+    );
+
+    NamedCommands.registerCommand("StowToBarge",
+      new StowToBarge(shoulder, elbow, wrist)
+    );
+
+    NamedCommands.registerCommand("BargeStow",
+      new ConditionalCommand(
+        new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE, intakeExtender),
+        elevator.getNewSetDistanceCommand(0.0)
+        .andThen(new WaitUntilCommand(elevator.getNewLessThanDistanceTrigger(() -> 5.0))).withTimeout(0.5)
+        .andThen(new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE, intakeExtender)),
+        algaeEE.hasAlgaeTrigger()
+      )
     );
     //#endregion
   }

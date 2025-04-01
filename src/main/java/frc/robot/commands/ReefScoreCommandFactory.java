@@ -50,23 +50,26 @@ public class ReefScoreCommandFactory {
 
     private static int[] targetIds;
 
-    //#region TODO Find Accurate Values
-    private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlign/offsetBBackingUp", 1.0);
-    private static LoggedTunableNumber rightOffsetBFinal = new LoggedTunableNumber("AutoAlign/rightOffsetBFinal", 0.68);
-    private static LoggedTunableNumber leftOffsetBFinal = new LoggedTunableNumber("AutoAlign/leftOffsetBFinal", 0.68);
-    private static LoggedTunableNumber algaeOffsetBFinal = new LoggedTunableNumber("AutoAlign/algaeOffsetBFinal", 0.53);
-    private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlign/offsetL", 0.155 + Inches.of(1).in(Meters));
-    private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlign/offsetR", 0.2 - Inches.of(3).in(Meters));
-    private static LoggedTunableNumber offsetCL = new LoggedTunableNumber("AutoAlign/offsetCL", Inches.of(0).in(Meters));
+    //#region Coral Alignment
+    private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetBBackingUp", 1.0);
+    private static LoggedTunableNumber rightOffsetBFinal = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/rightOffsetBFinal", 0.68);
+    private static LoggedTunableNumber leftOffsetBFinal = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/leftOffsetBFinal", 0.68);
+    private static LoggedTunableNumber offsetL = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetL", 0.155 + Inches.of(1).in(Meters));
+    private static LoggedTunableNumber offsetR = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetR", 0.2 - Inches.of(3).in(Meters));
+    //#endregion
+
+    //#region Algae Alignment
+    private static LoggedTunableNumber algaeOffsetBFinal = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Algae/algaeOffsetBFinal", 0.53);
+    private static LoggedTunableNumber offsetCL = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Algae/offsetCL", Inches.of(0).in(Meters));
     //#endregion
 
     //Overrides
-    private static LoggedTunableNumber offsetLL3 = new LoggedTunableNumber("AutoAlign/offsetLL3", 0.155 + Inches.of(1).in(Meters));
-    private static LoggedTunableNumber offsetRL3 = new LoggedTunableNumber("AutoAlign/offsetRL3", 0.2 - Inches.of(3).in(Meters));
-    private static LoggedTunableNumber offsetLL2 = new LoggedTunableNumber("AutoAlign/offsetLL2", 0.155 + Inches.of(1).in(Meters));
-    private static LoggedTunableNumber offsetRL2 = new LoggedTunableNumber("AutoAlign/offsetRL2", 0.2 - Inches.of(3).in(Meters));
-    private static LoggedTunableNumber offsetBFinalL2 = new LoggedTunableNumber("AutoAlign/offsetBFinalL2", 0.63);
-    private static LoggedTunableNumber offsetBFinalL3 = new LoggedTunableNumber("AutoAlign/offsetBFinalL3", 0.63);
+    private static LoggedTunableNumber offsetLL3 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetLL3", 0.155 + Inches.of(1).in(Meters));
+    private static LoggedTunableNumber offsetRL3 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetRL3", 0.2 - Inches.of(3).in(Meters));
+    private static LoggedTunableNumber offsetLL2 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetLL2", 0.155 + Inches.of(1).in(Meters));
+    private static LoggedTunableNumber offsetRL2 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetRL2", 0.2 - Inches.of(3).in(Meters));
+    private static LoggedTunableNumber offsetBFinalL2 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetBFinalL2", 0.63);
+    private static LoggedTunableNumber offsetBFinalL3 = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/offsetBFinalL3", 0.63);
 
     /**
      * Finds the closest april tag to a position.
