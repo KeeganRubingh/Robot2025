@@ -20,9 +20,11 @@ import frc.robot.util.LoggedTunableNumber;
 
 public class StationIntakeToStow extends SequentialCommandGroup {
 
+    
+
     private enum WristPositions {
-        SafeToSwingShoulder(new LoggedTunableNumber("StationIntakeToStow/wrist/SafeToSwingShoulder", -45.0)),
-        Final(new LoggedTunableNumber("StationIntakeToStow/wrist/FinalDegrees", 0));
+        SafeToSwingShoulder(new LoggedTunableNumber("Positions/StationIntakeToStow/wrist/SafeToSwingShoulder", -45.0)),
+        Final(new LoggedTunableNumber("Positions/StationIntakeToStow/wrist/FinalDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -39,8 +41,8 @@ public class StationIntakeToStow extends SequentialCommandGroup {
     }
 
     private enum ShoulderPositions {
-        SafeToTwistWrist(new LoggedTunableNumber("StationIntakeToStow/shoulder/SafeToTwistWrist", 105)),
-        MidPoint(new LoggedTunableNumber("StationIntakeToStow/shoulder/MidPoint", 100));
+        SafeToTwistWrist(new LoggedTunableNumber("Positions/StationIntakeToStow/shoulder/SafeToTwistWrist", 105)),
+        MidPoint(new LoggedTunableNumber("Positions/StationIntakeToStow/shoulder/MidPoint", 100));
 
         DoubleSupplier position;
         MutAngle distance;

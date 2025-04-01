@@ -33,7 +33,7 @@ public class Elevator extends SubsystemBase {
   public static final double REDUCTION = (3.0/1.0);
 
   public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
-    "Elevator", 
+    "Gains/Elevator/", 
     3.0, 0, 0, 
     0, 0.8, 0, 0, 
     80.0, 60.0, 0, 0, 0

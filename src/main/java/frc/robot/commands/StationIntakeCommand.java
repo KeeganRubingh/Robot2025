@@ -23,8 +23,8 @@ public class StationIntakeCommand extends SequentialCommandGroup {
     private static final String className = StationIntakeCommand.class.getSimpleName();
 
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber(className + "/shoulder/StartingDegrees", -45.0)),
-        Final(new LoggedTunableNumber(className + "/shoulder/FinalDegrees", 180.0-58.5));
+        Starting(new LoggedTunableNumber("Positions/" + className + "/shoulder/StartingDegrees", -45.0)),
+        Final(new LoggedTunableNumber("Positions/" + className + "/shoulder/FinalDegrees", 180.0-58.5));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -41,8 +41,8 @@ public class StationIntakeCommand extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber(className + "/elbow/StartingDegrees", 50.0)),
-        Final(new LoggedTunableNumber(className + "/elbow/FinalDegrees", 142.5));
+        Starting(new LoggedTunableNumber("Positions/" + className + "/elbow/StartingDegrees", 50.0)),
+        Final(new LoggedTunableNumber("Positions/" + className + "/elbow/FinalDegrees", 142.5));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -59,8 +59,8 @@ public class StationIntakeCommand extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Starting(new LoggedTunableNumber(className + "/wrist/StartingDegrees", 0.0)),
-        Final(new LoggedTunableNumber(className + "/wrist/FinalDegrees", -90.0));
+        Starting(new LoggedTunableNumber("Positions/" + className + "/wrist/StartingDegrees", 0.0)),
+        Final(new LoggedTunableNumber("Positions/" + className + "/wrist/FinalDegrees", -90.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -77,7 +77,7 @@ public class StationIntakeCommand extends SequentialCommandGroup {
     }
 
     private enum ElevatorPositions {
-        Starting(new LoggedTunableNumber(className + "/elevator/StartingInches", 2.5));
+        Starting(new LoggedTunableNumber("Positions/" + className + "/elevator/StartingInches", 2.5));
 
         DoubleSupplier position;
         MutDistance distance;

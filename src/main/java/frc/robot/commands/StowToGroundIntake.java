@@ -17,10 +17,12 @@ import frc.robot.util.LoggedTunableNumber;
 
 
 public class StowToGroundIntake extends SequentialCommandGroup {
+
+    
     private static enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("StowToGroundIntake/Shoulder/StartingDegrees", 90)),
-        ExtendSafe(new LoggedTunableNumber("StowToGroundIntake/Shoulder/ExtendSafeDegrees", 45.5)),
-        Final(new LoggedTunableNumber("StowToGroundIntake/Shoulder/FinalDegrees", 51));
+        Starting(new LoggedTunableNumber("Positions/StowToGroundIntake/Shoulder/StartingDegrees", 90)),
+        ExtendSafe(new LoggedTunableNumber("Positions/StowToGroundIntake/Shoulder/ExtendSafeDegrees", 45.5)),
+        Final(new LoggedTunableNumber("Positions/StowToGroundIntake/Shoulder/FinalDegrees", 51));
         
 
         DoubleSupplier position;
@@ -38,8 +40,8 @@ public class StowToGroundIntake extends SequentialCommandGroup {
     }
 
     private static enum ElbowPositions {
-        Starting(new LoggedTunableNumber("StowToGroundIntake/Elbow/StartingDegrees",65)),
-        Final(new LoggedTunableNumber("StowToGroundIntake/Elbow/FinalDegrees", 158));
+        Starting(new LoggedTunableNumber("Positions/StowToGroundIntake/Elbow/StartingDegrees",65)),
+        Final(new LoggedTunableNumber("Positions/StowToGroundIntake/Elbow/FinalDegrees", 158));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -56,8 +58,8 @@ public class StowToGroundIntake extends SequentialCommandGroup {
     }
 
     private static enum WristPositions {
-        Starting(new LoggedTunableNumber("StowToGroundIntake/Wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("StowToGroundIntake/Wrist/FinalDegrees", -90));
+        Starting(new LoggedTunableNumber("Positions/StowToGroundIntake/Wrist/StartingDegrees", 0)),
+        Final(new LoggedTunableNumber("Positions/StowToGroundIntake/Wrist/FinalDegrees", -90));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -78,9 +80,9 @@ public class StowToGroundIntake extends SequentialCommandGroup {
     public static final Angle intakeExtenderFinal = Degrees.of(-155.0);
     
     private static enum IntakeExtenderPositions {
-        Stow(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/StowDegrees",intakeExtenderStow.in(Degrees))),
-        Transfer(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/TransferDegrees", intakeExtenderTransfer.in(Degrees))),
-        Final(new LoggedTunableNumber("StowToGroundIntake/IntakeExtender/FinalDegrees", intakeExtenderFinal.in(Degrees)));
+        Stow(new LoggedTunableNumber("Positions/StowToGroundIntake/IntakeExtender/StowDegrees",intakeExtenderStow.in(Degrees))),
+        Transfer(new LoggedTunableNumber("Positions/StowToGroundIntake/IntakeExtender/TransferDegrees", intakeExtenderTransfer.in(Degrees))),
+        Final(new LoggedTunableNumber("Positions/StowToGroundIntake/IntakeExtender/FinalDegrees", intakeExtenderFinal.in(Degrees)));
 
         DoubleSupplier position;
         MutAngle distance;

@@ -21,10 +21,12 @@ import frc.robot.util.LoggedTunableNumber;
 
 public class StowToL3 extends SequentialCommandGroup {
 
+    
+
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("StowToL3/shoulder/StartingDegrees", 95.0)),
-        Final(new LoggedTunableNumber("StowToL3/shoulder/FinalDegrees", 32.5)),
-        Confirm(new LoggedTunableNumber("StowToL3/shoulder/Confirm", 35.5));
+        Starting(new LoggedTunableNumber("Positions/StowToL3/shoulder/StartingDegrees", 95.0)),
+        Final(new LoggedTunableNumber("Positions/StowToL3/shoulder/FinalDegrees", 32.5)),
+        Confirm(new LoggedTunableNumber("Positions/StowToL3/shoulder/Confirm", 35.5));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -41,9 +43,9 @@ public class StowToL3 extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber("StowToL3/elbow/StartingDegrees", 10)),
-        Final(new LoggedTunableNumber("StowToL3/elbow/FinalDegrees", 20)),
-        Confirm(new LoggedTunableNumber("StowToL3/elbow/ConfirmDegrees", -50));
+        Starting(new LoggedTunableNumber("Positions/StowToL3/elbow/StartingDegrees", 10)),
+        Final(new LoggedTunableNumber("Positions/StowToL3/elbow/FinalDegrees", 20)),
+        Confirm(new LoggedTunableNumber("Positions/StowToL3/elbow/ConfirmDegrees", -50));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -60,8 +62,8 @@ public class StowToL3 extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Starting(new LoggedTunableNumber("StowToL3/wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("StowToL3/wrist/FinalDegrees", 0));
+        Starting(new LoggedTunableNumber("Positions/StowToL3/wrist/StartingDegrees", 0)),
+        Final(new LoggedTunableNumber("Positions/StowToL3/wrist/FinalDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -78,9 +80,9 @@ public class StowToL3 extends SequentialCommandGroup {
     }
 
     private enum ElevatorPositions {
-        Starting(new LoggedTunableNumber("StowToL3Command/elevator/StartingInches", 0)),
-        SafeToSwingShoulder(new LoggedTunableNumber("StowToL3Command/elevator/SafeToSwingShoulderInches", 5.0)),
-        Final(new LoggedTunableNumber("StowToL3Command/elevator/FinalInches", 15));
+        Starting(new LoggedTunableNumber("Positions/StowToL3Command/elevator/StartingInches", 0)),
+        SafeToSwingShoulder(new LoggedTunableNumber("Positions/StowToL3Command/elevator/SafeToSwingShoulderInches", 5.0)),
+        Final(new LoggedTunableNumber("Positions/StowToL3Command/elevator/FinalInches", 15));
 
         DoubleSupplier position;
         MutDistance distance;

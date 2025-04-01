@@ -18,9 +18,9 @@ import frc.robot.util.LoggedTunableNumber;
 public class StowToL2 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("StowToL2/shoulder/StartingDegrees", 10)),
-        Final(new LoggedTunableNumber("StowToL2/shoulder/FinalDegrees", 35)),
-        Confirm(new LoggedTunableNumber("StowToL2/shoulder/Confirm", 70));
+        Starting(new LoggedTunableNumber("Positions/StowToL2/shoulder/StartingDegrees", 10)),
+        Final(new LoggedTunableNumber("Positions/StowToL2/shoulder/FinalDegrees", 35)),
+        Confirm(new LoggedTunableNumber("Positions/StowToL2/shoulder/Confirm", 70));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -37,9 +37,9 @@ public class StowToL2 extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber("StowToL2/elbow/StartingDegrees", 10)),
-        Final(new LoggedTunableNumber("StowToL2/elbow/FinalDegrees", 20)), 
-        Confirm(new LoggedTunableNumber("StowToL2/elbow/ConfirmDegrees", -20));
+        Starting(new LoggedTunableNumber("Positions/StowToL2/elbow/StartingDegrees", 10)),
+        Final(new LoggedTunableNumber("Positions/StowToL2/elbow/FinalDegrees", 20)), 
+        Confirm(new LoggedTunableNumber("Positions/StowToL2/elbow/ConfirmDegrees", -20));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -56,8 +56,8 @@ public class StowToL2 extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Starting(new LoggedTunableNumber("StowToL2/wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("StowToL2/wrist/FinalDegrees", 0));
+        Starting(new LoggedTunableNumber("Positions/StowToL2/wrist/StartingDegrees", 0)),
+        Final(new LoggedTunableNumber("Positions/StowToL2/wrist/FinalDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;

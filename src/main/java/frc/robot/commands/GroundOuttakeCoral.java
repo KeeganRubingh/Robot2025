@@ -15,9 +15,11 @@ import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.util.LoggedTunableNumber;
 
 public class GroundOuttakeCoral extends SequentialCommandGroup {
+
+    
     private static enum IntakeExtenderPositions {
-        Outtake(new LoggedTunableNumber("GroundOuttake/IntakeExtender/OuttakeDegrees",StowToGroundIntake.intakeExtenderFinal.in(Degrees))),
-        Stow(new LoggedTunableNumber("GroundOuttake/IntakeExtender/StowDegrees",StowToGroundIntake.intakeExtenderStow.in(Degrees)));
+        Outtake(new LoggedTunableNumber("Positions/GroundOuttake/IntakeExtender/OuttakeDegrees",StowToGroundIntake.intakeExtenderFinal.in(Degrees))),
+        Stow(new LoggedTunableNumber("Positions/GroundOuttake/IntakeExtender/StowDegrees",StowToGroundIntake.intakeExtenderStow.in(Degrees)));
 
         DoubleSupplier position;
         MutAngle distance;

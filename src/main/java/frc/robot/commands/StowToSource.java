@@ -16,11 +16,13 @@ import frc.robot.util.LoggedTunableNumber;
 
 public class StowToSource extends SequentialCommandGroup {
 
+    
+
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("StowToSourceCommand/Shoulder/StartingDegrees", 0)),
-        MidPoint(new LoggedTunableNumber("StowToSourceCommand/Shoulder/MidPointDegrees", 110)),
-        SafeToSwingElbow(new LoggedTunableNumber("StowToSourceCommand/Shoulder/SafeToSwingElbowDegrees", 100)),
-        Final(new LoggedTunableNumber("StowToSourceCommand/Shoulder/FinalDegrees", 90));
+        Starting(new LoggedTunableNumber("Positions/StowToSourceCommand/Shoulder/StartingDegrees", 0)),
+        MidPoint(new LoggedTunableNumber("Positions/StowToSourceCommand/Shoulder/MidPointDegrees", 110)),
+        SafeToSwingElbow(new LoggedTunableNumber("Positions/StowToSourceCommand/Shoulder/SafeToSwingElbowDegrees", 100)),
+        Final(new LoggedTunableNumber("Positions/StowToSourceCommand/Shoulder/FinalDegrees", 90));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -37,9 +39,9 @@ public class StowToSource extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber("StowToSourceCommand/Elbow/StartingDegrees", 0)),
-        ShoulderSafeSwing(new LoggedTunableNumber("StowToSourceCommand/Elbow/ShoulderSafeSwingDegrees", 45)),
-        Final(new LoggedTunableNumber("StowToSourceCommand/Elbow/FinalDegrees", 90));
+        Starting(new LoggedTunableNumber("Positions/StowToSourceCommand/Elbow/StartingDegrees", 0)),
+        ShoulderSafeSwing(new LoggedTunableNumber("Positions/StowToSourceCommand/Elbow/ShoulderSafeSwingDegrees", 45)),
+        Final(new LoggedTunableNumber("Positions/StowToSourceCommand/Elbow/FinalDegrees", 90));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -56,8 +58,8 @@ public class StowToSource extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Starting(new LoggedTunableNumber("StowToSourceCommand/Wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("StowToSourceCommand/Wrist/FinalDegrees", 90));
+        Starting(new LoggedTunableNumber("Positions/StowToSourceCommand/Wrist/StartingDegrees", 0)),
+        Final(new LoggedTunableNumber("Positions/StowToSourceCommand/Wrist/FinalDegrees", 90));
 
         DoubleSupplier position;
         MutAngle distance;

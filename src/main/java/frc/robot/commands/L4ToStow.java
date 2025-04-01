@@ -20,9 +20,11 @@ import frc.robot.util.LoggedTunableNumber;
 
 public class L4ToStow extends SequentialCommandGroup {
 
+    
+
     private enum ElbowPositions {
-        SafeToSwingShoulder(new LoggedTunableNumber("StowCommand/elbow/L4ToStowSafeToSwingShoulder", -10)),
-        MidPoint(new LoggedTunableNumber("StowCommand/elbow/L4ToStowMidpoint", 0));
+        SafeToSwingShoulder(new LoggedTunableNumber("Positions/StowCommand/elbow/L4ToStowSafeToSwingShoulder", -10)),
+        MidPoint(new LoggedTunableNumber("Positions/StowCommand/elbow/L4ToStowMidpoint", 0));
 
         DoubleSupplier position;
         MutAngle distance;

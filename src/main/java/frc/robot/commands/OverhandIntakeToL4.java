@@ -17,8 +17,10 @@ import frc.robot.util.LoggedTunableNumber;
 
 public class OverhandIntakeToL4 extends SequentialCommandGroup {
 
+    
+
     private enum ShoulderPositions {
-        Final(new LoggedTunableNumber("OverhandIntakeToL4/shoulder/FinalDegrees", -55.0));
+        Final(new LoggedTunableNumber("Positions/OverhandIntakeToL4/shoulder/FinalDegrees", -55.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -35,7 +37,7 @@ public class OverhandIntakeToL4 extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Final(new LoggedTunableNumber("OverhandIntakeToL4/elbow/FinalDegrees", -100.0));
+        Final(new LoggedTunableNumber("Positions/OverhandIntakeToL4/elbow/FinalDegrees", -100.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -52,7 +54,7 @@ public class OverhandIntakeToL4 extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Final(new LoggedTunableNumber("OverhandIntakeToL4/wrist/FinalDegrees", 0.0));
+        Final(new LoggedTunableNumber("Positions/OverhandIntakeToL4/wrist/FinalDegrees", 0.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -69,7 +71,7 @@ public class OverhandIntakeToL4 extends SequentialCommandGroup {
     }
 
     private enum ElevatorPositions {
-        Final(new LoggedTunableNumber("OverhandIntakeToL4/elevator/FinalInches", 16.0));
+        Final(new LoggedTunableNumber("Positions/OverhandIntakeToL4/elevator/FinalInches", 16.0));
 
         DoubleSupplier position;
         MutDistance distance;
