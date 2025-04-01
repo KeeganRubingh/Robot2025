@@ -76,7 +76,7 @@ public class ArmJointIOTalonFX implements ArmJointIO {
 
     if(FollowerMotor != null) {
       TalonFXConfiguration f_cfg = new TalonFXConfiguration();
-      f_cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+      f_cfg.MotorOutput.NeutralMode = neutralMode;
       f_cfg.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
       f_cfg.CurrentLimits.SupplyCurrentLimit = m_Constants.SupplyCurrentLimit.in(Amp);
       f_cfg.CurrentLimits.StatorCurrentLimit = m_Constants.TorqueCurrentLimit.in(Amp);

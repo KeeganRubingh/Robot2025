@@ -53,7 +53,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   private void configureTalons() {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
-    cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.Voltage.PeakForwardVoltage = 12;
     cfg.Voltage.PeakReverseVoltage = 12;
     cfg.CurrentLimits.StatorCurrentLimit = 80;
