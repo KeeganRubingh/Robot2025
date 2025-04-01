@@ -47,7 +47,7 @@ public class ElbowConstants extends ArmJointConstants {
 
         this.NumMotors = 1;
         this.SensorToMechanismGearing = 1.0;
-        this.MotorToSensorGearing = 48.0;
+        this.MotorToSensorGearing = 50.0; //Gear Ratio
         this.Length = Inches.of(15);
         this.Weight = Pounds.of(8.5);
         this.Motors = DCMotor.getKrakenX60(NumMotors);
