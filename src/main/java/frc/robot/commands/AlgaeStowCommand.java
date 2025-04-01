@@ -38,7 +38,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Final(new LoggedTunableNumber("Positions/StowToAlgaeStow/elbow/FinalDegrees", 198));
+        Final(new LoggedTunableNumber("Positions/AlgaeStowCommand/elbow/FinalDegrees", 198));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -55,7 +55,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private enum ElevatorPositions {
-        Final(new LoggedTunableNumber("Positions/StowToAlgaeStow/elevator/FinalInches", 0));
+        Final(new LoggedTunableNumber("Positions/AlgaeStowCommand/elevator/FinalInches", 0));
 
         DoubleSupplier position;
         MutDistance distance;
@@ -72,7 +72,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Final(new LoggedTunableNumber("Positions/StowToAlgaeStow/wrist/FinalDegrees", 0));
+        Final(new LoggedTunableNumber("Positions/AlgaeStowCommand/wrist/FinalDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -89,9 +89,9 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private static enum IntakeExtenderPositions{
-        Stow(new LoggedTunableNumber("Positions/StowToAlgaeStow/IntakeExtender/StowDegrees",StowToGroundIntake.intakeExtenderStow.in(Degrees))),
-        OutOfTheWay(new LoggedTunableNumber("Positions/StowToAlgaeStow/IntakeExtender/OutOfTheWay",-75.0)),
-        StowSafeZone(new LoggedTunableNumber("Positions/StowToAlgaeStow/IntakeExtender/StowSafeZoneDegrees",StowToGroundIntake.intakeExtenderStow.in(Degrees) - 2.0));
+        Stow(new LoggedTunableNumber("Positions/AlgaeStowCommand/IntakeExtender/StowDegrees",StowToGroundIntake.intakeExtenderStow.in(Degrees))),
+        OutOfTheWay(new LoggedTunableNumber("Positions/AlgaeStowCommand/IntakeExtender/OutOfTheWay",-75.0)),
+        StowSafeZone(new LoggedTunableNumber("Positions/AlgaeStowCommand/IntakeExtender/StowSafeZoneDegrees",StowToGroundIntake.intakeExtenderStow.in(Degrees) - 2.0));
 
         DoubleSupplier position;
         MutAngle distance;
