@@ -355,6 +355,16 @@ public class RobotContainer {
         DriveCommands.brakeDrive(drive)
           .alongWith(new StowToBarge(shoulder, elbow, wrist))
           .andThen(new BargeAlignCommand(drive,()->MathUtil.applyDeadband(controller.getLeftX(),0.1)))
+          .andThen(new BargeScoreThrowCommand(elevator, wrist, algaeEndEffector))
+          .andThen(algaeEndEffector.getNewSetVoltsCommand(0.0))
+          .andThen(elevator.getNewSetDistanceCommand(0.0))
+          .andThen(
+            new ConditionalCommand(
+              new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector), 
+              new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+              algaeEndEffector.hasAlgaeTrigger()
+            ).onlyIf(controller.y().negate())
+          )
       )
       .onFalse(
         new ConditionalCommand(
@@ -485,21 +495,6 @@ public class RobotContainer {
       .onTrue(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
       .onFalse(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands));
     //#endregion
-
-    // Confirm Barge
-    controller.rightTrigger().and(controller.y())
-    .onTrue(new BargeScoreThrowCommand(elevator, wrist, algaeEndEffector))
-    .onFalse(
-      algaeEndEffector.getNewSetVoltsCommand(0.0)
-      .andThen(elevator.getNewSetDistanceCommand(0.0))
-      .andThen(
-        new ConditionalCommand(
-          new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector), 
-          new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
-          algaeEndEffector.hasAlgaeTrigger()
-        ).onlyIf(controller.y().negate())
-      )
-    );
 
     // Outtake Algae
     controller.povLeft()

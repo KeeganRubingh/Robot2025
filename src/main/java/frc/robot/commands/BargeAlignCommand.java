@@ -64,9 +64,9 @@ public class BargeAlignCommand extends AutoAlignCommand {
         return newPose ;
   }
 
-  //Must be killed manually
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+  // //Must be killed manually
+  // @Override
+  // public boolean isFinished() {
+  //   return false;
+  // }
 }
