@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.690266393442623,
-        "y": 7.303637295081967
+        "x": 3.6322745901639335,
+        "y": 5.841137295081967
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.589708017838719,
-        "y": 6.5009463022082725
+        "x": 3.04791557631985,
+        "y": 6.201796423696367
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.596311475409836,
-        "y": 5.7811987704918035
+        "x": 1.8086250000000001,
+        "y": 7.140124999999999
       },
       "prevControl": {
-        "x": 2.7571721311475414,
-        "y": 6.5244364754098365
+        "x": 1.918112704918033,
+        "y": 6.852340163934426
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "StationIntakeToL4Arm",
+      "name": "L4ToStationIntake",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
@@ -43,27 +43,16 @@
             {
               "type": "named",
               "data": {
-                "name": "StationIntakeToStow"
+                "name": "UnsafeStow"
               }
             },
             {
               "type": "named",
               "data": {
-                "name": "StowToL4Arm"
+                "name": "StationIntake"
               }
             }
           ]
-        }
-      }
-    },
-    {
-      "name": "StowToL4Elevator",
-      "waypointRelativePos": 0.7962962962962984,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "StowToL4Elevator"
         }
       }
     }
@@ -78,13 +67,13 @@
   },
   "goalEndState": {
     "velocity": 0.5,
-    "rotation": 120.1413855520754
+    "rotation": 126.02570217584261
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 125.67640822186192
+    "rotation": 120.1413855520754
   },
   "useDefaultConstraints": true
 }

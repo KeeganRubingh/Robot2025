@@ -43,10 +43,27 @@
             {
               "type": "named",
               "data": {
-                "name": "StationIntakeToStow"
+                "name": "UnsafeStationIntakeToStow"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "StowToL4Arm"
               }
             }
           ]
+        }
+      }
+    },
+    {
+      "name": "StowToL4Elevator",
+      "waypointRelativePos": 0.8,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StowToL4Elevator"
         }
       }
     }

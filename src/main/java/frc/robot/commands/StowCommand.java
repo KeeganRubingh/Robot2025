@@ -8,6 +8,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDistance;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -137,6 +138,16 @@ public class StowCommand extends SequentialCommandGroup {
             extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position)
         );
         addRequirements(shoulder, elbow, wrist, elevator, coralEE, algaeEE);
+    }
+
+    public static Command getNewUnsafeStowCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
+        return new SequentialCommandGroup(
+            wrist.getNewWristTurnCommand(WristPositions.Final.position),
+            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
+            elevator.getNewSetDistanceCommand(ElevatorPositions.Final.distance().in(Inches)),
+            elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
+
+        );
     }
 
     public static Trigger getNewAtStowTrigger(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {

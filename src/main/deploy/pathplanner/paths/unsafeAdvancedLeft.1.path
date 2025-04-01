@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.190676229508196,
+        "x": 5.0468237704918035,
         "y": 5.793186475409836
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.243647540983606,
-        "y": 6.176793032786884
+        "x": 5.130737704918034,
+        "y": 6.872079918032787
       },
       "isLocked": false,
       "linkedName": null
@@ -43,7 +43,7 @@
             {
               "type": "named",
               "data": {
-                "name": "L4ToStow"
+                "name": "UnsafeStow"
               }
             },
             {
