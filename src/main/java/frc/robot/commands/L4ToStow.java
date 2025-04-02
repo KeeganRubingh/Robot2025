@@ -23,7 +23,7 @@ public class L4ToStow extends SequentialCommandGroup {
     
 
     private enum ElbowPositions {
-        SafeToSwingShoulder(new LoggedTunableNumber("Positions/StowCommand/elbow/L4ToStowSafeToSwingShoulder", -10)),
+        SafeToSwingShoulder(new LoggedTunableNumber("Positions/StowCommand/elbow/L4ToStowSafeToSwingShoulder", -25)),
         MidPoint(new LoggedTunableNumber("Positions/StowCommand/elbow/L4ToStowMidpoint", 0));
 
         DoubleSupplier position;
@@ -40,12 +40,30 @@ public class L4ToStow extends SequentialCommandGroup {
         }
     }
 
+    private enum ShoulderPositions {
+        MidPoint(new LoggedTunableNumber("Positions/StowCommand/shoulder/L4ToStowMidpoint", -0));
+
+        DoubleSupplier position;
+        MutAngle distance;
+
+        ShoulderPositions(DoubleSupplier position) {
+            this.position = position;
+            this.distance = Degrees.mutable(0.0);
+        }
+
+        public Angle angle() {
+            this.distance.mut_replace(this.position.getAsDouble(), Degrees);
+            return this.distance;
+        }
+    }
+
     public L4ToStow(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
         super(
             elbow.getNewSetAngleCommand(ElbowPositions.MidPoint.position)
                 .alongWith(
-                    new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.SafeToSwingShoulder.position)),
-                    elevator.getNewSetDistanceCommand(0.0)
+                    shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position),
+                    elevator.getNewSetDistanceCommand(0.0),
+                    new WaitUntilCommand(elbow.getNewGreaterThanAngleTrigger(ElbowPositions.SafeToSwingShoulder.position))
                 ),
             new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE)
         );

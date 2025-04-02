@@ -20,9 +20,6 @@ import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
 public class StowCommand extends SequentialCommandGroup {
-
-    
-
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("Positions/StowCommand/shoulder/StartingDegrees", 0)),
         SafeToSwingElbow(new LoggedTunableNumber("Positions/StowCommand/shoulder/SafeToSwingElbowDegrees", 105)),

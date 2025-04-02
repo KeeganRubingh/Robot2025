@@ -208,15 +208,15 @@ public class ReefScoreCommandFactory {
         .raceWith(new RunCommand(() -> Logger.recordOutput("AutoAlign/DistanceMeters",drive.getDistanceTo(positionFunction.apply(drive.getAutoAlignPose())).in(Meters))));
         //If we're backing up, add kill conditions
         if(isBackingUp) {
-            returnedCommand = returnedCommand
+            // returnedCommand = returnedCommand
                 // Kill when we are out of the distance (not necessary since we kill)
                 // .until(() -> (drive.getDistanceTo(positionFunction.apply(drive.getPose())).in(Meters) > offsetBBackingUp.getAsDouble()))
                 // Don't run the backup if we are out of the distance
-                .unless(() -> {
-                    double dist = drive.getDistanceTo(positionFunction.apply(drive.getAutoAlignPose())).in(Meters);
-                    Logger.recordOutput("AutoAlign/DistanceMeters",dist);
-                    return dist > offsetBBackingUp.getAsDouble();
-                });
+                // .unless(() -> {
+                //     double dist = drive.getDistanceTo(positionFunction.apply(drive.getAutoAlignPose())).in(Meters);
+                //     Logger.recordOutput("AutoAlign/DistanceMeters",dist);
+                //     return dist > offsetBBackingUp.getAsDouble();
+                // });
         }
         return returnedCommand;
     }
@@ -233,7 +233,9 @@ public class ReefScoreCommandFactory {
         return 
             getNewAlignToReefCommand(position, true, drive).onlyIf(()->isBackingUp)
                 .andThen(DriveCommands.brakeDrive(drive))
-                .alongWith(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
+                .alongWith(
+                    ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands)
+                )
             .andThen(getNewAlignToReefCommand(position, false, drive))
             .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
             // Added wait for score L4 so no need for wait here

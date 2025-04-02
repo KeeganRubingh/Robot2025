@@ -456,7 +456,8 @@ public class RobotContainer {
         SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector, drive),
         drive
       )
-    ).onFalse(new ConditionalCommand(
+    ).onFalse(
+    new ConditionalCommand(
       new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
       new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
       () -> reefPositions.isSelected(ScoreLevel.L4)
@@ -493,7 +494,7 @@ public class RobotContainer {
     // Conditional Confirm Coral
     controller.rightTrigger().and(controller.rightBumper()).and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
       .onTrue(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
-      .onFalse(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands));
+      .onFalse(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands).onlyIf(controller.rightBumper()));
     //#endregion
 
     // Outtake Algae
