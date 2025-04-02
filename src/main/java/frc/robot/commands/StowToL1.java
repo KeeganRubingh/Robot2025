@@ -20,7 +20,7 @@ public class StowToL1 extends SequentialCommandGroup {
 
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("Positions/StowToL1/shoulder/StartingDegrees", 10)),
-        SafeToTurnWrist(new LoggedTunableNumber("Positions/StowToL1/shoulder/SafeToTurnWristDegrees", 90)),
+        SafeToTurnWrist(new LoggedTunableNumber("Positions/StowToL1/shoulder/SafeToTurnWristDegrees", 80)),
         Final(new LoggedTunableNumber("Positions/StowToL1/shoulder/FinalDegrees", 60));
 
         DoubleSupplier position;
@@ -39,7 +39,7 @@ public class StowToL1 extends SequentialCommandGroup {
 
     private enum ElbowPositions {
         Starting(new LoggedTunableNumber("Positions/StowToL1/elbow/StartingDegrees", 10)),
-        SafeToTurnWrist(new LoggedTunableNumber("Positions/StowToL1/elbow/SafeToTurnWristDegrees", 90)),
+        SafeToTurnWrist(new LoggedTunableNumber("Positions/StowToL1/elbow/SafeToTurnWristDegrees", 50)),
         Final(new LoggedTunableNumber("Positions/StowToL1/elbow/FinalDegrees", -25));
 
         DoubleSupplier position;
@@ -79,7 +79,7 @@ public class StowToL1 extends SequentialCommandGroup {
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
             .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position)),  
             new WaitUntilCommand(elbow.getNewLessThanAngleTrigger(ElbowPositions.SafeToTurnWrist.position)
-                .and(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.SafeToTurnWrist.position))),
+                .and(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.SafeToTurnWrist.position))).withTimeout(0.2),
             wrist.getNewWristTurnCommand(WristPositions.Final.position)
         );
     }
