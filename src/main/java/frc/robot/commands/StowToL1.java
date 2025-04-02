@@ -84,7 +84,8 @@ public class StowToL1 extends SequentialCommandGroup {
         );
     }
     public static Command getNewScoreCommand(CoralEndEffector coralEndEffector) {
-        return(coralEndEffector.getNewSetVoltsCommand(-2));
+        return(coralEndEffector.getNewSetVoltsCommand(-2))
+        .andThen(new WaitUntilCommand(coralEndEffector.hasCoralTrigger().negate()).withTimeout(0.2));
     }
     public static Command getNewStopScoreCommand(CoralEndEffector coralEndEffector){
         return(coralEndEffector.getNewSetVoltsCommand(0));
