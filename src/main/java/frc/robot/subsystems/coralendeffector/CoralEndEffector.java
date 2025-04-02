@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 
 /**
@@ -55,15 +56,20 @@ public class CoralEndEffector extends SubsystemBase {
     }, this);
   }
 
+  public boolean hasCoral() {
+    return logged.coralDistance.lt(Inches.of(CoralEndEffector.CORAL_DISTANCE_THRESHOLD.get()));
+  }
+
   public Trigger hasCoralTrigger() {
-    return new Trigger(() -> {
-      return logged.coralDistance.lt(Inches.of(CoralEndEffector.CORAL_DISTANCE_THRESHOLD.get()));
-    });
+    return new Trigger(this::hasCoral);
   }
 
   @Override
   public void periodic() {
     m_IO.updateInputs(logged);
     Logger.processInputs("RobotState/CoralEndEffector", logged);
+    if(Constants.tuningMode) {
+      Logger.recordOutput("RobotState/CoralEndEffector", hasCoral());
+    }
   }
 }
