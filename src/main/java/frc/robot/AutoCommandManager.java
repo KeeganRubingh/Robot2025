@@ -115,7 +115,7 @@ public class AutoCommandManager {
     NamedCommands.registerCommand("WaitUntilL4", 
       new StopDrivetrainCommand(drive)
         .unless(StowToL4.getNewAtL4Trigger(shoulder, elbow, elevator, wrist))
-        .andThen(new WaitUntilCommand(StowToL4.getNewAtL4Trigger(shoulder, elbow, elevator, wrist))));
+        .andThen(new WaitUntilCommand(StowToL4.getNewAtL4Trigger(shoulder, elbow, elevator, wrist)).withTimeout(1.5)));
 
       NamedCommands.registerCommand("WaitUntilArmAtL4", 
       new StopDrivetrainCommand(drive)
