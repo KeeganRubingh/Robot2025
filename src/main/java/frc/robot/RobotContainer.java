@@ -598,7 +598,6 @@ public class RobotContainer {
     // ).onFalse(
     //   new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector)
     // );
-
     testcontroller.povUp().onTrue(
       (new AlgaeStowCommand(shoulder,elbow,elevator,wrist,algaeEndEffector)
         .alongWith(new ProcessorAlignCommand(drive))
@@ -606,6 +605,16 @@ public class RobotContainer {
       .andThen(new OutakeAlgae(algaeEndEffector))
       .andThen(new WaitCommand(0.3))
       .andThen(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector))
+    );
+
+    testcontroller.povDown().onTrue(
+      ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Left, true, drive, shoulder, elbow, elevator, wrist, coralEndEffector)
+      .andThen(
+        StationIntakeCommandFactory.getNewStationIntakeSequence(()->IntakePosition.Center, shoulder, elbow, elevator, wrist, coralEndEffector, drive),
+        ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Left, true, drive, shoulder, elbow, elevator, wrist, coralEndEffector),
+        StationIntakeCommandFactory.getNewStationIntakeSequence(()->IntakePosition.Center, shoulder, elbow, elevator, wrist, coralEndEffector, drive),
+        ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Right, true, drive, shoulder, elbow, elevator, wrist, coralEndEffector)
+      )
     );
     // testcontroller.b().onTrue(
     //     ReefScoreCommandFactory.getNewAlgaePluckAutoAlignSequenceCommand(DeAlgaeLevel.Low, drive, shoulder, elbow, elevator, wrist, algaeEndEffector))

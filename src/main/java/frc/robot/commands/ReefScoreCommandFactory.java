@@ -21,11 +21,13 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
+import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.ReefPositionsUtil;
+import frc.robot.util.SelectorCommandFactory;
 import frc.robot.util.ReefPositionsUtil.DeAlgaeLevel;
 import frc.robot.util.ReefPositionsUtil.ScoreLevel;
 
@@ -243,6 +245,10 @@ public class ReefScoreCommandFactory {
                 getNewAlignToReefCommand(position, true, drive).onlyIf(()->ReefPositionsUtil.getInstance().isSelected(ScoreLevel.L4))
                     .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands))
             );
+    }
+
+    public static Command getNewReefCoralScoreSequence(ReefPosition position, Boolean isBackingUp, Drive drive, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE) {
+        return getNewReefCoralScoreSequence(position, false, SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEE), SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEE, drive), drive);
     }
 
     public static Command getNewReefCoralScoreSequence(ReefPosition position, boolean isBackingUp, Drive drive) {
