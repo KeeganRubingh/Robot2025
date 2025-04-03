@@ -48,7 +48,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AlgaeStowCommand;
 import frc.robot.commands.BargeAlignCommand;
-import frc.robot.commands.BargeScoreCommand;
+import frc.robot.commands.BargeScoreThrowCommand;
 import frc.robot.commands.DisengageClimber;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.EngageClimber;
@@ -61,13 +61,10 @@ import frc.robot.commands.ReadyProcessorScore;
 import frc.robot.commands.ReefScoreCommandFactory;
 import frc.robot.commands.ReefScoreCommandFactory.ReefPosition;
 import frc.robot.commands.StationIntakeCommand;
-import frc.robot.commands.StationIntakeCommandFactory;
 import frc.robot.commands.StationIntakeCommandFactory.IntakePosition;
-import frc.robot.commands.StationIntakeReverseCommand;
 import frc.robot.commands.StationIntakeToStow;
 import frc.robot.commands.StowCommand;
 import frc.robot.commands.StowToBarge;
-import frc.robot.commands.BargeScoreThrowCommand;
 import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
 import frc.robot.commands.TakeAlgaeL2;
@@ -96,8 +93,6 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.vision.AprilTagVision;
-
-import static frc.robot.subsystems.vision.VisionConstants.angularStdDevBaseline;
 import static frc.robot.subsystems.vision.VisionConstants.limelightLeftName;
 import static frc.robot.subsystems.vision.VisionConstants.limelightRightName;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCameraLeft;
@@ -356,6 +351,7 @@ public class RobotContainer {
           .alongWith(new StowToBarge(shoulder, elbow, wrist))
           .andThen(new BargeAlignCommand(drive,()->MathUtil.applyDeadband(controller.getLeftX(),0.1)))
           .andThen(new BargeScoreThrowCommand(elevator, wrist, algaeEndEffector))
+          .andThen(new WaitCommand(0.5))
           .andThen(algaeEndEffector.getNewSetVoltsCommand(0.0))
           .andThen(elevator.getNewSetDistanceCommand(0.0))
           .andThen(
