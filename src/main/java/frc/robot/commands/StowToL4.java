@@ -10,7 +10,6 @@ import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.arm.ArmJoint;
@@ -27,7 +26,7 @@ public class StowToL4 extends SequentialCommandGroup {
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("Positions/StowToL4Command/shoulder/StartingDegrees", 95.0)),
         SafeToMoveElevator(new LoggedTunableNumber("Positions/StowToL4Command/shoulder/SafeToSwingElbowDegrees", 60)),
-        Final(new LoggedTunableNumber("Positions/StowToL4Command/shoulder/FinalDegrees", -67));
+        Final(new LoggedTunableNumber("Positions/StowToL4Command/shoulder/FinalDegrees", -60));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -84,7 +83,7 @@ public class StowToL4 extends SequentialCommandGroup {
     private enum ElevatorPositions {
         Starting(new LoggedTunableNumber("Positions/StowToL4Command/elevator/StartingInches", 0)),
         SafeToSwingShoulder(new LoggedTunableNumber("Positions/StowToL4Command/elevator/SafeToSwingShoulderInches", 5.0)),
-        Final(new LoggedTunableNumber("Positions/StowToL4Command/elevator/FinalInches", 16));
+        Final(new LoggedTunableNumber("Positions/StowToL4Command/elevator/FinalInches", 18));
 
         DoubleSupplier position;
         MutDistance distance;

@@ -1,15 +1,14 @@
 
 package frc.robot.subsystems.coralendeffector;
 
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
-
-import java.util.function.BooleanSupplier;
-
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -26,10 +25,12 @@ import frc.robot.util.LoggedTunableNumber;
  * </ul>
  */
 public class CoralEndEffector extends SubsystemBase {
-  public static LoggedTunableNumber CORAL_DISTANCE_THRESHOLD = new LoggedTunableNumber("Sensors/CoralEndEffector/SENSORTHRESHOLD", 1.85);
+  public static LoggedTunableNumber CORAL_DISTANCE_THRESHOLD_HIGH = new LoggedTunableNumber("Sensors/CoralEndEffector/SENSORTHRESHOLDHIGH", 1.9);
+  public static LoggedTunableNumber CORAL_DISTANCE_THRESHOLD_LOW = new LoggedTunableNumber("Sensors/CoralEndEffector/SENSORTHRESHOLDLOW", 1.4);
 
   private CoralEndEffectorIO m_IO;
   private CoralEndEffectorInputsAutoLogged logged = new CoralEndEffectorInputsAutoLogged();
+  private Debouncer coralDebouncer = new Debouncer(0.15, DebounceType.kBoth);
 
   public CoralEndEffector(CoralEndEffectorIO io) {
     m_IO = io;
@@ -57,7 +58,11 @@ public class CoralEndEffector extends SubsystemBase {
   }
 
   public boolean hasCoral() {
-    return logged.coralDistance.lt(Inches.of(CoralEndEffector.CORAL_DISTANCE_THRESHOLD.get()));
+    return coralDebouncer.calculate(
+      logged.coralDistance.lte(Inches.of(CoralEndEffector.CORAL_DISTANCE_THRESHOLD_HIGH.get()))
+      &&
+      logged.coralDistance.gte(Inches.of(CoralEndEffector.CORAL_DISTANCE_THRESHOLD_LOW.get()))
+    );
   }
 
   public Trigger hasCoralTrigger() {
@@ -69,7 +74,7 @@ public class CoralEndEffector extends SubsystemBase {
     m_IO.updateInputs(logged);
     Logger.processInputs("RobotState/CoralEndEffector", logged);
     if(Constants.tuningMode) {
-      Logger.recordOutput("RobotState/CoralEndEffector", hasCoral());
+      Logger.recordOutput("RobotState/CoralEndEffector/hasCoral", hasCoralTrigger());
     }
   }
 }
