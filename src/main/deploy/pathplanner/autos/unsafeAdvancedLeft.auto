@@ -52,9 +52,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "parallel",
                 "data": {
-                  "name": "BackupL4Left"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ElevatorStow"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "BackupL4Left"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -152,9 +165,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "parallel",
                 "data": {
-                  "name": "BackupL4Left"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ElevatorStow"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "BackupL4Left"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -258,6 +284,25 @@
                 }
               },
               {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ElevatorStow"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "BackupL4Right"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
                 "type": "named",
                 "data": {
                   "name": "StopScoreL4"
@@ -267,22 +312,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "WaitUntilElevatorStow"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "L4ToStow"
-                }
-              }
-            ]
+            "name": "L4ToStow"
           }
         }
       ]

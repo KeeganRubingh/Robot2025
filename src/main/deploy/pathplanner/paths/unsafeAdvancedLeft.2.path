@@ -58,7 +58,7 @@
     },
     {
       "name": "StowToL4Elevator",
-      "waypointRelativePos": 0.7962962962962984,
+      "waypointRelativePos": 0.9,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

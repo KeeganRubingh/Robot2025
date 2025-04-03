@@ -118,7 +118,7 @@ public class StowCommand extends SequentialCommandGroup {
         return new SequentialCommandGroup(
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
-            elevator.getNewSetDistanceCommand(ElevatorPositions.Final.distance().in(Inches)),
+            elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position),
             elbow.getNewSetAngleCommand(ElbowPositions.Final.position)
 
         );

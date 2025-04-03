@@ -21,7 +21,7 @@ import frc.robot.util.Gains;
 
 public class ElevatorIOSim implements ElevatorIO {
   private final ElevatorFeedforward ff = new ElevatorFeedforward(0.0, 0.8, 0.0, 0.0);
-  private final ProfiledPIDController controller = new ProfiledPIDController(5.0, 0.0, 0.0, new Constraints(90, 60));
+  private final ProfiledPIDController controller = new ProfiledPIDController(5.0, 0.0, 0.0, new Constraints(90, 120));
   private final ElevatorSim sim;
 
   private Distance target = Inches.of(0);
