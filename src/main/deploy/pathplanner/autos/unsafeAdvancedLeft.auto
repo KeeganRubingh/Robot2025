@@ -11,12 +11,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Stow"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "unsafeAdvancedLeft.0"
@@ -39,7 +33,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "WaitUntilArmAtL4"
+                        "name": "WaitUntilL4"
                       }
                     }
                   ]
@@ -55,6 +49,37 @@
                 "type": "named",
                 "data": {
                   "name": "ScoreL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "BackupL4Left"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopScoreL4"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "WaitUntilElevatorStow"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "L4ToStow"
                 }
               }
             ]
@@ -108,7 +133,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "WaitUntilArmAtL4"
+                        "name": "WaitUntilL4"
                       }
                     }
                   ]
@@ -124,6 +149,37 @@
                 "type": "named",
                 "data": {
                   "name": "ScoreL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "BackupL4Left"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopScoreL4"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "WaitUntilElevatorStow"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "L4ToStow"
                 }
               }
             ]
@@ -177,7 +233,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "WaitUntilArmAtL4"
+                        "name": "WaitUntilL4"
                       }
                     }
                   ]
@@ -194,20 +250,39 @@
                 "data": {
                   "name": "ScoreL4"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "BackupL4Right"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopScoreL4"
+                }
               }
             ]
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "BackupL4Right"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L4ToStow"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "WaitUntilElevatorStow"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "L4ToStow"
+                }
+              }
+            ]
           }
         }
       ]
