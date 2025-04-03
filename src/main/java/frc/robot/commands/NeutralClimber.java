@@ -9,7 +9,7 @@ public class NeutralClimber extends SequentialCommandGroup {
     public NeutralClimber(Climber climber) {
         super(
             climber.getNewSetVoltsCommand(0.0),
-            climber.getNewSetServoAngleCommand(120.0)
+            climber.getNewSetServoAngleCommand(180.0)
         );
     }
 }

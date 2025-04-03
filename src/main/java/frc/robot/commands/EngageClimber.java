@@ -53,9 +53,10 @@ public class EngageClimber extends SequentialCommandGroup {
         super(
             elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
-            climber.getNewSetServoAngleCommand(120.0),
+            climber.getNewSetServoAngleCommand(180.0),
             new WaitCommand(0.1),
             climber.getNewSetVoltsCommand(-2.0) // negative was forward in test
         );
     }
 }
+// 80 is fully engaged
