@@ -50,7 +50,7 @@ public class ReefScoreCommandFactory {
 
     //#region Coral Alignment
     private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Back/BackingUp", 1.0);
-    private static LoggedTunableNumber offsetBDefault = new LoggedTunableNumber("AAutoAlignCommands/ReefAlignCommand/Offsets/Back/default", 0.68);
+    private static LoggedTunableNumber offsetBDefault = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Back/default", 0.68);
 
     private static LoggedTunableNumber defaultOffsetL = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Left/default", 0.155 + Inches.of(1).in(Meters));
     private static LoggedTunableNumber defaultOffsetR = new LoggedTunableNumber("AutoAlignCommands/ReefAlignCommand/Offsets/Right/default", 0.2 - Inches.of(3).in(Meters));
