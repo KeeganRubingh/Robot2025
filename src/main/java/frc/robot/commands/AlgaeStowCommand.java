@@ -20,7 +20,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     
 
     private enum ShoulderPositions {
-        Final(new LoggedTunableNumber("Positions/AlgaeStowCommand/shoulder/FinalDegrees", 71.0));
+        Final(new LoggedTunableNumber("Positions/AlgaeStowCommand/shoulder/FinalDegrees", 60.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -37,7 +37,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Final(new LoggedTunableNumber("Positions/AlgaeStowCommand/elbow/FinalDegrees", 198));
+        Final(new LoggedTunableNumber("Positions/AlgaeStowCommand/elbow/FinalDegrees", 155));
 
         DoubleSupplier position;
         MutAngle distance;

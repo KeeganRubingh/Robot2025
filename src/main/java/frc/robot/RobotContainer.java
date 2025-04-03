@@ -561,7 +561,7 @@ public class RobotContainer {
 
     // Disengage climber
     co_controller.back().and(co_controller.start().negate())
-    .whileTrue(new DisengageClimber(climber))
+    .whileTrue(new DisengageClimber(climber, elbow, shoulder))
     .onFalse(new NeutralClimber(climber));
 
     //#endregion

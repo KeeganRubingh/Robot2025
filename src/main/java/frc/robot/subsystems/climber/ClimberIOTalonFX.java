@@ -32,7 +32,7 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   private void configureTalons(boolean invert) {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
-    cfg.Feedback.RotorToSensorRatio = 125.0*32.0/12.0;
+    cfg.Feedback.SensorToMechanismRatio = 333.3333333333333;
     cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.CurrentLimits.StatorCurrentLimit = 80.0;
     cfg.CurrentLimits.StatorCurrentLimitEnable = true;

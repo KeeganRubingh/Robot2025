@@ -1,9 +1,9 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.*;
-
 import java.util.function.DoubleSupplier;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
@@ -99,10 +99,11 @@ public class TakeAlgaeL2 extends SequentialCommandGroup {
         super(
             wrist.getNewWristTurnCommand(WristPositions.Final.position)
             .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position)),
+            shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
+            new WaitUntilCommand(elbow.getNewAtAngleTrigger(ElbowPositions.Final.position, ()->(3))).withTimeout(0.5)
+            .alongWith(new WaitUntilCommand(shoulder.getNewAtAngleTrigger(ShoulderPositions.Final.position, ()->(3))).withTimeout(0.5)),
             algaeEE.getNewSetVoltsCommand(8)
-            .alongWith(shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position))
-            .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position)),
-            new WaitUntilCommand(shoulder.getNewAtAngleTrigger(ShoulderPositions.Final.position, ()->(3))).withTimeout(0.5)
+            .alongWith(elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position))
 
             // LOGIC NEEDED FOR INTAKE TO STOW
             // .alongWith(

@@ -88,7 +88,7 @@ public class BargeScoreThrowCommand extends SequentialCommandGroup {
         Starting(new LoggedTunableNumber("Positions/BargeScoreCommand/elevator/StartingInches", 0)),
         SafeToSwingShoulder(new LoggedTunableNumber("Positions/BargeScoreCommand/elevator/SafeToSwingShoulderInches", 5.0)),
         Final(new LoggedTunableNumber("Positions/BargeScoreCommand/elevator/FinalInches", 26.0)),
-        Launch(new LoggedTunableNumber("Positions/BargeScoreCommand/elevator/LaunchInches", 18.0)),
+        Launch(new LoggedTunableNumber("Positions/BargeScoreCommand/elevator/LaunchInches", 15.0)),
         Tolerance(new LoggedTunableNumber("Positions/BargeScoreCommand/elevator/ToleranceInches", 1.0));
 
         DoubleSupplier position;
@@ -108,9 +108,10 @@ public class BargeScoreThrowCommand extends SequentialCommandGroup {
     public BargeScoreThrowCommand(Elevator elevator, Wrist wrist, AlgaeEndEffector algaeEE) {
         super( 
             elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position)
-            .alongWith(
-                new WaitUntilCommand(elevator.getNewGreaterThanDistanceTrigger(ElevatorPositions.SafeToSwingShoulder.position))
-            ),
+            // .alongWith(
+            //     new WaitUntilCommand(elevator.getNewGreaterThanDistanceTrigger(ElevatorPositions.SafeToSwingShoulder.position))
+            // )
+            ,
             new WaitUntilCommand(elevator.getNewGreaterThanDistanceTrigger(ElevatorPositions.Launch.position)),
             new BargeScoreCommand(algaeEE),
             new WaitUntilCommand(elevator.getNewAtDistanceTrigger(ElevatorPositions.Final.position, ElevatorPositions.Tolerance.position))
