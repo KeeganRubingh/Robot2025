@@ -26,7 +26,7 @@ public class StowToL3 extends SequentialCommandGroup {
     private enum ShoulderPositions {
         Starting(new LoggedTunableNumber("Positions/StowToL3/shoulder/StartingDegrees", 95.0)),
         Final(new LoggedTunableNumber("Positions/StowToL3/shoulder/FinalDegrees", 32.5)),
-        Confirm(new LoggedTunableNumber("Positions/StowToL3/shoulder/Confirm", 35.5));
+        Confirm(new LoggedTunableNumber("Positions/StowToL3/shoulder/Confirm", 47.0));
 
         DoubleSupplier position;
         MutAngle distance;
