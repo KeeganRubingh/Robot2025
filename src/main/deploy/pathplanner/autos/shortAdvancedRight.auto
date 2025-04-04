@@ -13,12 +13,6 @@
         {
           "type": "named",
           "data": {
-            "name": "GroundIntakeToStow"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Stow"
           }
         },
