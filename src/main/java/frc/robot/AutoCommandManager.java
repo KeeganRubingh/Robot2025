@@ -169,21 +169,21 @@ public class AutoCommandManager {
         () -> {return IntakePosition.Inside;}, 
         false, 
         drive
-      ).andThen(new WaitUntilCommand(coralEE.hasCoralTrigger())).until(coralEE.hasCoralTrigger())
+      ).andThen(new WaitUntilCommand(coralEE.hasCoralTrigger()).withTimeout(2.0)).until(coralEE.hasCoralTrigger())
     );
     NamedCommands.registerCommand("AutoAlignStationCenter", 
       StationIntakeCommandFactory.getNewAlignToStationCommand(
         () -> {return IntakePosition.Center;}, 
         false,
         drive
-      ).andThen(new WaitUntilCommand(coralEE.hasCoralTrigger())).until(coralEE.hasCoralTrigger())
+      ).andThen(new WaitUntilCommand(coralEE.hasCoralTrigger()).withTimeout(2.0)).until(coralEE.hasCoralTrigger())
     );
     NamedCommands.registerCommand("AutoAlignStationOutside", 
       StationIntakeCommandFactory.getNewAlignToStationCommand(
         () -> {return IntakePosition.Outside;},
         false,
         drive
-      ).andThen(new WaitUntilCommand(coralEE.hasCoralTrigger())).until(coralEE.hasCoralTrigger())
+      ).andThen(new WaitUntilCommand(coralEE.hasCoralTrigger()).withTimeout(2.0)).until(coralEE.hasCoralTrigger())
     );
 
     NamedCommands.registerCommand("AutoAlignScoreLeft", 
