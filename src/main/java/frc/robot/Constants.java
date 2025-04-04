@@ -34,7 +34,8 @@ public final class Constants {
   public static final boolean isDSConnected = DriverStation.waitForDsConnection(1);
   public static final boolean isInElim = DriverStation.getMatchType() == MatchType.Elimination;
   public static final boolean isInQual = DriverStation.getMatchType() == MatchType.Qualification;
-  public static final boolean isInMatch = isInElim || isInQual;
+  public static final boolean isInPrac = DriverStation.getMatchType() == MatchType.Practice;
+  public static final boolean isInMatch = isInElim || isInQual || isInPrac;
 
   // When changing Mode.SIM to Mode.REPLAY, also change SimGui default flag in build.gradle
   public static final Mode simMode = Mode.SIM;
