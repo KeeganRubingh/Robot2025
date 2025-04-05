@@ -71,6 +71,12 @@ public class Climber extends SubsystemBase {
         this);
   }
 
+  public Command getNewStopClimberCommand() {
+    return new InstantCommand(()-> {
+      m_ClimberIO.stop();
+    });
+  }
+
   @Override
   public void periodic() {
     m_ClimberIO.updateInputs(loggedclimber);

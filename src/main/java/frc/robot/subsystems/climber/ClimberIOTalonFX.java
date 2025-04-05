@@ -8,6 +8,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
@@ -40,6 +41,10 @@ public class ClimberIOTalonFX implements ClimberIO {
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
     cfg.Voltage.PeakForwardVoltage = 16.0;
     cfg.Voltage.PeakReverseVoltage = 16.0;
+    // cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    // cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Degrees.of(140.0).in(Rotations); //160.0
+    // cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    // cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Degrees.of(120.0).in(Rotations);; // 80.0
     cfg.MotorOutput.Inverted = invert ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }

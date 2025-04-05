@@ -556,15 +556,16 @@ public class RobotContainer {
     // Select Right Auto Aligning
     co_controller.povRight()
       .onTrue(new InstantCommand(() ->ReefPositionsUtil.getInstance().setAutoAlignSide(ReefPositionsUtil.AutoAlignSide.Right)));
+    
     // Engage climber
     co_controller.start().and(co_controller.back().negate())
     .whileTrue(new EngageClimber(climber, shoulder, elbow))
-    .onFalse(new NeutralClimber(climber));
+    .onFalse(new NeutralClimber(climber,true));
 
     // Disengage climber
     co_controller.back().and(co_controller.start().negate())
     .whileTrue(new DisengageClimber(climber, elbow, shoulder))
-    .onFalse(new NeutralClimber(climber));
+    .onFalse(new NeutralClimber(climber,false));
 
     //#endregion
   }
@@ -729,6 +730,6 @@ public class RobotContainer {
   }
 
   public void disabledPeriodic() {
-    climber.setServoTarget(Degrees.of(180.0));
+    // climber.setServoTarget(Degrees.of(180.0));
   }
 }
