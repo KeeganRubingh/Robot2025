@@ -75,5 +75,6 @@ public class Climber extends SubsystemBase {
   public void periodic() {
     m_ClimberIO.updateInputs(loggedclimber);
     Logger.processInputs("RobotState/Climber", loggedclimber);
+    Logger.recordOutput("RobotState/Climber/angleDegrees", loggedclimber.angle.in(Degrees));
   }
 }
