@@ -176,7 +176,7 @@ public class StowToL4 extends SequentialCommandGroup {
         return(
             elbow.getNewSetAngleCommand(ElbowPositions.Confirm.position)
             .alongWith(wrist.getNewApplyCoastModeCommand())
-            .alongWith(new WaitUntilCommand(elbow.getNewAtAngleTrigger(ElbowPositions.Confirm.angle(), Degrees.of(7.0))).withTimeout(1.0))
+            .alongWith(new WaitUntilCommand(elbow.getNewAtAngleTrigger(ElbowPositions.Confirm.angle(), Degrees.of(5.0))).withTimeout(1.0))
         )
         .andThen(coralEndEffector.getNewSetVoltsCommand(-4));
     }

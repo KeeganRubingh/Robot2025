@@ -42,9 +42,9 @@ public class ClimberIOTalonFX implements ClimberIO {
     cfg.Voltage.PeakForwardVoltage = 16.0;
     cfg.Voltage.PeakReverseVoltage = 16.0;
     // cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    // cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Degrees.of(140.0).in(Rotations); //160.0
+    // cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Degrees.of(110.0).in(Rotations);
     // cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    // cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Degrees.of(120.0).in(Rotations);; // 80.0
+    // cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Degrees.of(130.0).in(Rotations);
     cfg.MotorOutput.Inverted = invert ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }
