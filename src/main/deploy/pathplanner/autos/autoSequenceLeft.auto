@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "shortLeft.0"
+            "pathName": "autoSequenceLeft.0"
           }
         },
         {
@@ -50,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "shortLeft.1"
+            "pathName": "autoSequenceLeft.1"
           }
         },
         {
@@ -75,7 +75,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "shortLeft.2"
+            "pathName": "autoSequenceLeft.2"
           }
         },
         {
@@ -106,7 +106,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "shortLeft.3"
+            "pathName": "autoSequenceLeft.3"
           }
         },
         {
@@ -131,7 +131,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "shortLeft.4"
+            "pathName": "autoSequenceLeft.4"
           }
         },
         {
