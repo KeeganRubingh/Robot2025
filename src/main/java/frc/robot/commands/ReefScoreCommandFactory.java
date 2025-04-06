@@ -46,6 +46,11 @@ public class ReefScoreCommandFactory {
         17,18,19,20,21,22
     };
 
+    private final static int[] targetIdsAll = {
+        6,7,8,9,10,11,
+        17,18,19,20,21,22
+    };
+
     private static int[] targetIds;
 
     //#region Coral Alignment
@@ -87,6 +92,22 @@ public class ReefScoreCommandFactory {
      */
     private static Pose2d findClosestTag(Pose2d pos) {
         int[] targets = targetIds;
+        double minDistance = Double.MAX_VALUE;
+        Pose2d target = Pose2d.kZero;
+        
+        for (int i = 0; i < targets.length; i++) {
+            double distance = pos.getTranslation().getDistance(aprilTagLayout.getTagPose(targets[i]).orElse(Pose3d.kZero).getTranslation().toTranslation2d());
+            if (distance < minDistance) {
+                target = aprilTagLayout.getTagPose(targets[i]).orElse(Pose3d.kZero).toPose2d();
+                minDistance = distance;
+            }
+        }
+        
+        return target;
+    }
+
+    private static Pose2d findClosestTagFromBothAlliances(Pose2d pos) {
+        int[] targets = targetIdsAll;
         double minDistance = Double.MAX_VALUE;
         Pose2d target = Pose2d.kZero;
         
@@ -167,7 +188,7 @@ public class ReefScoreCommandFactory {
             }
             
             //Get our closest tag
-            Pose2d closestTarget = findClosestTag(pose);
+            Pose2d closestTarget = pos == ReefPosition.Center ? findClosestTagFromBothAlliances(pose) : findClosestTag(pose);
             //Build a transformation for our offset from that tag
             Transform2d offset = new Transform2d(backOffset, sideOffset, Rotation2d.kZero);
 
