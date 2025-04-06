@@ -224,5 +224,23 @@ public class AutoCommandManager {
       )
     );
     //#endregion
+
+    //#region Full Sequences
+    NamedCommands.registerCommand("FullAutoAlignSequenceLeft", 
+      ReefScoreCommandFactory.getNewReefCoralScoreSequence(
+        ReefPosition.Left, 
+        true, 
+        drive, shoulder, elbow, elevator, wrist, coralEE
+      )
+    );
+
+    NamedCommands.registerCommand("FullAutoAlignSequenceRight", 
+      ReefScoreCommandFactory.getNewReefCoralScoreSequence(
+        ReefPosition.Right, 
+        true, 
+        drive, shoulder, elbow, elevator, wrist, coralEE
+      )
+    );
+    //#endregion
   }
 }
