@@ -33,8 +33,8 @@ public class ElbowConstants extends ArmJointConstants {
                 .kP(0.1).kI(0.0).kD(0.0).build();
         
         this.LoggedName = "Elbow";
-        this.TalonFXGains = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName+"/Slot0/", 30.0, 0, 0, 0, 0, 0, 0, 2.0, 5.0, 0, 0, 0);
-        this.TalonFXGainsSlot1 = new LoggedTunableGainsBuilder("ArmJoint"+LoggedName+"/Slot1/", 30.0, 0, 0, 0, 0, 0, 0, 2.0, 5.0, 0, 0, 0);
+        this.TalonFXGainsSlot0 = new LoggedTunableGainsBuilder("Gains/"+LoggedName+"/Slot0/", 600.0, 0.0, 60.0, 8.0, 0.0, 0.0, 0.0, 2.0, 10.0, 0.0, 0.0, 0.0);
+        this.TalonFXGainsSlot1 = new LoggedTunableGainsBuilder("Gains/"+LoggedName+"/Slot1/", 600.0, 0.0, 60.0, 8.0, 0.0, 0.0, 0.0, 2.0, 10.0, 0.0, 0.0, 0.0);
 
 
         this.MaxVelocity = RotationsPerSecond.of(1);
@@ -47,7 +47,7 @@ public class ElbowConstants extends ArmJointConstants {
 
         this.NumMotors = 1;
         this.SensorToMechanismGearing = 1.0;
-        this.MotorToSensorGearing = 48.0;
+        this.MotorToSensorGearing = 50.0; //Gear Ratio
         this.Length = Inches.of(15);
         this.Weight = Pounds.of(8.5);
         this.Motors = DCMotor.getKrakenX60(NumMotors);
@@ -58,7 +58,7 @@ public class ElbowConstants extends ArmJointConstants {
         this.XPosition = Meters.of(0.07);
         this.YPosition = Inches.of(0);
         this.ZPosition = Meters.of(0.377);
-        this.CanCoderOffset = Degrees.of(218.5);
+        this.CanCoderOffset = Degrees.of(113.5);
 
         this.LoggedName = "Elbow";
 

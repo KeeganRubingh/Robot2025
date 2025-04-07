@@ -18,10 +18,12 @@ import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
 public class ReadyProcessorScore extends SequentialCommandGroup {
+
+    
     
     private enum ShoulderPositions {
-        Final(new LoggedTunableNumber("ReadyProcessorScore/shoulder/FinalDegrees", 50.0)),
-        Tolerance(new LoggedTunableNumber("ReadyProcessorScore/shoulder/Tolerance", 2.0));
+        Final(new LoggedTunableNumber("Positions/ReadyProcessorScore/shoulder/FinalDegrees", 50.0)),
+        Tolerance(new LoggedTunableNumber("Positions/ReadyProcessorScore/shoulder/Tolerance", 2.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -38,8 +40,8 @@ public class ReadyProcessorScore extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Final(new LoggedTunableNumber("ReadyProcessorScore/elbow/FinalDegrees", 120.0)),
-        Tolerance(new LoggedTunableNumber("ReadyProcessorScore/elbow/Tolerance", 2.0));
+        Final(new LoggedTunableNumber("Positions/ReadyProcessorScore/elbow/FinalDegrees", 120.0)),
+        Tolerance(new LoggedTunableNumber("Positions/ReadyProcessorScore/elbow/Tolerance", 2.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -56,8 +58,8 @@ public class ReadyProcessorScore extends SequentialCommandGroup {
     }
 
     private enum ElevatorPositions {
-        Starting(new LoggedTunableNumber("ReadyProcessorScore/elevator/StartingInches", 0)),
-        Final(new LoggedTunableNumber("ReadyProcessorScore/elevator/FinalInches", 0));
+        Starting(new LoggedTunableNumber("Positions/ReadyProcessorScore/elevator/StartingInches", 0)),
+        Final(new LoggedTunableNumber("Positions/ReadyProcessorScore/elevator/FinalInches", 0));
 
         DoubleSupplier position;
         MutDistance distance;
@@ -74,8 +76,8 @@ public class ReadyProcessorScore extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Starting(new LoggedTunableNumber("ReadyProcessorScore/wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("ReadyProcessorScore/wrist/FinalDegrees", 0));
+        Starting(new LoggedTunableNumber("Positions/ReadyProcessorScore/wrist/StartingDegrees", 0)),
+        Final(new LoggedTunableNumber("Positions/ReadyProcessorScore/wrist/FinalDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;

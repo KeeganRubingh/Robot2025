@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.041815052062286,
-        "y": 3.212748317927633
+        "x": 6.573985927152319,
+        "y": 4.7150869205298
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.442418032786885,
-        "y": 2.71234631147541
+        "x": 7.264549180327867,
+        "y": 6.308657786885245
       },
       "prevControl": {
-        "x": 6.252715209719956,
-        "y": 3.472242288519168
+        "x": 6.080028973509934,
+        "y": 6.313182947019867
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,19 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "StowToBarge",
+      "waypointRelativePos": 0.5,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StowToBarge"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -42,7 +54,7 @@
   },
   "goalEndState": {
     "velocity": 0.5,
-    "rotation": -61.38954033403481
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": null,

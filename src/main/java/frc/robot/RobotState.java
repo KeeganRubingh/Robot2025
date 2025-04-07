@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.util.VirtualSubsystem;
-import frc.robot.util.safezones.SafeZones;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -32,7 +31,6 @@ public class RobotState extends VirtualSubsystem {
   private MutAngle shoulderAngle = Degrees.mutable(0);
   private MutAngle elbowAngle = Degrees.mutable(0);
   private MutAngle wristTwist = Degrees.mutable(0);
-  private MutAngle intakeExtenderAngle = Degrees.mutable(0);
 
   // private final LoggedTunableNumber elevatorHeightTune =
       // new LoggedTunableNumber("robotState/elevatorHeight", 0);
@@ -53,9 +51,6 @@ public class RobotState extends VirtualSubsystem {
   private final MechanismRoot2d wristMechanismRoot;
   private final MechanismLigament2d wristMechanismLigament;
 
-  private final MechanismRoot2d intakeExtenderMechanismRoot;
-  private final MechanismLigament2d intakeExtenderMechanismLigament;
-
   private final MechanismRoot2d robotBaseRoot;
   private final MechanismLigament2d baseLigament2d = new MechanismLigament2d("RobotBase", 150, 0, 24, new Color8Bit(Color.kBlue));
 
@@ -71,7 +66,6 @@ public class RobotState extends VirtualSubsystem {
     shoulderLigament2d = new MechanismLigament2d("ShoulderLigament", Centimeters.convertFrom(15 + 5, Inches), shoulderAngle.in(Degrees));
     elbowLigament2d = new MechanismLigament2d("ElbowLigament", Centimeters.convertFrom(18, Inches), elbowAngle.in(Degrees), 7, new Color8Bit(Color.kOrange));
     wristMechanismLigament = new MechanismLigament2d("WristLigament", Centimeters.convertFrom(18 , Inches), wristTwist.in(Degrees), 5, new Color8Bit(Color.kOrange));
-    intakeExtenderMechanismLigament = new MechanismLigament2d("IntakeExtenderLigament", Centimeters.convertFrom(18, Inches), intakeExtenderAngle.in(Degrees),5,new Color8Bit(Color.kLightBlue));
 
     robotBaseRoot = primaryMechanism2d.getRoot("2dBaseRoot", 225, 20);
     robotBaseRoot.append(baseLigament2d);
@@ -82,11 +76,7 @@ public class RobotState extends VirtualSubsystem {
     shoulderLigament2d.append(elbowLigament2d);
 
     wristMechanismRoot = primaryMechanism2d.getRoot("2dWrist", 30, 20);
-    wristMechanismRoot.append(wristMechanismLigament);
-
-    intakeExtenderMechanismRoot = primaryMechanism2d.getRoot("2dIntakeExtender", 370, 25);
-    intakeExtenderMechanismRoot.append(intakeExtenderMechanismLigament);
-    
+    wristMechanismRoot.append(wristMechanismLigament);    
 
     SmartDashboard.putData("Mech2d",primaryMechanism2d);
 
@@ -104,7 +94,6 @@ public class RobotState extends VirtualSubsystem {
   @Override
   public void periodic() {
     visualize();
-    SafeZones.logSafeZones();
   }
 
   public Distance getElevatorHeight() {
@@ -123,10 +112,6 @@ public class RobotState extends VirtualSubsystem {
     return wristTwist;
   }
 
-  public Angle getIntakeExtenderAngle() {
-    return intakeExtenderAngle;
-  }
-
   public void setElevatorHeight(Distance elevatorHeight) {
     this.elevatorHeight.mut_replace(elevatorHeight);
   }
@@ -141,10 +126,6 @@ public class RobotState extends VirtualSubsystem {
 
   public void setWristTwist(Angle wristTwist) {
     this.wristTwist.mut_replace(wristTwist);
-  }
-  
-  public void setIntakeExtenderAngle(Angle intakeExtenderAngle) {
-    this.intakeExtenderAngle.mut_replace(intakeExtenderAngle);
   }
 
   public void setElevatorSource(MutDistance elevatorHeight) {
@@ -161,10 +142,6 @@ public class RobotState extends VirtualSubsystem {
 
   public void setWristSource(MutAngle wristTwist) {
     this.wristTwist = wristTwist;
-  }
-
-  public void setIntakeExtenderSource(MutAngle intakeExtenderAngle) {
-    this.intakeExtenderAngle = intakeExtenderAngle;
   }
 
   int counter = 0;
@@ -217,8 +194,7 @@ public class RobotState extends VirtualSubsystem {
     shoulderLigament2d.setAngle(tempShoulderAngle);
     elbowLigament2d.setAngle(tempElbowAngle);
     wristMechanismLigament.setAngle(wristTwist.in(Degrees));
-    intakeExtenderMechanismLigament.setAngle(intakeExtenderAngle.in(Degrees) + 90 + 25);
-
+    
     Logger.recordOutput("RobotState/Elevator/" + key, elevatorPose);
     Logger.recordOutput("RobotState/Shoulder/" + key, shoulderPose);
     Logger.recordOutput("RobotState/Elbow/" + key, elbowPose);

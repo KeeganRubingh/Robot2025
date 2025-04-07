@@ -8,21 +8,20 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDistance;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
 public class StationIntakeToStow extends SequentialCommandGroup {
-
     private enum WristPositions {
-        SafeToSwingShoulder(new LoggedTunableNumber("StationIntakeToStow/wrist/SafeToSwingShoulder", -45.0)),
-        Final(new LoggedTunableNumber("StationIntakeToStow/wrist/FinalDegrees", 0));
+        SafeToSwingShoulder(new LoggedTunableNumber("Positions/StationIntakeToStow/wrist/SafeToSwingShoulder", -45.0)),
+        Final(new LoggedTunableNumber("Positions/StationIntakeToStow/wrist/FinalDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -39,8 +38,8 @@ public class StationIntakeToStow extends SequentialCommandGroup {
     }
 
     private enum ShoulderPositions {
-        SafeToTwistWrist(new LoggedTunableNumber("StationIntakeToStow/shoulder/SafeToTwistWrist", 105)),
-        MidPoint(new LoggedTunableNumber("StationIntakeToStow/shoulder/MidPoint", 100));
+        SafeToTwistWrist(new LoggedTunableNumber("Positions/StationIntakeToStow/shoulder/SafeToTwistWrist", 105)),
+        MidPoint(new LoggedTunableNumber("Positions/StationIntakeToStow/shoulder/MidPoint", 100));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -56,15 +55,24 @@ public class StationIntakeToStow extends SequentialCommandGroup {
         }
     }
 
-    public StationIntakeToStow(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE, IntakeExtender intakeExtender) {
+    public StationIntakeToStow(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
         super(
             shoulder.getNewSetAngleCommand(ShoulderPositions.MidPoint.position),
             new WaitUntilCommand(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.SafeToTwistWrist.position)),
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             // Needed so coral doesn't hit bar on way back
             new WaitUntilCommand(wrist.getNewGreaterThanAngleTrigger(WristPositions.SafeToSwingShoulder.position)),
-            new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE,intakeExtender)
+            new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE)
         );
         addRequirements(shoulder, elbow, wrist, elevator, coralEE, algaeEE);
+    }
+
+    public static Command getNewUnsafeStationIntakeToStow(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, AlgaeEndEffector algaeEE) {
+        return new SequentialCommandGroup(
+            wrist.getNewWristTurnCommand(WristPositions.Final.position),
+            // Needed so coral doesn't hit bar on way back
+            new WaitUntilCommand(wrist.getNewGreaterThanAngleTrigger(WristPositions.SafeToSwingShoulder.position)),
+            new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE)
+        );
     }
 }

@@ -14,7 +14,7 @@ import frc.robot.util.LoggedTunableNumber;
 
 public class CoralEndEffectorIOSim implements CoralEndEffectorIO {
   private Voltage appliedVoltage = Volts.mutable(0.0);
-  private LoggedTunableNumber coralEESensorSim = new LoggedTunableNumber("Coral End Effector/SensorDistanceInches", 1);
+  private LoggedTunableNumber coralEESensorSim = new LoggedTunableNumber("Sensors/CoralEndEffector/SensorDistanceInches", 1);
 
   private final FlywheelSim sim;
 

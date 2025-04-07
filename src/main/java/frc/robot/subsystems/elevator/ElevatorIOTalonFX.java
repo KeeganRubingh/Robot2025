@@ -4,28 +4,18 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.Inch;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.InchesPerSecond;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.arm.ArmJointIO.ArmInputs;
 import frc.robot.util.CanDef;
 import frc.robot.util.Gains;
@@ -35,7 +25,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   public ElevatorIOTalonFX() {}
 
-  public MotionMagicVoltage Request;
+  public MotionMagicTorqueCurrentFOC Request;
   public TalonFX leaderMotor;
   public TalonFX followerMotor;
 
@@ -46,19 +36,19 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   public ElevatorIOTalonFX(CanDef leftDef, CanDef rightDef) {
     leaderMotor = new TalonFX(leftDef.id(), leftDef.bus());
     followerMotor = new TalonFX(rightDef.id(), rightDef.bus());
-    Request = new MotionMagicVoltage(0);
+    Request = new MotionMagicTorqueCurrentFOC(0);
 
     configureTalons();
   }
 
   private void configureTalons() {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
-    cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.Voltage.PeakForwardVoltage = 12;
     cfg.Voltage.PeakReverseVoltage = 12;
     cfg.CurrentLimits.StatorCurrentLimit = 80;
     cfg.CurrentLimits.StatorCurrentLimitEnable = true;
-    cfg.CurrentLimits.SupplyCurrentLimit = 40;
+    cfg.CurrentLimits.SupplyCurrentLimit = 30;
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
     cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
@@ -72,7 +62,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     cfg2.Voltage.PeakReverseVoltage = 12;
     cfg2.CurrentLimits.StatorCurrentLimit = 80;
     cfg2.CurrentLimits.StatorCurrentLimitEnable = true;
-    cfg2.CurrentLimits.SupplyCurrentLimit = 20;
+    cfg2.CurrentLimits.SupplyCurrentLimit = 30;
     cfg2.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     cfg2.Feedback.SensorToMechanismRatio = Elevator.REDUCTION;

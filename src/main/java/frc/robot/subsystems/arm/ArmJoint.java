@@ -29,7 +29,7 @@ public class ArmJoint extends SubsystemBase {
 
   ArmInputsAutoLogged m_loggedArm = new ArmInputsAutoLogged();
 
-  public LoggedTunableGainsBuilder tunableGains;
+  public LoggedTunableGainsBuilder tunableSlot0Gains;
   public LoggedTunableGainsBuilder tunableSlot1Gains;
   
   private Supplier<Angle> previousJointAngleSupplier;
@@ -53,7 +53,7 @@ public class ArmJoint extends SubsystemBase {
     //    to pass the constants instance back up from the IO to get an instance of it in the subsystem.
     m_constants = armJointIO.getConstants();
     m_constants.mechanismSimCallback.accept(m_loggedArm.angle);
-    tunableGains = m_constants.TalonFXGains;
+    tunableSlot0Gains = m_constants.TalonFXGainsSlot0;
     tunableSlot1Gains = m_constants.TalonFXGainsSlot1;
     m_loggedArm.angle.mut_replace(m_constants.StartingAngle);
   }
@@ -171,7 +171,7 @@ public class ArmJoint extends SubsystemBase {
 
   @Override
   public void periodic() {
-    tunableGains.ifGainsHaveChanged((gains) -> this.m_armJointIO.setGains(gains,0));
+    tunableSlot0Gains.ifGainsHaveChanged((gains) -> this.m_armJointIO.setGains(gains,0));
     tunableSlot1Gains.ifGainsHaveChanged((gains) -> this.m_armJointIO.setGains(gains,1));
     m_armJointIO.updateInputs(m_loggedArm);
     Logger.processInputs("RobotState/" + m_constants.LoggedName, m_loggedArm);

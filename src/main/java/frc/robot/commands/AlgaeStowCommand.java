@@ -12,14 +12,15 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.algaeendeffector.AlgaeEndEffector;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
 public class AlgaeStowCommand extends SequentialCommandGroup {
 
+    
+
     private enum ShoulderPositions {
-        Final(new LoggedTunableNumber("StowToAlgaeStow/shoulder/FinalDegrees", 71.0));
+        Final(new LoggedTunableNumber("Positions/AlgaeStowCommand/shoulder/FinalDegrees", 60.0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -36,7 +37,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Final(new LoggedTunableNumber("StowToAlgaeStow/elbow/FinalDegrees", 198));
+        Final(new LoggedTunableNumber("Positions/AlgaeStowCommand/elbow/FinalDegrees", 155));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -53,7 +54,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private enum ElevatorPositions {
-        Final(new LoggedTunableNumber("StowToAlgaeStow/elevator/FinalInches", 0));
+        Final(new LoggedTunableNumber("Positions/AlgaeStowCommand/elevator/FinalInches", 0));
 
         DoubleSupplier position;
         MutDistance distance;
@@ -70,7 +71,7 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Final(new LoggedTunableNumber("StowToAlgaeStow/wrist/FinalDegrees", 0));
+        Final(new LoggedTunableNumber("Positions/AlgaeStowCommand/wrist/FinalDegrees", 0));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -86,34 +87,14 @@ public class AlgaeStowCommand extends SequentialCommandGroup {
         }
     }
 
-    private static enum IntakeExtenderPositions{
-        Stow(new LoggedTunableNumber("StowToAlgaeStow/IntakeExtender/StowDegrees",StowToGroundIntake.intakeExtenderStow.in(Degrees))),
-        OutOfTheWay(new LoggedTunableNumber("StowToAlgaeStow/IntakeExtender/OutOfTheWay",-75.0)),
-        StowSafeZone(new LoggedTunableNumber("StowToAlgaeStow/IntakeExtender/StowSafeZoneDegrees",StowToGroundIntake.intakeExtenderStow.in(Degrees) - 2.0));
-
-        DoubleSupplier position;
-        MutAngle distance;
-
-        IntakeExtenderPositions(DoubleSupplier position) {
-            this.position = position;
-            this.distance = Degrees.mutable(0.0);
-        }
-
-        public Angle angle() {
-            this.distance.mut_replace(this.position.getAsDouble(), Degrees);
-            return this.distance;
-        }
-    }
-
-    public AlgaeStowCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, AlgaeEndEffector algaeEE, IntakeExtender extender) {
+    public AlgaeStowCommand(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, AlgaeEndEffector algaeEE) {
         super(
-            extender.getNewIntakeExtenderTurnCommand(IntakeExtenderPositions.Stow.position),
             wrist.getNewWristTurnCommand(WristPositions.Final.position),
             elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
             elevator.getNewSetDistanceCommand(ElevatorPositions.Final.position),
             algaeEE.getNewSetVoltsCommand(2.0)
         );
-        addRequirements(shoulder, elbow,  elevator, wrist, algaeEE, extender);
+        addRequirements(shoulder, elbow,  elevator, wrist, algaeEE);
     }
 }

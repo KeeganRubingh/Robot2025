@@ -23,7 +23,6 @@ import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.intakeextender.IntakeExtender;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.util.LoggedTunableNumber;
 
@@ -46,23 +45,23 @@ public class StationIntakeCommandFactory {
     private int selectedTargetId;
 
     //#region TODO Find Accurate Values
-    private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("StationAutoAlign/offsetBBackingUp", 0.75);
+    private static LoggedTunableNumber offsetBBackingUp = new LoggedTunableNumber("AutoAlignCommands/StationAutoAlign/offsetBBackingUp", 0.75);
 
     // for tags 1 and 13
 
-    private static LoggedTunableNumber outsideRightOffsetBFinal = new LoggedTunableNumber("StationAutoAlign/outsideRightOffsetBFinal", 0.4);
-    private static LoggedTunableNumber outsideRightOffset = new LoggedTunableNumber("StationAutoAlign/outsideRightOffset", 0.5);
+    private static LoggedTunableNumber outsideRightOffsetBFinal = new LoggedTunableNumber("AutoAlignCommands/StationAutoAlign/outsideRightOffsetBFinal", 0.4);
+    private static LoggedTunableNumber outsideRightOffset = new LoggedTunableNumber("AutoAlignCommands/StationAutoAlign/outsideRightOffset", 0.5);
 
-    private static LoggedTunableNumber insideLeftOffsetBFinal = new LoggedTunableNumber("StationAutoAlign/insideLeftOffsetBFinal", 0.4);
-    private static LoggedTunableNumber insideLeftOffset = new LoggedTunableNumber("StationAutoAlign/insideLeftOffset", 0.5);
+    private static LoggedTunableNumber insideLeftOffsetBFinal = new LoggedTunableNumber("AutoAlignCommands/StationAutoAlign/insideLeftOffsetBFinal", 0.4);
+    private static LoggedTunableNumber insideLeftOffset = new LoggedTunableNumber("AutoAlignCommands/StationAutoAlign/insideLeftOffset", 0.5);
 
     // for tags 2 and 12
 
-    private static LoggedTunableNumber insideRightOffsetBFinal = new LoggedTunableNumber("StationAutoAlign/insideRightOffsetBFinal", 0.4);
-    private static LoggedTunableNumber insideRightOffset = new LoggedTunableNumber("StationAutoAlign/insideRightOffset", 0.5);
+    private static LoggedTunableNumber insideRightOffsetBFinal = new LoggedTunableNumber("AutoAlignCommands/StationAutoAlign/insideRightOffsetBFinal", 0.4);
+    private static LoggedTunableNumber insideRightOffset = new LoggedTunableNumber("AutoAlignCommands/StationAutoAlign/insideRightOffset", 0.5);
 
-    private static LoggedTunableNumber outsideLeftOffsetBFinal = new LoggedTunableNumber("StationAutoAlign/outsideLeftOffsetBFinal", 0.4);
-    private static LoggedTunableNumber outsideLeftOffset = new LoggedTunableNumber("StationAutoAlign/outsideLeftOffset", 0.5);
+    private static LoggedTunableNumber outsideLeftOffsetBFinal = new LoggedTunableNumber("AutoAlignCommands/StationAutoAlign/outsideLeftOffsetBFinal", 0.4);
+    private static LoggedTunableNumber outsideLeftOffset = new LoggedTunableNumber("AutoAlignCommands/StationAutoAlign/outsideLeftOffset", 0.5);
     //#endregion
 
     /**
@@ -174,8 +173,8 @@ public class StationIntakeCommandFactory {
      * @param drive
      * @return
      */
-    public static Command getNewStationIntakeSequence(Supplier<IntakePosition> position, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, Drive drive, IntakeExtender extender) {
-        return new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEE, extender)
+    public static Command getNewStationIntakeSequence(Supplier<IntakePosition> position, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE, Drive drive) {
+        return new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEE)
             .andThen(
                 getNewAlignToStationCommand(position, false, drive)
             );

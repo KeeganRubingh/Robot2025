@@ -14,7 +14,7 @@ import frc.robot.util.LoggedTunableNumber;
 
 public class AlgaeEndEffectorIOSim implements AlgaeEndEffectorIO {
   private Voltage appliedVoltage = Volts.mutable(0.0);
-  private LoggedTunableNumber algaeEESensorSim = new LoggedTunableNumber("Algae End Effector/SensorDistanceInches", 1);
+  private LoggedTunableNumber algaeEESensorSim = new LoggedTunableNumber("Sensors/AlgaeEndEffector/SensorDistanceInches", 1);
 
   private final FlywheelSim sim;
   private MutDistance intakeSensorDistance;

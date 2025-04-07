@@ -8,6 +8,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
@@ -32,19 +33,25 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   private void configureTalons(boolean invert) {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
+    cfg.Feedback.SensorToMechanismRatio = 333.3333333333333;
     cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    cfg.CurrentLimits.StatorCurrentLimit = 80.0;
+    cfg.CurrentLimits.StatorCurrentLimit = 120.0;
     cfg.CurrentLimits.StatorCurrentLimitEnable = true;
-    cfg.CurrentLimits.SupplyCurrentLimit = 30.0;
+    cfg.CurrentLimits.SupplyCurrentLimit = 40.0;
     cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
     cfg.Voltage.PeakForwardVoltage = 16.0;
     cfg.Voltage.PeakReverseVoltage = 16.0;
+    // cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    // cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Degrees.of(110.0).in(Rotations);
+    // cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    // cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Degrees.of(130.0).in(Rotations);
     cfg.MotorOutput.Inverted = invert ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
     PhoenixUtil.tryUntilOk(5, () -> Motor.getConfigurator().apply(cfg));
   }
 
   @Override
   public void updateInputs(ClimberInputs inputs) {
+    inputs.angle.mut_replace(Motor.getPosition().getValue());
     inputs.angularVelocity.mut_replace(Motor.getVelocity().getValue());
     inputs.voltageSetPoint.mut_replace(m_setPoint);
     inputs.voltage.mut_replace(Motor.getMotorVoltage().getValue());

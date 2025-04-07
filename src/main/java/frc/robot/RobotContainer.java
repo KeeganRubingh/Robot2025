@@ -33,6 +33,8 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
@@ -48,11 +50,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AlgaeStowCommand;
 import frc.robot.commands.BargeAlignCommand;
-import frc.robot.commands.BargeScoreCommand;
+import frc.robot.commands.BargeScoreThrowCommand;
 import frc.robot.commands.DisengageClimber;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.EngageClimber;
-import frc.robot.commands.GroundOuttakeCoral;
 import frc.robot.commands.L4ToStow;
 import frc.robot.commands.NeutralClimber;
 import frc.robot.commands.OutakeAlgae;
@@ -62,13 +63,11 @@ import frc.robot.commands.ReadyProcessorScore;
 import frc.robot.commands.ReefScoreCommandFactory;
 import frc.robot.commands.ReefScoreCommandFactory.ReefPosition;
 import frc.robot.commands.StationIntakeCommand;
+import frc.robot.commands.StationIntakeCommandFactory;
 import frc.robot.commands.StationIntakeCommandFactory.IntakePosition;
-import frc.robot.commands.StationIntakeReverseCommand;
 import frc.robot.commands.StationIntakeToStow;
 import frc.robot.commands.StowCommand;
 import frc.robot.commands.StowToBarge;
-import frc.robot.commands.BargeScoreThrowCommand;
-import frc.robot.commands.StowToGroundIntake;
 import frc.robot.commands.StowToL3;
 import frc.robot.commands.StowToL4;
 import frc.robot.commands.TakeAlgaeL2;
@@ -96,15 +95,7 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIONova;
-import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intakeextender.IntakeExtender;
-import frc.robot.subsystems.intakeextender.IntakeExtenderIOSim;
-import frc.robot.subsystems.intakeextender.IntakeExtenderIOTalonFX;
 import frc.robot.subsystems.vision.AprilTagVision;
-
-import static frc.robot.subsystems.vision.VisionConstants.angularStdDevBaseline;
 import static frc.robot.subsystems.vision.VisionConstants.limelightLeftName;
 import static frc.robot.subsystems.vision.VisionConstants.limelightRightName;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCameraLeft;
@@ -145,11 +136,7 @@ public class RobotContainer {
 
   private final CoralEndEffector coralEndEffector;
 
-  private final Intake intake;
-
   private final AlgaeEndEffector algaeEndEffector;
-
-  private final IntakeExtender intakeExtender;
 
   private final Climber climber;
 
@@ -171,11 +158,10 @@ public class RobotContainer {
   final LoggedTunableNumber setWristAngle = new LoggedTunableNumber("RobotState/Wrist/setAngle", -90);
   final LoggedTunableNumber setToesiesVolts = new LoggedTunableNumber("RobotState/Toesies/setVolts", 2);
   final LoggedTunableNumber setFingeysVolts = new LoggedTunableNumber("RobotState/Fingeys/setVolts", 2);
-  final LoggedTunableNumber setIntakeExtenderAngle = new LoggedTunableNumber("RobotState/IntakeExtender/setAngle", 90);
   final LoggedTunableNumber setIntakeVolts = new LoggedTunableNumber("RobotState/Intake/setVolts", 4);
   final LoggedTunableNumber setShoulderAngle = new LoggedTunableNumber("RobotState/Shoulder/setAngle", 0);
   final LoggedTunableNumber setElbowAngle = new LoggedTunableNumber("RobotState/Elbow/setAngle", 0);
-  final LoggedTunableNumber setClimberVolts = new LoggedTunableNumber("dashboardKey:RobotState/Climber/setVolts", 4);
+  final LoggedTunableNumber setClimberVolts = new LoggedTunableNumber("RobotState/Climber/setVolts", 4);
 
   private LoggedDashboardChooser<IntakePosition> intakePosChooser = new LoggedDashboardChooser<>("Intake Position");
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -231,9 +217,7 @@ public class RobotContainer {
         shoulder = new ArmJoint(new ArmJointIOSim(new ShoulderConstants()),Optional.empty());
         elbow = new ArmJoint(new ArmJointIOSim(new ElbowConstants()),Optional.of(shoulder));
         coralEndEffector = new CoralEndEffector(new CoralEndEffectorIOSim(121));
-        intake = new Intake(new IntakeIOSim(15));
         algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIOSim(12));
-        intakeExtender = new IntakeExtender(new IntakeExtenderIOSim(16));
         climber = new Climber(new ClimberIOSim(19));
         
         SmartDashboard.putData(drive);
@@ -263,15 +247,11 @@ public class RobotContainer {
 
         elevator = new Elevator(new ElevatorIOTalonFX(rioCanBuilder.id(13).build(),rioCanBuilder.id(14).build()));
 
-        shoulder = new ArmJoint(new ArmJointIOTalonFX(new ShoulderConstants(), InvertedValue.CounterClockwise_Positive, SensorDirectionValue.Clockwise_Positive, NeutralModeValue.Coast), Optional.empty());
-        elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants(), InvertedValue.Clockwise_Positive, SensorDirectionValue.Clockwise_Positive, NeutralModeValue.Brake), Optional.of(shoulder));
+        shoulder = new ArmJoint(new ArmJointIOTalonFX(new ShoulderConstants(), InvertedValue.CounterClockwise_Positive, SensorDirectionValue.Clockwise_Positive, NeutralModeValue.Brake), Optional.empty());
+        elbow = new ArmJoint(new ArmJointIOTalonFX(new ElbowConstants(), InvertedValue.CounterClockwise_Positive, SensorDirectionValue.Clockwise_Positive, NeutralModeValue.Brake), Optional.of(shoulder));
 
         coralEndEffector = new CoralEndEffector(new CoralEndEffectorIOTalonFX(canivoreCanBuilder.id(12).build(), canivoreCanBuilder.id(17).build()));
         // coralEndEffector = new CoralEndEffector(new CoralEndEffectorIONova(rioCanBuilder.id(12).build(), canivoreCanBuilder.id(17).build()));
-        
-        intake = new Intake(new IntakeIONova(rioCanBuilder.id(18).build(),rioCanBuilder.id(17).build()));
-
-        intakeExtender = new IntakeExtender(new IntakeExtenderIOTalonFX(canivoreCanBuilder.id(16).build()));
 
         algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIOTalonFX(canivoreCanBuilder.id(15).build(), canivoreCanBuilder.id(24).build()));
         // algaeEndEffector = new AlgaeEndEffector(new AlgaeEndEffectorIONova(rioCanBuilder.id(15).build(), canivoreCanBuilder.id(24).build()));
@@ -303,13 +283,12 @@ public class RobotContainer {
       //   fingeys = null;
       //   intake = null;
       //   algaeEndEffector = null;
-      //   intakeExtender = null;
 
       //   throw new Exception("The robot is in neither sim nor real. Something has gone seriously wrong");
     }
 
 
-    autoCommandManager = new AutoCommandManager(drive, shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender);
+    autoCommandManager = new AutoCommandManager(drive, shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector);
     reefPositions = ReefPositionsUtil.getInstance();
     ReefScoreCommandFactory.initialize();
 
@@ -340,16 +319,16 @@ public class RobotContainer {
       new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator), 
       new TakeAlgaeL3(shoulder, elbow, wrist, algaeEndEffector, elevator), 
       () -> reefPositions.isSelected(DeAlgaeLevel.Low)))
-    .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector, intakeExtender));
+    .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
 
     //conditional DeAlgae auto align
     controller.leftTrigger()
     .and(()->ReefPositionsUtil.getInstance().getIsAutoAligning())
     .onTrue(new ConditionalCommand(
-      ReefScoreCommandFactory.getNewAlgaePluckAutoAlignSequenceCommand(DeAlgaeLevel.Low, drive, shoulder, elbow, elevator, wrist, algaeEndEffector, intakeExtender), 
-      ReefScoreCommandFactory.getNewAlgaePluckAutoAlignSequenceCommand(DeAlgaeLevel.Top, drive, shoulder, elbow, elevator, wrist, algaeEndEffector, intakeExtender), 
+      ReefScoreCommandFactory.getNewAlgaePluckAutoAlignSequenceCommand(DeAlgaeLevel.Low, drive, shoulder, elbow, elevator, wrist, algaeEndEffector), 
+      ReefScoreCommandFactory.getNewAlgaePluckAutoAlignSequenceCommand(DeAlgaeLevel.Top, drive, shoulder, elbow, elevator, wrist, algaeEndEffector), 
       () -> reefPositions.isSelected(DeAlgaeLevel.Low)))
-    .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector, intakeExtender));
+    .onFalse(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
 
     // Coral Station Intake Auto Align Sequence†
     // controller.leftBumper()
@@ -357,22 +336,15 @@ public class RobotContainer {
     //   .and(coralEndEffector.hasCoralTrigger().negate())
     //   .and(algaeEndEffector.hasAlgaeTrigger().negate()) 
     //   .onTrue(
-    //     new ConditionalCommand(
-    //       new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
-    //       .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector))
-    //       .andThen(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender, intake))
-    //       , 
-    //       StationIntakeCommandFactory.getNewStationIntakeSequence(
+    //     StationIntakeCommandFactory.getNewStationIntakeSequence(
     //         () -> {
     //         IntakePosition pos = intakePosChooser.get();
     //         return pos == null ? IntakePosition.Inside : pos;
     //       },
     //         shoulder, elbow, elevator, wrist, coralEndEffector, drive
-    //       ), 
-    //       intake.hasCoralTrigger()
     //     )
     //   )
-    //.onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    // .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
     // Go to barge auto align
     controller.y()
@@ -381,11 +353,22 @@ public class RobotContainer {
         DriveCommands.brakeDrive(drive)
           .alongWith(new StowToBarge(shoulder, elbow, wrist))
           .andThen(new BargeAlignCommand(drive,()->MathUtil.applyDeadband(controller.getLeftX(),0.1)))
+          .andThen(new BargeScoreThrowCommand(elevator, wrist, algaeEndEffector))
+          .andThen(new WaitCommand(0.5))
+          .andThen(algaeEndEffector.getNewSetVoltsCommand(0.0))
+          .andThen(elevator.getNewSetDistanceCommand(0.0))
+          .andThen(
+            new ConditionalCommand(
+              new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector), 
+              new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+              algaeEndEffector.hasAlgaeTrigger()
+            ).onlyIf(controller.y().negate())
+          )
       )
       .onFalse(
         new ConditionalCommand(
-          new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector, intakeExtender), 
-          new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender),
+          new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector), 
+          new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
           algaeEndEffector.hasAlgaeTrigger()
         )
       );
@@ -398,8 +381,8 @@ public class RobotContainer {
       )
       .onFalse(
         new ConditionalCommand(
-          new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector, intakeExtender), 
-          new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender),
+          new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector), 
+          new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
           algaeEndEffector.hasAlgaeTrigger()
         )
       );
@@ -413,8 +396,8 @@ public class RobotContainer {
         .andThen(new WaitUntilCommand(algaeEndEffector.hasAlgaeTrigger().negate()))
         .andThen(
           new ConditionalCommand(
-            new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector, intakeExtender), 
-            new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender),
+            new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector), 
+            new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
             algaeEndEffector.hasAlgaeTrigger()
           )
         )
@@ -431,36 +414,13 @@ public class RobotContainer {
         .andThen(new WaitUntilCommand(algaeEndEffector.hasAlgaeTrigger().negate()))
         .andThen(
           new ConditionalCommand(
-            new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector, intakeExtender), 
-            new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender),
+            new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector), 
+            new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
             algaeEndEffector.hasAlgaeTrigger()
           )
         )
       );
     
-    //ground intake 
-    // controller.leftBumper()
-    //   .whileTrue(
-    //     new ConditionalCommand(
-    //       StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender), 
-    //       new ConditionalCommand(
-    //         new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
-    //         .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector)), 
-    //         new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
-    //         .andThen(StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender))
-    //         .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector))
-    //         .andThen(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender, intake)), 
-    //         intake.hasCoralTrigger()
-    //       ), 
-    //     algaeEndEffector.hasAlgaeTrigger()
-    //     )
-    //     .unless(coralEndEffector.hasCoralTrigger())
-    //   ).onFalse(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender, intake));
-
-    //   //Ground Outtake
-    //   controller.povDown()
-    //     .onTrue(new GroundOuttakeCoral(intake, intakeExtender))
-    //     .onFalse(GroundOuttakeCoral.GroundOuttakeToStow(intake, intakeExtender));
     //#region reef scoring
 
     // Hashmaps for Coral level commands
@@ -495,9 +455,10 @@ public class RobotContainer {
         SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector, drive),
         drive
       )
-    ).onFalse(new ConditionalCommand(
-      new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender),
-      new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender),
+    ).onFalse(
+    new ConditionalCommand(
+      new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+      new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
       () -> reefPositions.isSelected(ScoreLevel.L4)
     ));
 
@@ -516,8 +477,8 @@ public class RobotContainer {
         SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEndEffector, drive),
         drive)
     ).onFalse(new ConditionalCommand(
-      new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender),
-      new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender),
+      new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+      new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
       () -> reefPositions.isSelected(ScoreLevel.L4)
     ));
 
@@ -525,30 +486,15 @@ public class RobotContainer {
     controller.rightBumper().and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
     .onTrue(ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands))
     .onFalse(new ConditionalCommand(
-      new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender),
-      new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender),
+      new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+      new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
       () -> reefPositions.isSelected(ScoreLevel.L4)));
 
     // Conditional Confirm Coral
     controller.rightTrigger().and(controller.rightBumper()).and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
       .onTrue(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
-      .onFalse(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands));
+      .onFalse(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands).onlyIf(controller.rightBumper()));
     //#endregion
-
-    // Confirm Barge
-    controller.rightTrigger().and(controller.y())
-    .onTrue(new BargeScoreThrowCommand(elevator, wrist, algaeEndEffector))
-    .onFalse(
-      algaeEndEffector.getNewSetVoltsCommand(0.0)
-      .andThen(elevator.getNewSetDistanceCommand(0.0))
-      .andThen(
-        new ConditionalCommand(
-          new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector, intakeExtender), 
-          new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender),
-          algaeEndEffector.hasAlgaeTrigger()
-        ).onlyIf(controller.y().negate())
-      )
-    );
 
     // Outtake Algae
     controller.povLeft()
@@ -573,9 +519,9 @@ public class RobotContainer {
     // Coral Station Intake No Auto Align
     co_controller.leftBumper()
       .onTrue(
-        new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector, intakeExtender)
+        new StationIntakeCommand(shoulder, elbow, elevator, wrist, coralEndEffector)
       )
-      .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender));
+      .onFalse(new StationIntakeToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
     // Select L4
     co_controller.y().and(controller.rightBumper().negate())
@@ -601,7 +547,7 @@ public class RobotContainer {
     // co_controller.povUp()
     //   .and(algaeEndEffector.hasAlgaeTrigger().negate())
     //   .onTrue(new StationIntakeReverseCommand(shoulder, elbow, elevator, wrist, coralEndEffector))
-    //   .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender));
+    //   .onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
 
     // Select Left Auto Aligning
     co_controller.povLeft()
@@ -610,15 +556,16 @@ public class RobotContainer {
     // Select Right Auto Aligning
     co_controller.povRight()
       .onTrue(new InstantCommand(() ->ReefPositionsUtil.getInstance().setAutoAlignSide(ReefPositionsUtil.AutoAlignSide.Right)));
+    
     // Engage climber
     co_controller.start().and(co_controller.back().negate())
-    .whileTrue(new EngageClimber(climber))
-    .onFalse(new NeutralClimber(climber));
+    .whileTrue(new EngageClimber(climber, shoulder, elbow))
+    .onFalse(new NeutralClimber(climber,true));
 
     // Disengage climber
     co_controller.back().and(co_controller.start().negate())
-    .whileTrue(new DisengageClimber(climber))
-    .onFalse(new NeutralClimber(climber));
+    .whileTrue(new DisengageClimber(climber, elbow, shoulder))
+    .onFalse(new NeutralClimber(climber,false));
 
     //#endregion
   }
@@ -628,7 +575,6 @@ public class RobotContainer {
     // testcontroller.rightBumper().onTrue(toesies.getNewSetVoltsCommand(setToesiesVolts)).onFalse(toesies.getNewSetVoltsCommand(0));
     // testcontroller.leftTrigger().onTrue(fingeys.getNewSetVoltsCommand(setFingeysVolts)).onFalse(fingeys.getNewSetVoltsCommand(0));
     // testcontroller.rightTrigger().onTrue(intake.getNewSetVoltsCommand(setIntakeVolts)).onFalse(intake.getNewSetVoltsCommand(0));
-    // testcontroller.x().onTrue(intakeExtender.getNewIntakeExtenderTurnCommand(setIntakeExtenderAngle)).onFalse(intakeExtender.getNewIntakeExtenderTurnCommand(0));
     //testcontroller.a().onTrue(shoulder.getNewSetAngleCommand(setShoulderAngle)).onFalse(shoulder.getNewSetAngleCommand(90));
     testcontroller.b().onTrue(elbow.getNewSetAngleCommand(setElbowAngle));/* .onFalse(elbow.getNewSetAngleCommand(0))*/
     // testcontroller.povLeft().onTrue(climber.getNewSetVoltsCommand(setClimberVolts)).onFalse(climber.getNewSetVoltsCommand(0));
@@ -637,11 +583,11 @@ public class RobotContainer {
     // testcontroller.povRight().whileTrue(new TakeCoral(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(coralEndEffector.getNewSetVoltsCommand(0)).onFalse(TEMPgetStowCommand());
     // controller.leftBumper().onTrue(new StowToL3(shoulder, elbow, wrist, coralEndEffector, elevator)).onFalse(TEMPgetStowCommand());
     // testcontroller.leftTrigger().onTrue(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator)).onFalse(algaeEndEffector.getNewSetVoltsCommand(4).alongWith(elevator.getNewSetDistanceCommand(0)));
-    // testcontroller.x().onTrue(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender));
+    // testcontroller.x().onTrue(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
     // testcontroller.leftBumper().onTrue(new OutakeAlgae(algaeEndEffector)).onFalse(algaeEndEffector.getNewSetVoltsCommand(0));
     // testcontroller.rightBumper().onTrue(new OutakeCoral(coralEndEffector)).onFalse(coralEndEffector.getNewSetVoltsCommand(0));
-    // testcontroller.y().onTrue(new TakeCoral(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender));
-    // testcontroller.povDown().onTrue(new BargeScore(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender));
+    // testcontroller.y().onTrue(new TakeCoral(shoulder, elbow, elevator, wrist)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
+    // testcontroller.povDown().onTrue(new BargeScore(shoulder, elbow, elevator, wrist, coralEndEffector)).onFalse(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
     // testcontroller.povLeft().whileTrue(new AutoAlignCommand((thisOneVariableWhichIDontReallyNeedSoIWillUseAnExtremelyConciseNameFor) -> {return new Pose2d(-1, 0, Rotation2d.kCCW_90deg);}, drive));
     // testcontroller.povRight().whileTrue(new AutoAlignCommand((thisOneVariableWhichIDontReallyNeedSoIWillUseAnExtremelyConciseNameFor) -> {return new Pose2d(-1, 0, Rotation2d.kCW_90deg);}, drive));
     // testcontroller.povUp().whileTrue(new AutoAlignCommand((thisOneVariableWhichIDontReallyNeedSoIWillUseAnExtremelyConciseNameFor) -> {return new Pose2d(0, 0, Rotation2d.kZero);}, drive));
@@ -650,51 +596,50 @@ public class RobotContainer {
     //   .andThen(new BargeAlignCommand(drive,()->testcontroller.getLeftX()))
     //   .andThen(new BargeScoreCommand(algaeEndEffector))
     // ).onFalse(
-    //   new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender)
+    //   new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector)
     // );
-
     testcontroller.povUp().onTrue(
-      (new AlgaeStowCommand(shoulder,elbow,elevator,wrist,algaeEndEffector, intakeExtender)
+      (new AlgaeStowCommand(shoulder,elbow,elevator,wrist,algaeEndEffector)
         .alongWith(new ProcessorAlignCommand(drive))
       )
       .andThen(new OutakeAlgae(algaeEndEffector))
       .andThen(new WaitCommand(0.3))
-      .andThen(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender))
+      .andThen(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector))
+    );
+
+    //TODO AUTO ALIGN AUTO
+    //1. Scoring position reached before movement
+    //2. Outside field auto align
+    //3. Rotates right away, could hit reef
+    //4. Targeting into station
+    testcontroller.povDown().onTrue(
+      reefPositions.getNewSetScoreLevelCommand(ScoreLevel.L4)
+      .andThen(ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Left, true, drive, shoulder, elbow, elevator, wrist, coralEndEffector))
+      .andThen(
+        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        StationIntakeCommandFactory.getNewStationIntakeSequence(()->IntakePosition.Center, shoulder, elbow, elevator, wrist, coralEndEffector, drive),
+        new WaitUntilCommand(coralEndEffector.hasCoralTrigger()),
+        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Left, true, drive, shoulder, elbow, elevator, wrist, coralEndEffector),
+        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        StationIntakeCommandFactory.getNewStationIntakeSequence(()->IntakePosition.Center, shoulder, elbow, elevator, wrist, coralEndEffector, drive),
+        new WaitUntilCommand(coralEndEffector.hasCoralTrigger()),
+        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+        ReefScoreCommandFactory.getNewReefCoralScoreSequence(ReefPosition.Right, true, drive, shoulder, elbow, elevator, wrist, coralEndEffector),
+        new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector)
+        )
     );
     // testcontroller.b().onTrue(
     //     ReefScoreCommandFactory.getNewAlgaePluckAutoAlignSequenceCommand(DeAlgaeLevel.Low, drive, shoulder, elbow, elevator, wrist, algaeEndEffector))
     //   .onFalse(
     //     new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector)  
     //   );
-    
-    // GROUND INTAKE PARTY
-    // testcontroller.a()
-    //   .and(coralEndEffector.hasCoralTrigger().and(algaeEndEffector.hasAlgaeTrigger()).negate())
-    //   .whileTrue(
-    //     new ConditionalCommand(
-    //       StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender), 
-    //       new ConditionalCommand(
-    //         StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector), 
-    //         new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector)
-    //         .andThen(StowToGroundIntake.getRunGroundIntakeCommand(intake, intakeExtender))
-    //         .andThen(new WaitUntilCommand(intake.hasCoralTrigger()))
-    //         .andThen(StowToGroundIntake.getTakeCoralFromGroundIntakeCommand(intake, intakeExtender, shoulder, elbow, wrist, coralEndEffector)), 
-    //         coralEndEffector.hasCoralTrigger()
-    //       ), 
-    //     algaeEndEffector.hasAlgaeTrigger()
-    //     )
-    //   ).onFalse(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector, intakeExtender, intake));
-    
 
-
-    SmartDashboard.putData(new StowToGroundIntake(shoulder, elbow, wrist, coralEndEffector));
-    // System.out.println(StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector));
-    // SmartDashboard.putData("ReturnToStowFromGroundIntake",StowToGroundIntake.getReturnToStowCommand(shoulder, elbow, wrist, coralEndEffector));
-    SmartDashboard.putData(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector, intakeExtender));
+    SmartDashboard.putData(new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEndEffector));
     SmartDashboard.putData(new StowToL3(shoulder, elbow, wrist, elevator));
     SmartDashboard.putData(new StowToL4(shoulder, elbow, elevator, wrist));
     SmartDashboard.putData(new TakeAlgaeL2(shoulder, elbow, wrist, algaeEndEffector, elevator));
-    SmartDashboard.putData(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector, intakeExtender));
+    SmartDashboard.putData(new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector));
   }
 
   public void configureCharacterizationButtonBindings() {
@@ -782,5 +727,9 @@ public class RobotContainer {
     Logger.recordOutput("ReefPositions/DeAlgaePos/Top", reefPositions.isSelected(DeAlgaeLevel.Top));
     Logger.recordOutput("ReefPositions/DeAlgaePos/Low", reefPositions.isSelected(DeAlgaeLevel.Low));
     Logger.recordOutput("ReefPositions/isAutoAlignEnabled", reefPositions.getIsAutoAligning());
+  }
+
+  public void disabledPeriodic() {
+    // climber.setServoTarget(Degrees.of(180.0));
   }
 }

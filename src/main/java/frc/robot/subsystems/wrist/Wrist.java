@@ -26,7 +26,7 @@ public class Wrist extends SubsystemBase {
   WristInputsAutoLogged loggedwrist = new WristInputsAutoLogged();
 
   public LoggedTunableGainsBuilder tunableGains = new LoggedTunableGainsBuilder(
-    "Wrist", 
+    "Gains/Wrist/", 
     50, 0, 0, 
     0, 0, 0, 0, 
     5.0, 10.0, 0.0, 0, 0

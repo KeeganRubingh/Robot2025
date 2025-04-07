@@ -31,6 +31,7 @@ public class Climber extends SubsystemBase {
 
   public Climber(ClimberIO ClimberIO) {
     m_ClimberIO = ClimberIO;
+    loggedclimber.angle = Degrees.mutable(0);
     loggedclimber.angularVelocity = DegreesPerSecond.mutable(0);
     loggedclimber.supplyCurrent = Amps.mutable(0);
     loggedclimber.torqueCurrent = Amps.mutable(0);
@@ -70,9 +71,16 @@ public class Climber extends SubsystemBase {
         this);
   }
 
+  public Command getNewStopClimberCommand() {
+    return new InstantCommand(()-> {
+      m_ClimberIO.stop();
+    });
+  }
+
   @Override
   public void periodic() {
     m_ClimberIO.updateInputs(loggedclimber);
     Logger.processInputs("RobotState/Climber", loggedclimber);
+    Logger.recordOutput("RobotState/Climber/angleDegrees", loggedclimber.angle.in(Degrees));
   }
 }

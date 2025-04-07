@@ -21,11 +21,13 @@ import frc.robot.util.LoggedTunableNumber;
 
 public class StowToAlgaeIntake extends SequentialCommandGroup {
 
+    
+
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("StowToAlgaeIntake/Shoulder/StartingDegrees", 0)),
-        MidPoint(new LoggedTunableNumber("StowToAlgaeIntake/Shoulder/MidPointDegrees", 110)),
-        SafeToSwingElbow(new LoggedTunableNumber("StowToAlgaeIntake/Shoulder/SafeToSwingElbowDegrees", 100)),
-        Final(new LoggedTunableNumber("StowToAlgaeIntake/Shoulder/FinalDegrees", 90));
+        Starting(new LoggedTunableNumber("Positions/StowToAlgaeIntake/Shoulder/StartingDegrees", 0)),
+        MidPoint(new LoggedTunableNumber("Positions/StowToAlgaeIntake/Shoulder/MidPointDegrees", 110)),
+        SafeToSwingElbow(new LoggedTunableNumber("Positions/StowToAlgaeIntake/Shoulder/SafeToSwingElbowDegrees", 100)),
+        Final(new LoggedTunableNumber("Positions/StowToAlgaeIntake/Shoulder/FinalDegrees", 90));
         
 
         DoubleSupplier position;
@@ -43,9 +45,9 @@ public class StowToAlgaeIntake extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber("StowToAlgaeIntake/Elbow/StartingDegrees", 0)),
-        ShoulderSafeSwing(new LoggedTunableNumber("StowToAlgaeIntake/Elbow/ShoulderSafeSwingDegrees", 45)),
-        Final(new LoggedTunableNumber("StowToAlgaeIntake/Elbow/FinalDegrees", 90));
+        Starting(new LoggedTunableNumber("Positions/StowToAlgaeIntake/Elbow/StartingDegrees", 0)),
+        ShoulderSafeSwing(new LoggedTunableNumber("Positions/StowToAlgaeIntake/Elbow/ShoulderSafeSwingDegrees", 45)),
+        Final(new LoggedTunableNumber("Positions/StowToAlgaeIntake/Elbow/FinalDegrees", 90));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -62,8 +64,8 @@ public class StowToAlgaeIntake extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Starting(new LoggedTunableNumber("StowToAlgaeIntake/Wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("StowToAlgaeIntake/Wrist/FinalDegrees", 180));
+        Starting(new LoggedTunableNumber("Positions/StowToAlgaeIntake/Wrist/StartingDegrees", 0)),
+        Final(new LoggedTunableNumber("Positions/StowToAlgaeIntake/Wrist/FinalDegrees", 180));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -80,8 +82,8 @@ public class StowToAlgaeIntake extends SequentialCommandGroup {
     }
     
     private enum AlgaeIntakePositions {
-        Starting(new LoggedTunableNumber("StowToAlgaeIntake/AlgaeIntake/StartingVolts", 0)),
-        Final(new LoggedTunableNumber("StowToAlgaeIntake/AlgaeIntake/FinalVolts", 2));
+        Starting(new LoggedTunableNumber("Positions/StowToAlgaeIntake/AlgaeIntake/StartingVolts", 0)),
+        Final(new LoggedTunableNumber("Positions/StowToAlgaeIntake/AlgaeIntake/FinalVolts", 2));
 
         DoubleSupplier voltage;
         MutVoltage volts;

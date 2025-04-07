@@ -7,7 +7,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.coralendeffector.CoralEndEffector;
@@ -16,10 +15,12 @@ import frc.robot.util.LoggedTunableNumber;
 
 public class StowToL1 extends SequentialCommandGroup {
 
+    
+
     private enum ShoulderPositions {
-        Starting(new LoggedTunableNumber("StowToL1/shoulder/StartingDegrees", 10)),
-        SafeToTurnWrist(new LoggedTunableNumber("StowToL1/shoulder/SafeToTurnWristDegrees", 90)),
-        Final(new LoggedTunableNumber("StowToL1/shoulder/FinalDegrees", 60));
+        Starting(new LoggedTunableNumber("Positions/StowToL1/shoulder/StartingDegrees", 10)),
+        SafeToTurnWrist(new LoggedTunableNumber("Positions/StowToL1/shoulder/SafeToTurnWristDegrees", 80)),
+        Final(new LoggedTunableNumber("Positions/StowToL1/shoulder/FinalDegrees", 55));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -36,9 +37,9 @@ public class StowToL1 extends SequentialCommandGroup {
     }
 
     private enum ElbowPositions {
-        Starting(new LoggedTunableNumber("StowToL1/elbow/StartingDegrees", 10)),
-        SafeToTurnWrist(new LoggedTunableNumber("StowToL1/elbow/SafeToTurnWristDegrees", 90)),
-        Final(new LoggedTunableNumber("StowToL1/elbow/FinalDegrees", -25));
+        Starting(new LoggedTunableNumber("Positions/StowToL1/elbow/StartingDegrees", 10)),
+        SafeToTurnWrist(new LoggedTunableNumber("Positions/StowToL1/elbow/SafeToTurnWristDegrees", 50)),
+        Final(new LoggedTunableNumber("Positions/StowToL1/elbow/FinalDegrees", -20));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -55,8 +56,8 @@ public class StowToL1 extends SequentialCommandGroup {
     }
 
     private enum WristPositions {
-        Starting(new LoggedTunableNumber("StowToL1/wrist/StartingDegrees", 0)),
-        Final(new LoggedTunableNumber("StowToL1/wrist/FinalDegrees", 90));
+        Starting(new LoggedTunableNumber("Positions/StowToL1/wrist/StartingDegrees", 0)),
+        Final(new LoggedTunableNumber("Positions/StowToL1/wrist/FinalDegrees", 90));
 
         DoubleSupplier position;
         MutAngle distance;
@@ -77,12 +78,13 @@ public class StowToL1 extends SequentialCommandGroup {
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position)
             .alongWith(elbow.getNewSetAngleCommand(ElbowPositions.Final.position)),  
             new WaitUntilCommand(elbow.getNewLessThanAngleTrigger(ElbowPositions.SafeToTurnWrist.position)
-                .and(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.SafeToTurnWrist.position))),
+                .and(shoulder.getNewLessThanAngleTrigger(ShoulderPositions.SafeToTurnWrist.position))).withTimeout(0.2),
             wrist.getNewWristTurnCommand(WristPositions.Final.position)
         );
     }
     public static Command getNewScoreCommand(CoralEndEffector coralEndEffector) {
-        return(coralEndEffector.getNewSetVoltsCommand(-2));
+        return(coralEndEffector.getNewSetVoltsCommand(-2))
+        .andThen(new WaitUntilCommand(coralEndEffector.hasCoralTrigger().negate()).withTimeout(0.2));
     }
     public static Command getNewStopScoreCommand(CoralEndEffector coralEndEffector){
         return(coralEndEffector.getNewSetVoltsCommand(0));

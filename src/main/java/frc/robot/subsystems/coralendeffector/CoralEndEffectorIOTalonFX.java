@@ -8,10 +8,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
-
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.CanDef;
 import frc.robot.util.PhoenixUtil;
@@ -51,7 +50,7 @@ public class CoralEndEffectorIOTalonFX implements CoralEndEffectorIO {
     inputs.voltage.mut_replace(motor.getMotorVoltage().getValue());
     inputs.supplyCurrent.mut_replace(motor.getSupplyCurrent().getValue());
     inputs.torqueCurrent.mut_replace(motor.getStatorCurrent().getValue());
-    inputs.coralDistance.mut_replace(filter.calculate(m_sensor.getDistance().getValue().in(Inches)), Inches);
+    inputs.coralDistance.mut_replace(m_sensor.getDistance().getValue().in(Inches), Inches);
     // inputs.hasCoral = m_sensor.getDistance().getValue().lt(Inches.of(CoralEndEffector.CORAL_DISTANCE_THRESHOLD.get()));
   }
 

@@ -1,0 +1,90 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.0498975409836064,
+        "y": 7.01593237704918
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.5773565573770494,
+        "y": 6.512448770491803
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.2846311475409835,
+        "y": 5.673309426229508
+      },
+      "prevControl": {
+        "x": 2.781147540983606,
+        "y": 6.212756147540984
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "StationIntakeToStow",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "UnsafeStationIntakeToStow"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "StowToL4Arm"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "StowToL4Elevator",
+      "waypointRelativePos": 0.9,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StowToL4Elevator"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.5,
+    "rotation": 120.96375653207349
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 126.02570217584261
+  },
+  "useDefaultConstraints": true
+}
