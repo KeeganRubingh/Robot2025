@@ -159,7 +159,7 @@ public class StowToL4 extends SequentialCommandGroup {
         addRequirements(shoulder, elbow, wrist);
     }
 
-    public static Trigger getNewAtL4Trigger(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
+    public static Trigger getNewAtScoreTrigger(ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist) {
         return shoulder.getNewAtAngleTrigger(Degrees.of(ShoulderPositions.Final.position.getAsDouble()), Degrees.of(20.0))
             .and(elbow.getNewAtAngleTrigger(Degrees.of(ElbowPositions.Final.position.getAsDouble()), Degrees.of(5.0)))
             .and(elevator.getNewAtDistanceTrigger(Inches.of(ElevatorPositions.Final.position.getAsDouble()), Inches.of(2.0)))

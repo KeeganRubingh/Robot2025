@@ -251,24 +251,26 @@ public class ReefScoreCommandFactory {
      * @param drive
      * @return
      */
-    public static Command getNewReefCoralScoreSequence(ReefPosition position, boolean isBackingUp, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands, Drive drive) {
+    public static Command getNewReefCoralScoreSequence(ReefPosition position, boolean isBackingUp, Map<ReefPositionsUtil.ScoreLevel,Command> coralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> scoreCoralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> stopCoralLevelCommands, Map<ReefPositionsUtil.ScoreLevel,Command> waitUntilCoralLevelCommands, Drive drive) {
+        ReefPositionsUtil reefUtil = ReefPositionsUtil.getInstance();
         return 
             getNewAlignToReefCommand(position, true, drive).onlyIf(()->isBackingUp)
                 .andThen(DriveCommands.brakeDrive(drive))
-                .alongWith(
-                    ReefPositionsUtil.getInstance().getCoralLevelSelector(coralLevelCommands)
+                .withDeadline(
+                    reefUtil.getCoralLevelSelector(coralLevelCommands)
+                    .andThen(reefUtil.getCoralLevelSelector(waitUntilCoralLevelCommands))
                 )
             .andThen(getNewAlignToReefCommand(position, false, drive))
-            .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(scoreCoralLevelCommands))
+            .andThen(reefUtil.getCoralLevelSelector(scoreCoralLevelCommands))
             // Added wait for score L4 so no need for wait here
             .andThen(
-                getNewAlignToReefCommand(position, true, drive).onlyIf(()->ReefPositionsUtil.getInstance().isSelected(ScoreLevel.L4))
-                    .andThen(ReefPositionsUtil.getInstance().getCoralLevelSelector(stopCoralLevelCommands))
+                getNewAlignToReefCommand(position, true, drive).onlyIf(()->reefUtil.isSelected(ScoreLevel.L4))
+                    .andThen(reefUtil.getCoralLevelSelector(stopCoralLevelCommands))
             );
     }
 
     public static Command getNewReefCoralScoreSequence(ReefPosition position, Boolean isBackingUp, Drive drive, ArmJoint shoulder, ArmJoint elbow, Elevator elevator, Wrist wrist, CoralEndEffector coralEE) {
-        return getNewReefCoralScoreSequence(position, false, SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEE), SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEE, drive), drive);
+        return getNewReefCoralScoreSequence(position, false, SelectorCommandFactory.getCoralLevelPrepCommandSelector(shoulder, elbow, elevator, wrist), SelectorCommandFactory.getCoralLevelScoreCommandSelector(shoulder, elbow, elevator, wrist, coralEE), SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEE, drive), SelectorCommandFactory.getCoralLevelStopScoreCommandSelector(elbow, wrist, coralEE, drive), drive);
     }
 
     public static Command getNewReefCoralScoreSequence(ReefPosition position, boolean isBackingUp, Drive drive) {

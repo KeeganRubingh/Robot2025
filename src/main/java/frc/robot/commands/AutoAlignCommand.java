@@ -14,7 +14,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -53,7 +55,7 @@ public class AutoAlignCommand extends Command {
     public static LinearVelocity m_maxStrafe = MetersPerSecond.of(maxStrafeTune.getAsDouble()); 
     public static LinearVelocity m_maxThrottle = MetersPerSecond.of(maxThrottleTune.getAsDouble());
     public static LinearAcceleration m_maxAccelStrafe = MetersPerSecondPerSecond.of(maxAccelStrafeTune.getAsDouble());
-    public static LinearAcceleration m_maxAccelThrottle = MetersPerSecondPerSecond.of(maxAccelStrafeTune.getAsDouble());
+    public static LinearAcceleration m_maxAccelThrottle = MetersPerSecondPerSecond.of(maxAccelDistanceTune.getAsDouble());
     public static final double MAX_SPIN = Math.toRadians(180.0);
 
     private double m_strafe;
@@ -171,8 +173,14 @@ public class AutoAlignCommand extends Command {
         m_vx = drivetrain.getChassisSpeeds().vxMetersPerSecond;
         m_vy = drivetrain.getChassisSpeeds().vyMetersPerSecond;
 
-        m_strafePID.reset(m_tx,m_vy);
-        m_throttlePID.reset(m_ty,m_vx);
+        
+        m_strafePID = new ProfiledPIDController(strafeGains.build().kP, strafeGains.build().kI, strafeGains.build().kD, new Constraints(m_maxStrafe.in(MetersPerSecond), m_maxAccelStrafe.in(MetersPerSecondPerSecond)));
+        m_throttlePID = new ProfiledPIDController(throttleGains.build().kP, throttleGains.build().kI, throttleGains.build().kD, new Constraints(m_maxThrottle.in(MetersPerSecond), m_maxAccelThrottle.in(MetersPerSecondPerSecond)));
+
+        m_strafePID.reset(m_tx, m_vy);
+        m_throttlePID.reset(m_ty, m_vx);
+        m_throttle = m_throttlePID.calculate(m_ty, new TrapezoidProfile.State(), new TrapezoidProfile.Constraints(Integer.MAX_VALUE / 4.0, Integer.MAX_VALUE / 4.0));
+        
         spinPID.reset();
     }
 
@@ -182,19 +190,19 @@ public class AutoAlignCommand extends Command {
     */
     @Override
     public void execute() {
-        targetPose = targetPose.transformBy(speedModSupplier.get().times(Timer.getFPGATimestamp() - lastTimestamp));
+        // targetPose = targetPose.transformBy(speedModSupplier.get().times(Timer.getFPGATimestamp() - lastTimestamp));
 
         Pose2d targetPose_r = getRelativeTarget();
 
         double distance = getCurrentPose().getTranslation().getDistance(targetPose.getTranslation());
 
-        m_tx = 0.0 - targetPose_r.getY();
-        m_ty = 0.0 - targetPose_r.getX();
+        m_tx = -targetPose_r.getY();
+        m_ty = -targetPose_r.getX();
         m_tr = targetPose_r.getRotation().unaryMinus().getRadians();
 
         m_strafe = m_strafePID.calculate(m_tx, 0.0); 
         m_throttle = m_throttlePID.calculate(m_ty, 0.0);
-        m_spin = MathUtil.clamp(spinPID.calculate(m_tr, 0.0),-MAX_SPIN,MAX_SPIN);
+        m_spin = MathUtil.clamp(spinPID.calculate(m_tr, 0.0), -MAX_SPIN, MAX_SPIN);
 
         if(controlscheme == ControllerType.COMPLEX_DRIVESUPPRESS) {
             double coef = MathUtil.clamp(1.0-Math.abs((Degrees.convertFrom(m_tr, Radians)/spinBound.getAsDouble())), 0, 1);

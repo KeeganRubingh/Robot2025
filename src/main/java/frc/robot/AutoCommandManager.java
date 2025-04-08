@@ -114,8 +114,8 @@ public class AutoCommandManager {
     NamedCommands.registerCommand("StowToL4Arm", new StowToL4(shoulder, elbow, wrist));
     NamedCommands.registerCommand("WaitUntilL4", 
       new StopDrivetrainCommand(drive)
-        .unless(StowToL4.getNewAtL4Trigger(shoulder, elbow, elevator, wrist))
-        .andThen(new WaitUntilCommand(StowToL4.getNewAtL4Trigger(shoulder, elbow, elevator, wrist)).withTimeout(1.5)));
+        .unless(StowToL4.getNewAtScoreTrigger(shoulder, elbow, elevator, wrist))
+        .andThen(new WaitUntilCommand(StowToL4.getNewAtScoreTrigger(shoulder, elbow, elevator, wrist)).withTimeout(1.5)));
 
       NamedCommands.registerCommand("WaitUntilArmAtL4", 
       new StopDrivetrainCommand(drive)
@@ -154,7 +154,7 @@ public class AutoCommandManager {
     NamedCommands.registerCommand("StopDrivetrain", new StopDrivetrainCommand(drive));
     NamedCommands.registerCommand("StopUnlessL4", 
       new StopDrivetrainCommand(drive)
-        .unless(StowToL4.getNewAtL4Trigger(shoulder, elbow, elevator, wrist))
+        .unless(StowToL4.getNewAtScoreTrigger(shoulder, elbow, elevator, wrist))
     );
 
     // Deprecated
