@@ -113,6 +113,7 @@ import frc.robot.util.ReefPositionsUtil.AutoAlignSide;
 import frc.robot.util.ReefPositionsUtil.DeAlgaeLevel;
 import frc.robot.util.ReefPositionsUtil.ScoreLevel;
 import frc.robot.util.SelectorCommandFactory;
+import frc.robot.util.commandDissector.CommandConverter;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -492,6 +493,13 @@ public class RobotContainer {
       new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
       new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
       () -> reefPositions.isSelected(ScoreLevel.L4)));
+
+    CommandConverter newConv = new CommandConverter();
+
+    System.out.println(newConv.convert(new ConditionalCommand(
+      new L4ToStow(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+      new StowCommand(shoulder, elbow, elevator, wrist, coralEndEffector, algaeEndEffector),
+      () -> reefPositions.isSelected(ScoreLevel.L4))));
 
     // Conditional Confirm Coral
     controller.rightTrigger().and(controller.rightBumper()).and(()->!ReefPositionsUtil.getInstance().getIsAutoAligning())
