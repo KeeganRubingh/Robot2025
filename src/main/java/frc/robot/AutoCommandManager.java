@@ -7,9 +7,9 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import static edu.wpi.first.units.Units.Inches;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.AlgaeStowCommand;
+import frc.robot.commands.BargeAlignCommand;
 import frc.robot.commands.BargeScoreThrowCommand;
 import frc.robot.commands.L4ToStow;
 import frc.robot.commands.OutakeAlgae;
@@ -117,10 +117,14 @@ public class AutoCommandManager {
         .unless(StowToL4.getNewAtScoreTrigger(shoulder, elbow, elevator, wrist))
         .andThen(new WaitUntilCommand(StowToL4.getNewAtScoreTrigger(shoulder, elbow, elevator, wrist)).withTimeout(1.5)));
 
-      NamedCommands.registerCommand("WaitUntilArmAtL4", 
+    NamedCommands.registerCommand("WaitUntilArmAtL4", 
       new StopDrivetrainCommand(drive)
         .unless(StowToL4.getNewArmAtL4Trigger(shoulder, elbow, wrist))
         .andThen(new WaitUntilCommand(StowToL4.getNewArmAtL4Trigger(shoulder, elbow, wrist))));
+    
+    NamedCommands.registerCommand("StowToBarge",
+      new StowToBarge(shoulder, elbow, wrist)
+    );
     //#endregion
 
     //#region Confirm Scores
@@ -128,6 +132,12 @@ public class AutoCommandManager {
     NamedCommands.registerCommand("ScoreL2", StowToL2.getNewScoreCommand(shoulder, elbow, wrist, coralEE));
     NamedCommands.registerCommand("ScoreL3", StowToL3.getNewScoreCommand(shoulder, elbow, wrist, coralEE));
     NamedCommands.registerCommand("ScoreL4", StowToL4.getNewScoreCommand(elbow, wrist, coralEE));
+
+    NamedCommands.registerCommand("BargeScore",
+      new BargeScoreThrowCommand(elevator, wrist, algaeEE)
+      .andThen(new WaitUntilCommand(algaeEE.hasAlgaeTrigger().negate()).withTimeout(3))
+    );
+
     //#endregion
 
     //#region StopScore/Backup
@@ -205,23 +215,8 @@ public class AutoCommandManager {
       ReefScoreCommandFactory.getNewAlgaePluckAutoAlignCommand(drive, true)
     );
 
-    NamedCommands.registerCommand("BargeScore",
-      new BargeScoreThrowCommand(elevator, wrist, algaeEE)
-      .andThen(new WaitUntilCommand(algaeEE.hasAlgaeTrigger().negate()).withTimeout(3))
-    );
-
-    NamedCommands.registerCommand("StowToBarge",
-      new StowToBarge(shoulder, elbow, wrist)
-    );
-
-    NamedCommands.registerCommand("BargeStow",
-      new ConditionalCommand(
-        new AlgaeStowCommand(shoulder, elbow, elevator, wrist, algaeEE),
-        elevator.getNewSetDistanceCommand(0.0)
-        .andThen(new WaitUntilCommand(elevator.getNewLessThanDistanceTrigger(() -> 5.0))).withTimeout(0.5)
-        .andThen(new StowCommand(shoulder, elbow, elevator, wrist, coralEE, algaeEE)),
-        algaeEE.hasAlgaeTrigger()
-      )
+    NamedCommands.registerCommand("BargeAlignCommand",
+      new BargeAlignCommand(drive,()->0.0).withTimeout(1.0)
     );
     //#endregion
 
