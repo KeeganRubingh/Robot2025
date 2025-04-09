@@ -98,8 +98,10 @@ import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.vision.AprilTagVision;
 import static frc.robot.subsystems.vision.VisionConstants.limelightLeftName;
 import static frc.robot.subsystems.vision.VisionConstants.limelightRightName;
+import static frc.robot.subsystems.vision.VisionConstants.limelightFrontName;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCameraLeft;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCameraRight;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCameraFront;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.wrist.Wrist;
@@ -192,7 +194,8 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 drive::addVisionMeasurementAutoAlign,
                 new VisionIOPhotonVisionSim(limelightLeftName, robotToCameraLeft, drive::getPose),
-                new VisionIOPhotonVisionSim(limelightRightName, robotToCameraRight, drive::getPose));
+                new VisionIOPhotonVisionSim(limelightRightName, robotToCameraRight, drive::getPose),
+                new VisionIOPhotonVisionSim(limelightFrontName, robotToCameraRight, drive::getPose));
 
         wrist = new Wrist(new WristIOSim(3));
         elevator = new Elevator(
@@ -241,7 +244,8 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 drive::addVisionMeasurementAutoAlign,
                 new VisionIOLimelight(limelightLeftName, drive::getRotation),
-                new VisionIOLimelight(limelightRightName, drive::getRotation));
+                new VisionIOLimelight(limelightRightName, drive::getRotation),
+                new VisionIOLimelight(limelightFrontName, drive::getRotation));
 
         wrist = new Wrist(new WristIOTalonFX(canivoreCanBuilder.id(11).build(),canivoreCanBuilder.id(15).build()));
 
