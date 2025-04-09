@@ -195,7 +195,7 @@ public class RobotContainer {
                 drive::addVisionMeasurementAutoAlign,
                 new VisionIOPhotonVisionSim(limelightLeftName, robotToCameraLeft, drive::getPose),
                 new VisionIOPhotonVisionSim(limelightRightName, robotToCameraRight, drive::getPose),
-                new VisionIOPhotonVisionSim(limelightFrontName, robotToCameraRight, drive::getPose));
+                new VisionIOPhotonVisionSim(limelightFrontName, robotToCameraFront, drive::getPose));
 
         wrist = new Wrist(new WristIOSim(3));
         elevator = new Elevator(
