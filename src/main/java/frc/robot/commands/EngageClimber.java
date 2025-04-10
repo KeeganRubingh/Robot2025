@@ -7,6 +7,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.arm.ArmJoint;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.util.LoggedTunableNumber;
@@ -54,6 +55,9 @@ public class EngageClimber extends SequentialCommandGroup {
             elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
             climber.getNewSetVoltsCommand(-4.0) // negative was forward in test
+                .andThen(new WaitUntilCommand(climber.getNewLessThanAngleTrigger(100.0)))
+                .andThen(climber.getNewSetServoAngleCommand(140.0))
+            
         );
     }
 }
