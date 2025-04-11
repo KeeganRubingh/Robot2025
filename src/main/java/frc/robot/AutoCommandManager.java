@@ -135,7 +135,7 @@ public class AutoCommandManager {
 
     NamedCommands.registerCommand("BargeScore",
       new BargeScoreThrowCommand(elevator, wrist, algaeEE)
-      .andThen(new WaitUntilCommand(algaeEE.hasAlgaeTrigger().negate()).withTimeout(3))
+      .andThen(new WaitUntilCommand(algaeEE.hasAlgaeTrigger().negate()).withTimeout(1.5))
     );
 
     //#endregion

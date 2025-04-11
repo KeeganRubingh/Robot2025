@@ -127,6 +127,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "AutoAlignAlgaePluckBackup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "AlgaeStow"
                 }
               }
