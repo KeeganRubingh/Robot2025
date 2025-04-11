@@ -54,6 +54,8 @@ public class EngageClimber extends SequentialCommandGroup {
         super(
             elbow.getNewSetAngleCommand(ElbowPositions.Final.position),
             shoulder.getNewSetAngleCommand(ShoulderPositions.Final.position),
+            climber.getNewSetServoAngleCommand(0.0),
+                new WaitCommand(0.5),
             climber.getNewSetVoltsCommand(-4.0) // negative was forward in test
                 .andThen(new WaitUntilCommand(climber.getNewLessThanAngleTrigger(100.0)))
                 .andThen(climber.getNewSetServoAngleCommand(140.0))

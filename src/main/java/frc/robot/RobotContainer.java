@@ -569,7 +569,7 @@ public class RobotContainer {
     co_controller.start().and(co_controller.back().negate())
     .whileTrue(
       new EngageClimber(climber, shoulder, elbow) 
-        .andThen(new WaitUntilCommand(climber.getNewLessThanAngleTrigger(87.0)))
+        .andThen(new WaitUntilCommand(climber.getNewLessThanAngleTrigger(78.0)))
         .andThen(new NeutralClimber(climber, true))
       )
     .onFalse(new NeutralClimber(climber,true ));
@@ -578,7 +578,7 @@ public class RobotContainer {
     co_controller.back().and(co_controller.start().negate())
     .whileTrue(
       new DisengageClimber(climber, elbow, shoulder)
-        .andThen(new WaitUntilCommand(climber.getNewGreaterThanAngleTrigger(172.0)))
+        .andThen(new WaitUntilCommand(climber.getNewGreaterThanAngleTrigger(160.0)))
         .andThen(new NeutralClimber(climber, false))
     )
     .onFalse(new NeutralClimber(climber,false));
