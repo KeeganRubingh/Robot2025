@@ -391,6 +391,7 @@ public class RobotContainer {
         )
       );
 
+    // Processer Score
     controller.b()
       .and(()->ReefPositionsUtil.getInstance().getIsAutoAligning())
       .onTrue(
