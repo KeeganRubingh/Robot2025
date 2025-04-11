@@ -29,6 +29,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.google.gson.annotations.Until;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -567,12 +568,20 @@ public class RobotContainer {
     
     // Engage climber
     co_controller.start().and(co_controller.back().negate())
-    .whileTrue(new EngageClimber(climber, shoulder, elbow))
-    .onFalse(new NeutralClimber(climber,true));
+    .whileTrue(
+      new EngageClimber(climber, shoulder, elbow) 
+        .andThen(new WaitUntilCommand(climber.getNewLessThanAngleTrigger(78.0)))
+        .andThen(new NeutralClimber(climber, true))
+      )
+    .onFalse(new NeutralClimber(climber,true ));
 
     // Disengage climber
     co_controller.back().and(co_controller.start().negate())
-    .whileTrue(new DisengageClimber(climber, elbow, shoulder))
+    .whileTrue(
+      new DisengageClimber(climber, elbow, shoulder)
+        .andThen(new WaitUntilCommand(climber.getNewGreaterThanAngleTrigger(160.0)))
+        .andThen(new NeutralClimber(climber, false))
+    )
     .onFalse(new NeutralClimber(climber,false));
 
     //#endregion

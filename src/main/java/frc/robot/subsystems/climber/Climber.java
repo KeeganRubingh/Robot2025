@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.DoubleSupplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.units.measure.Angle;
@@ -14,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.LoggedTunableNumber;
 
 /**
@@ -75,6 +78,27 @@ public class Climber extends SubsystemBase {
     return new InstantCommand(()-> {
       m_ClimberIO.stop();
     });
+  }
+
+  
+  public Trigger getNewGreaterThanAngleTrigger(DoubleSupplier angle) {
+    return new Trigger(() -> {
+      return loggedclimber.angle.in(Degrees) > angle.getAsDouble();
+    });
+  }
+
+  public Trigger getNewGreaterThanAngleTrigger(Double angle) {
+    return getNewGreaterThanAngleTrigger(() -> angle);
+  }
+
+  public Trigger getNewLessThanAngleTrigger(DoubleSupplier angle) {
+    return new Trigger(() -> {
+      return loggedclimber.angle.in(Degrees) < angle.getAsDouble();
+    });
+  }
+
+  public Trigger getNewLessThanAngleTrigger(Double angle) {
+    return getNewLessThanAngleTrigger(() -> angle);
   }
 
   @Override
