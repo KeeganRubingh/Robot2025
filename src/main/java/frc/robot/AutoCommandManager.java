@@ -106,6 +106,7 @@ public class AutoCommandManager {
     //#endregion
 
     //#region Prep Scores
+    
     NamedCommands.registerCommand("StowToL1", new StowToL1(shoulder, elbow, wrist));
     NamedCommands.registerCommand("StowToL2", new StowToL2(shoulder, elbow, elevator, wrist));
     NamedCommands.registerCommand("StowToL3", new StowToL3(shoulder, elbow, wrist, elevator));
