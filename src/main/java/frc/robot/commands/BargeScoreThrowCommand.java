@@ -114,7 +114,7 @@ public class BargeScoreThrowCommand extends SequentialCommandGroup {
             ,
             new WaitUntilCommand(elevator.getNewGreaterThanDistanceTrigger(ElevatorPositions.Launch.position)),
             new BargeScoreCommand(algaeEE),
-            new WaitUntilCommand(elevator.getNewAtDistanceTrigger(ElevatorPositions.Final.position, ElevatorPositions.Tolerance.position))
+            new WaitUntilCommand(algaeEE.hasAlgaeTrigger().negate().debounce(0.5)).withTimeout(2.0)
         );
         addRequirements(wrist, elevator, algaeEE);
     }
