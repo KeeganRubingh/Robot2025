@@ -9,6 +9,8 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.CANrange;
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.CanDef;
 
@@ -43,4 +45,11 @@ public class CoralEndEffectorIONova implements CoralEndEffectorIO {
   public void stop() {
     motor.setVoltage(0.0);
   }
+
+  @Override
+  public TalonFX[] getTalons() {
+    return new TalonFX[] {};
+  }
+
+  
 }

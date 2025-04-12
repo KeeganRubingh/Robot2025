@@ -65,4 +65,9 @@ public class CoralEndEffectorIOTalonFX implements CoralEndEffectorIO {
   public void stop() {
     motor.setControl(new StaticBrake());
   }
+
+  @Override
+  public TalonFX[] getTalons() {
+    return new TalonFX[] {};
+  }
 }

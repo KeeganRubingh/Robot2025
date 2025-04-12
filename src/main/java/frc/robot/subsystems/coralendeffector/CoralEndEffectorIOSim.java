@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.MutDistance;
@@ -53,6 +55,11 @@ public class CoralEndEffectorIOSim implements CoralEndEffectorIO {
   @Override
   public void stop() {
     setTarget(Volts.of(0.0));
+  }
+
+  @Override
+  public TalonFX[] getTalons() {
+    return new TalonFX[] {};
   }
   
 }

@@ -3,6 +3,8 @@ package frc.robot.subsystems.coralendeffector;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import static edu.wpi.first.units.Units.Amps;
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.commands.Orchestra.Orchestratable;
 import frc.robot.util.LoggedTunableNumber;
 
 /**
@@ -24,7 +27,7 @@ import frc.robot.util.LoggedTunableNumber;
  * <li>Voltage control</li>
  * </ul>
  */
-public class CoralEndEffector extends SubsystemBase {
+public class CoralEndEffector extends SubsystemBase implements Orchestratable {
   public static LoggedTunableNumber CORAL_DISTANCE_THRESHOLD_HIGH = new LoggedTunableNumber("Sensors/CoralEndEffector/SENSORTHRESHOLDHIGH", 1.9);
   public static LoggedTunableNumber CORAL_DISTANCE_THRESHOLD_LOW = new LoggedTunableNumber("Sensors/CoralEndEffector/SENSORTHRESHOLDLOW", 1.4);
 
@@ -76,5 +79,10 @@ public class CoralEndEffector extends SubsystemBase {
     if(Constants.tuningMode) {
       Logger.recordOutput("RobotState/CoralEndEffector/hasCoral", hasCoralTrigger());
     }
+  }
+
+  @Override
+  public TalonFX[] getInstruments() {
+    return m_IO.getTalons();
   }
 }

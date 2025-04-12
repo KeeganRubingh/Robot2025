@@ -9,7 +9,9 @@ import edu.wpi.first.units.measure.Voltage;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface CoralEndEffectorIO {
+import com.ctre.phoenix6.hardware.TalonFX;
+
+public interface CoralEndEffectorIO{
 
   @AutoLog
   public static class CoralEndEffectorInputs {
@@ -32,4 +34,6 @@ public interface CoralEndEffectorIO {
   public void updateInputs(CoralEndEffectorInputs input);
 
   public void stop();
+
+  public TalonFX[] getTalons();
 }
